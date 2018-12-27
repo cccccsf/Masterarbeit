@@ -1,0 +1,208 @@
+#!/usr/bin/python3
+import os
+import re
+import xlwt
+import xlrd
+from xlutils.copy import copy
+from HF1 import submit_job_hf1
+
+
+def get_layer_distance(path):
+
+    f = open(path + '/hf.out', 'r')
+    lines = f.read().replace('\n', ':')
+    lines = ' '.join(lines.split()) + '#'
+    f.close()
+
+    #search geometry infomation
+    regex = ' ATOM AT. N. .*#'
+    geo_block = re.search(regex, lines).group(0)
+    geo_block = re.split(':', geo_block.replace(': ', ':'))
+    geometry = []
+    for line in geo_block[1:]:
+        if line == '':
+            break
+        geometry.append(line)
+
+    #get the dict of the z coordinate of each atom
+    geometry_split = []
+    for geo in geometry:
+        geometry_split.append(geo.split())
+    z = []
+    for geo in geo_split:
+        z.append(geo[-1])
+
+    #get the layer distance by calculating the largest distance between atoms
+    distance = 0
+    for i in range(1, len(z)):
+        if (abs(z[i] - z[i-1])) > distance:
+            distance = abs(z[i] - z[i-1])
+
+    return distance
+
+
+def read_init_distance(path):
+    path = os.path.split()[0]
+    path = os.path.split()[0]
+    path = os.path.split(path)[0]
+    path = path + '/geo_opt'
+    with open(path, 'r') as f:
+        init_dist = f.read()
+    init_dist = init_dist.strip()
+    init_dist = float(init_dist)
+    return init_dist
+
+
+def get_energy(path):
+    f = open(path + '/hf.out', 'r')
+    lines = f.read()
+    lines = ' '.join(lines.split()) + '#'
+    f.close()
+
+    regex = 'SCF ENDED - CONVERGENCE ON ENERGY .* CYCLES'
+    energy_block = re.search(regex, lines).group(0)    #SCF ENDED - CONVERGENCE ON ENERGY E(AU) -2.7260361085525E+03 CYCLES
+    regex_2 = 'E\(AU\) .* '
+    energy_block = re.search(regex_2, energy_block).group(0)    #E(AU) -2.7260361085525E+03
+    regex_3 = ' .* '
+    energy_block = re.search(regex_3, energy_block).group(0)    # -2.7260361085525E+03
+    energy = energy_block[1:-1]    #str
+
+    return energy
+
+
+def get_all_x_and_z(paths, init_distance):
+    x_set = set()
+    z_set = set()
+    for path in paths:
+        z = os.path.split(path)[-1]
+        path = os.path.split(path)[0]
+        layer_type = 'bilayer'
+        if z == 'underlayer' or z =='upperlayer':
+            layer_type = z
+            z = os.path.split(path)[-1]
+            path  = os.path.split(path)[0]
+        z = float(z.split('_')[-1])
+        x = os.path.split(path)[-1]
+        x = float(x.split('_')[-1])
+        x_set.add(x)
+        z_set.add(z)
+    x_list = list(xs)
+    z_list = list(zs)
+    x_list.sort()
+    z_list.sort()
+    for i in range(len(z_list)):
+        z_list[i] = z_list[i] +  init_distance
+    x_dict = {}
+    z_dict = {}
+    for i in range(len(x_list)):
+        x_dict[x_list[i]] = i
+    for i in range(len(z_list)):
+        z_dict[z_list[i]] = i
+    return x_dict, z_dict
+
+
+def get_x_z_and_layertype(path, init_distance):
+    z = os.path.split(path)[-1]
+    path = os.path.split(path)[0]
+    layer_type = 'bilayer'
+    if z == 'underlayer' or z =='upperlayer':
+        layer_type = z
+        z = os.path.split(path)[-1]
+        path  = os.path.split(path)[0]
+    z = float(z.split('_')[-1])
+    z = z + init_distance
+    x = os.path.split(path)[-1]
+    x = float(x.split('_')[-1])
+    return x, z, layer_type
+
+
+def creatxls_dis(path):
+    wb = xlwt.Workbook(encoding = 'utf-8')
+    ws = wb.add_sheet('hf1')   #新建工作表
+    ws.write(0, 0, 'displacement')
+    ws.write(0, 1, 'distance(A)')
+    ws.write(0, 2, 'E(au)')
+    ws.write(0, 3, 'Eupperlayer(au)')
+    ws.write(0, 4, 'Eunderlayer(au)')
+    ws.write(0, 5, 'deltaE')
+    wb.save(path + '/hf1.xls')  #保存工作表
+
+
+def data_saving_dis(i, path, disp, dis, l, energy):
+    try:
+        file = path + '/hf1.xls'
+        rb = xlrd.open_workbook(file, formatting_info=True)
+        wb = copy(rb)
+        ws = wb.get_sheet(0)
+        ws.write(i, 0, str(disp))
+        ws.write(i, 1, str(dis))
+        ws.write(i, l, str(energy))
+        wb.save(path + '/hf1.xls')
+        #count = i
+        #print('已写入%d条数据'%count)
+    except Exception as e:
+        print(e)
+
+
+def read_and_record_result(path, init_distance):
+    energy = get_energy(path)
+    x, z, layer_type = get_x_z_and_layertype(path, init_distance)
+    #path = path + '/../..'
+    path = os.path.dirname(path)
+    path = os.path.dirname(path)
+    j = 1 + len(x_dict) * z_dict[z] + x_dict[x]
+    layer = {'bilayer': 2, 'upperlayer': 3, 'underlayer': 4}
+    l = layer[layer_type]
+    data_saving_dis(j, path, x, z, l, energy)
+
+
+def read_all_results(job_dirs, init_distance = 3.1):
+    finished_path = []
+    readed_path = []
+
+    #pick up the initial system
+    loc = 0
+    for dir in job_dirs:
+        x, z, layer_type = get_x_z_and_layertype(dir, 3.1)
+        if layer_type == 'bilayer' and x == 0 and z == 3.1:
+            break
+        loc += 1
+    job_path = os.path.dirname(job_dirs[loc])
+    job_path = os.path.dirname(job_path)
+    creatxls_dis(job_path)
+
+    #get the initial distance of the system
+    try:
+        init_distance = read_init_distance(job_dirs[loc])
+    except Exception as e:
+        print(e)
+        init_distance = None
+    if init_distance == None:
+        init_distance = get_layer_distance(job_dirs[loc])
+    x_dict, z_dict = get_all_x_and_z(job_dirs, init_distance)
+
+    def test_finished(paths):
+        """
+        test one job is finished or not,
+        if finished, add the path to list finished_path, and delete it from the original list
+        :param paths:
+        :return:
+        """
+        for path in paths:
+            if submit_job_hf1.if_cal_finish(path):
+                finished_path.append(path)
+                paths.remove(path)
+            else:
+                pass
+
+    i = 0
+    length = len(job_dirs)
+    while i < length:
+        test_finished(job_dirs)
+        if len(finished_path) > i:
+            read_and_record_result(finished_path[i], init_distance)
+            readed_path.append(finished_path[i])
+            i += 1
+        else:
+            time.sleep(500)
+            continue

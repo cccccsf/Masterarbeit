@@ -1,0 +1,19 @@
+#!/bin/bash
+#PBS -j eo
+#PBS -r n
+#PBS -l nodes=1
+
+
+cd ${PBS_O_WORKDIR}
+currdir=/scratch/shch/$$tmp
+mkdir -p $currdir
+cp fort.9 $currdir/
+cp input.loc $currdir/
+cd $currdir
+~usvyat/Crystal14_new/bin/Linux-ifort-i64-t/std/properties < input.loc > loc.out
+
+cp fort.80 ${PBS_O_WORKDIR}/
+cp loc.out ${PBS_O_WORKDIR}/
+cd ${PBS_O_WORKDIR}
+rm -r $currdir
+

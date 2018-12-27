@@ -1,0 +1,20 @@
+# Windows:
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python:
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# My configurations:
+INPUT
+geo_opt/
+hf_1/
+hf_2/
+ziliao/
+
