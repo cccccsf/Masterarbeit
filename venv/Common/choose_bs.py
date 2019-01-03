@@ -38,7 +38,7 @@ def read_basis_set_file(element, bs_type):
     i = 0
     input1 = input2 = []
     for line in lines:
-        if any(letter in line for letter in ('S ', 'SP ', 'P ', 'D ', 'F ')):
+        if any(letter in line for letter in ('S ', 'SP ', 'P ', 'D ', 'F ', 'G ')):
             #print(line)
             if i == 1:
                 input1.append(input2)
@@ -73,11 +73,13 @@ def transfer_crystal_formatted_bs_input(basis_arrays, elements):
             elif shell[0][0] == 'SP':
                 shell[0][0] = 1
             elif  shell[0][0] == 'P':
-                shell[0][0] =2
+                shell[0][0] = 2
             elif shell[0][0] == 'D':
                 shell[0][0] = 3
             elif shell[0][0] == 'F':
-                shell[0][0] =4
+                shell[0][0] = 4
+            elif shell[0][0] == 'G':
+                shell[0][0] = 5
             shell[0].insert(0, 0)
 
     #Get the electron configuration
@@ -146,6 +148,8 @@ def transfer_crystal_formatted_bs_input(basis_arrays, elements):
                     count_shells[i][3] = 0
                 elif count_shells[i][3] == 0:
                     shell[0].insert(3, 0)
+            elif shell[0][1] == 5:
+                shell[0].insert(3, 0)
         i += 1
 
     return new_basis_array
