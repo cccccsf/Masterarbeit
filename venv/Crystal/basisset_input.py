@@ -236,13 +236,18 @@ class Basis_set(object):
                                 f.write(' ' + str(unit).ljust(16) + ' ')
                         f.write('\n')
 
+    def reset_bs(self, arg, value):
+        self.__dict__[arg] = value
+        self.__init__(self.elements, self.method, self.bs_type)
 
-path = 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_-0.150\\z_-0.106'
-geo = geometry_input.Geometry(path)
-elements = geo.elements
-method = 'GEO_OPT'
+# path = 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_-0.150\\z_-0.106'
+# geo = geometry_input.Geometry(path)
+# elements = geo.elements
+# method = 'HF1'
+# bs = Basis_set([15], method)
+# print(bs)
+# p = path + '/assss'
 
-bs = Basis_set([15], method)
-p = path + '/assss'
+
 
 

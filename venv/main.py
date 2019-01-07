@@ -2,10 +2,11 @@
 import os
 import Initialization
 import Pipeline
+import tests
 
 def menu():
 
-    path = os.getcwd()
+    path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
     Pipeline.pipeline(path)
 
 
@@ -16,5 +17,5 @@ def menu():
 
 
 if  __name__ == "__main__":
-
+    #tests.testsuite()
     menu()

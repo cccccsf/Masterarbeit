@@ -119,6 +119,15 @@ def if_init_finished(path):
             return False
         return True
 
+def get_job_dirs(path):
+    path = path + '/hf_2/'
+    walks = os.walk(path)
+    job_dirs = []
+    for root, dirs, files in walks:
+        if 'hf2' in files:
+            job_dirs.append(root)
+    return job_dirs
+
 
 def submit(job_dirs):
     max_paralell = 5
@@ -163,3 +172,4 @@ def submit(job_dirs):
 #path = 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\hf_1\\x_-0.150\\z_-0.106\\upperlayer'
 #copy_submit_scr(path)
 #copy_fort9(path)
+

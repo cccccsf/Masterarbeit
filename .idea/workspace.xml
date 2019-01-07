@@ -2,12 +2,20 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="80a2f072-9bec-4367-9f99-ce0957d9cc30" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/venv/Crystal/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/venv/Crystal/basisset_input.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/venv/Crystal/geometry_input.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Common/job_path.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/Crystal/guesdual.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/HF2/read_results_hf2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/LMP2/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/tests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/Common/choose_bs.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Common/choose_bs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Crystal/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Crystal/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Crystal/basisset_input.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Crystal/basisset_input.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/HF2/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/HF2/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/HF2/generation_input_hf2.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/HF2/generation_input_hf2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/HF2/inp_layers_hf2.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/HF2/inp_layers_hf2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/HF2/submit_job_hf2.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/HF2/submit_job_hf2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/Pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/main.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -45,7 +53,7 @@
           <entry key="job_submit_upperlayer" value="2" />
           <entry key="json" value="1" />
           <entry key="loc_job" value="1" />
-          <entry key="py" value="251" />
+          <entry key="py" value="299" />
           <entry key="submit_job_hf2" value="1" />
         </counts>
       </usages-collector>
@@ -54,7 +62,7 @@
           <entry key="Bash" value="21" />
           <entry key="JSON" value="1" />
           <entry key="PLAIN_TEXT" value="4" />
-          <entry key="Python" value="252" />
+          <entry key="Python" value="300" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -66,7 +74,7 @@
           <entry key="job_submit_underlayer" value="9" />
           <entry key="job_submit_upperlayer" value="9" />
           <entry key="loc_job" value="5" />
-          <entry key="py" value="69503" />
+          <entry key="py" value="79431" />
           <entry key="submit_job_hf2" value="3" />
         </counts>
       </usages-collector>
@@ -74,7 +82,7 @@
         <counts>
           <entry key="Bash" value="126" />
           <entry key="PLAIN_TEXT" value="84" />
-          <entry key="Python" value="69535" />
+          <entry key="Python" value="79463" />
         </counts>
       </usages-collector>
     </session>
@@ -84,71 +92,98 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/venv/Pipeline.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="164">
-              <caret line="290" selection-start-line="290" selection-end-line="290" />
+            <state relative-caret-position="96">
+              <caret line="297" selection-start-line="297" selection-end-line="297" />
               <folding>
                 <element signature="e#19#28#0" expanded="true" />
-                <marker date="1545391421283" expanded="true" signature="5944:11667" ph="..." />
-                <marker date="1545391421283" expanded="true" signature="9840:11667" ph="..." />
-                <marker date="1545391421283" expanded="true" signature="10700:11667" ph="..." />
-                <marker date="1545391421283" expanded="true" signature="11686:11691" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/venv/Localization/copy_inp_loc.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="32">
-              <caret line="21" selection-start-line="21" selection-end-line="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/venv/Crystal/basisset_input.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="93">
-              <caret line="236" column="37" selection-start-line="236" selection-start-column="37" selection-end-line="236" selection-end-column="37" />
-              <folding>
-                <element signature="e#19#29#0" expanded="true" />
-                <element signature="e#411#687#0" />
-                <element signature="e#766#778#0" />
-                <element signature="e#839#862#0" />
-                <element signature="e#904#931#0" />
-                <element signature="e#949#1991#0" />
-                <element signature="e#427#634#0" />
-                <element signature="e#901#1046#0" />
-                <element signature="e#1291#2089#0" />
-                <element signature="e#1511#1650#0" />
-                <element signature="e#1684#2035#0" />
-                <element signature="e#905#1065#0" />
-                <element signature="e#2613#2877#0" />
-                <element signature="e#3002#3151#0" />
-                <element signature="e#2905#3402#0" />
-                <element signature="e#3871#4039#0" />
-                <element signature="e#3804#3926#0" />
-                <element signature="e#4260#4901#0" />
-                <element signature="e#3984#4564#0" />
-                <element signature="e#5635#6387#0" />
-                <element signature="e#6944#7735#0" />
-                <marker date="1546548837906" expanded="true" signature="2521:3297" ph="..." />
-                <marker date="1546548837906" expanded="true" signature="3699:8569" ph="..." />
-                <marker date="1546548837906" expanded="true" signature="5179:6606" ph="..." />
-                <marker date="1546548837906" expanded="false" signature="6659:6765" ph="..." />
+                <element signature="e#586#5927#0" />
+                <element signature="e#5950#9814#0" />
+                <element signature="e#9851#10906#0" />
+                <marker date="1546615048341" expanded="true" signature="5981:12319" ph="..." />
+                <marker date="1546615048341" expanded="true" signature="9882:12319" ph="..." />
+                <marker date="1546615048341" expanded="true" signature="10960:12319" ph="..." />
+                <marker date="1546615048341" expanded="true" signature="12338:12343" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/venv/HF2/inp_layers_hf2.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="209">
+              <caret line="59" column="15" lean-forward="true" selection-start-line="59" selection-start-column="15" selection-end-line="59" selection-end-column="15" />
+              <folding>
+                <element signature="e#20#29#0" expanded="true" />
+                <marker date="1546878309634" expanded="true" signature="349:708" ph="..." />
+                <marker date="1546878309634" expanded="true" signature="1098:1107" ph="..." />
+                <marker date="1546878309634" expanded="true" signature="1642:1644" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/venv/Crystal/guesdual.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1140">
+              <caret line="93" column="32" lean-forward="true" selection-start-line="93" selection-start-column="32" selection-end-line="93" selection-end-column="32" />
+              <folding>
+                <element signature="e#19#48#0" expanded="true" />
+                <element signature="e#859#871#0" />
+                <element signature="e#896#1218#0" />
+                <element signature="e#1032#1608#0" />
+                <element signature="e#1415#1433#0" />
+                <element signature="e#1466#1500#0" />
+                <element signature="e#1539#1595#0" />
+                <element signature="e#1628#1652#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/venv/geometry_optimization/read_input.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="76">
+              <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+              <folding>
+                <element signature="e#19#28#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/venv/Common/job_path.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-3">
+              <caret column="18" lean-forward="true" selection-start-column="18" selection-end-column="18" />
+              <folding>
+                <marker date="1546622840765" expanded="true" signature="808:849" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/venv/HF2/read_results_hf2.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="23">
+              <caret line="11" column="20" lean-forward="true" selection-start-line="11" selection-start-column="20" selection-end-line="11" selection-end-column="20" />
+              <folding>
+                <element signature="e#19#28#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/venv/Crystal/geometry_input.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-152">
-              <caret line="27" selection-start-line="27" selection-end-line="31" selection-end-column="21" />
+            <state relative-caret-position="589">
+              <caret line="55" selection-start-line="55" selection-end-line="55" />
               <folding>
-                <element signature="e#120#484#0" />
                 <marker date="1546518049139" expanded="true" signature="70:961" ph="..." />
                 <marker date="1546518049139" expanded="true" signature="1423:1436" ph="..." />
                 <marker date="1546518049139" expanded="true" signature="3539:3543" ph="..." />
@@ -158,10 +193,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/venv/Common/choose_bs.py">
+        <entry file="file://$PROJECT_DIR$/venv/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2869">
-              <caret line="151" column="36" selection-start-line="151" selection-start-column="36" selection-end-line="151" selection-end-column="36" />
+            <state relative-caret-position="190">
+              <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
               <folding>
                 <element signature="e#19#28#0" expanded="true" />
               </folding>
@@ -172,17 +207,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/venv/HF2/generation_input_hf2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="256">
-              <caret line="267" column="37" lean-forward="true" selection-start-line="261" selection-start-column="12" selection-end-line="267" selection-end-column="37" />
+            <state relative-caret-position="57">
+              <caret line="164" column="55" selection-start-line="164" selection-start-column="37" selection-end-line="164" selection-end-column="55" />
               <folding>
                 <element signature="e#20#29#0" expanded="true" />
-                <element signature="e#349#534#0" />
-                <element signature="e#565#1135#0" />
-                <element signature="e#1162#1670#0" />
-                <marker date="1545391317252" expanded="true" signature="1693:2261" ph="..." />
-                <marker date="1545391317252" expanded="true" signature="2292:2301" ph="..." />
-                <marker date="1545391317252" expanded="true" signature="4759:5301" ph="..." />
-                <marker date="1545391317252" expanded="true" signature="7902:7911" ph="..." />
+                <element signature="e#401#587#0" />
+                <element signature="e#618#1188#0" />
+                <element signature="e#1215#1723#0" />
+                <element signature="e#3763#4514#0" />
+                <marker date="1546877847459" expanded="true" signature="1746:2184" ph="..." />
+                <marker date="1546877847459" expanded="true" signature="2220:2224" ph="..." />
+                <marker date="1546877847459" expanded="true" signature="3619:3723" ph="..." />
               </folding>
             </state>
           </provider>
@@ -212,9 +247,16 @@
       <find>if_bs</find>
       <find>x</find>
       <find>type</find>
-      <find>print</find>
       <find>elements_if</find>
       <find>G</find>
+      <find>read</find>
+      <find>self.path</find>
+      <find>root_path</find>
+      <find>bs_type</find>
+      <find>ele_nsh</find>
+      <find>get_uni</find>
+      <find>path</find>
+      <find>print</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -223,13 +265,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/venv/Data/__init__.py" />
-        <option value="$PROJECT_DIR$/venv/geometry_optimization/geometry_optimization.py" />
-        <option value="$PROJECT_DIR$/venv/geometry_optimization/__init__.py" />
-        <option value="$PROJECT_DIR$/venv/Data/Ahlrichs_VTZ.py" />
-        <option value="$PROJECT_DIR$/venv/geometry_optimization/choose_bs.py" />
-        <option value="$PROJECT_DIR$/venv/Common/__init__.py" />
-        <option value="$PROJECT_DIR$/venv/Data/Functionals.py" />
         <option value="$PROJECT_DIR$/venv/architecture.py" />
         <option value="$PROJECT_DIR$/venv/Architecture.py" />
         <option value="$PROJECT_DIR$/venv/Data/Grimme_parameter.py" />
@@ -237,7 +272,6 @@
         <option value="$PROJECT_DIR$/venv/Basis_Set/basis_set_catalog.py" />
         <option value="$PROJECT_DIR$/venv/Data/Periodict_Table.py" />
         <option value="$PROJECT_DIR$/venv/Common/get_e_configuration.py" />
-        <option value="$PROJECT_DIR$/venv/main.py" />
         <option value="$PROJECT_DIR$/venv/Common/test_variable.py" />
         <option value="$PROJECT_DIR$/venv/geometry_optimization/gen_input.py" />
         <option value="$PROJECT_DIR$/venv/Initialization.py" />
@@ -263,21 +297,29 @@
         <option value="$PROJECT_DIR$/venv/HF1/input_of_layers.py" />
         <option value="$PROJECT_DIR$/venv/Common/file_processing.py" />
         <option value="$PROJECT_DIR$/venv/Localization/submit_job_loc.py" />
-        <option value="$PROJECT_DIR$/venv/HF2/__init__.py" />
-        <option value="$PROJECT_DIR$/venv/HF2/generation_input_hf2.py" />
-        <option value="$PROJECT_DIR$/venv/Pipeline.py" />
         <option value="$PROJECT_DIR$/venv/HF2/submit_job_hf2" />
-        <option value="$PROJECT_DIR$/venv/HF2/inp_layers_hf2.py" />
-        <option value="$PROJECT_DIR$/venv/HF2/submit_job_hf2.py" />
         <option value="$PROJECT_DIR$/venv/HF1/generation_of_input.py" />
         <option value="$PROJECT_DIR$/venv/Crystal/geometry_input.py" />
         <option value="$PROJECT_DIR$/venv/Common/read_pob_tzvp_bs.py" />
         <option value="$PROJECT_DIR$/venv/Common/choose_bs.py" />
+        <option value="$PROJECT_DIR$/venv/LMP2/__init__.py" />
+        <option value="$PROJECT_DIR$/venv/HF2/__init__.py" />
+        <option value="$PROJECT_DIR$/venv/HF2/submit_job_hf2.py" />
+        <option value="$PROJECT_DIR$/venv/Pipeline.py" />
+        <option value="$PROJECT_DIR$/venv/Common/job_path.py" />
+        <option value="$PROJECT_DIR$/venv/Crystal/tests.py" />
+        <option value="$PROJECT_DIR$/venv/tests.py" />
+        <option value="$PROJECT_DIR$/venv/HF2/read_results_hf2.py" />
         <option value="$PROJECT_DIR$/venv/Crystal/basisset_input.py" />
+        <option value="$PROJECT_DIR$/venv/Crystal/__init__.py" />
+        <option value="$PROJECT_DIR$/venv/main.py" />
+        <option value="$PROJECT_DIR$/venv/Crystal/guesdual.py" />
+        <option value="$PROJECT_DIR$/venv/HF2/generation_input_hf2.py" />
+        <option value="$PROJECT_DIR$/venv/HF2/inp_layers_hf2.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="949" />
     <option name="width" value="980" />
     <option name="height" value="1091" />
@@ -307,13 +349,13 @@
               <item name="Layer_Structure_Caculation" type="b2602c69:ProjectViewProjectNode" />
               <item name="Layer_Structure_Caculation" type="462c0819:PsiDirectoryNode" />
               <item name="venv" type="462c0819:PsiDirectoryNode" />
-              <item name="Common" type="462c0819:PsiDirectoryNode" />
+              <item name="Crystal" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Layer_Structure_Caculation" type="b2602c69:ProjectViewProjectNode" />
               <item name="Layer_Structure_Caculation" type="462c0819:PsiDirectoryNode" />
               <item name="venv" type="462c0819:PsiDirectoryNode" />
-              <item name="Crystal" type="462c0819:PsiDirectoryNode" />
+              <item name="HF2" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -322,16 +364,17 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="SearchEverywhereHistoryKey" value="tvzp&#9;null&#9;null" />
+    <property name="SearchEverywhereHistoryKey" value="ba&#9;FILE&#9;file://C:/Users/ccccc/PycharmProjects/Layer_Structure_Caculation/venv/Crystal/basisset_input.py&#10;tvzp&#9;null&#9;null" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\venv\Common" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\venv\HF1" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\venv" />
+      <recent name="C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\venv\Common" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -346,7 +389,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.basisset_input">
+  <component name="RunManager" selected="Python.main">
     <configuration name="basisset_input" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Layer_Structure_Caculation" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -368,28 +411,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="geometry_input" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="Layer_Structure_Caculation" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/Crystal" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/Crystal/geometry_input.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="inp_layers_hf2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="generation_input_hf2" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Layer_Structure_Caculation" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -401,7 +423,28 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/HF2/inp_layers_hf2.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/HF2/generation_input_hf2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="guesdual" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Layer_Structure_Caculation" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/Crystal" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/Crystal/guesdual.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -431,7 +474,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="submit_job_hf2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="tests (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Layer_Structure_Caculation" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -439,11 +482,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/HF2" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/HF2/submit_job_hf2.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -454,18 +497,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.main" />
-      <item itemvalue="Python.inp_layers_hf2" />
-      <item itemvalue="Python.submit_job_hf2" />
-      <item itemvalue="Python.geometry_input" />
+      <item itemvalue="Python.tests (1)" />
+      <item itemvalue="Python.guesdual" />
       <item itemvalue="Python.basisset_input" />
+      <item itemvalue="Python.generation_input_hf2" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.basisset_input" />
-        <item itemvalue="Python.geometry_input" />
-        <item itemvalue="Python.submit_job_hf2" />
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.inp_layers_hf2" />
+        <item itemvalue="Python.generation_input_hf2" />
+        <item itemvalue="Python.guesdual" />
+        <item itemvalue="Python.basisset_input" />
+        <item itemvalue="Python.tests (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -476,16 +519,16 @@
     <frame x="-7" y="-7" width="1295" height="735" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2494043" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2406672" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3296355" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.23015873" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.20634921" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32857144" />
       <window_info anchor="bottom" id="Python Console" order="8" weight="0.2266244" />
       <window_info anchor="bottom" id="Statistic" order="9" weight="0.3296355" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -510,44 +553,47 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout-to-restore>
   </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/venv/Basis_Set/cc-pwCVQZ-DK.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Basis_Set/cc-pwCVQZ-DK3.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Data/Grimme_parameter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="17" selection-start-line="17" selection-end-line="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/pip-selfcheck.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Common/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="57">
-          <caret line="4" selection-start-line="4" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Data/Periodict_Table.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="245">
-          <caret line="48" column="1" selection-start-line="48" selection-start-column="1" selection-end-line="48" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/venv/HF1/job_submit" />
-    <entry file="file://$PROJECT_DIR$/venv/__init__.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/venv/geometry_optimization/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -656,13 +702,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/venv/geometry_optimization/read_input.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-589">
-          <caret line="13" column="44" selection-start-line="13" selection-start-column="44" selection-end-line="13" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/venv/Common/file_processing.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
@@ -680,44 +719,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Localization/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="4" selection-start-line="4" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Localization/submit_job_loc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-392">
-          <caret line="69" column="15" selection-start-line="69" selection-start-column="15" selection-end-line="69" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/HF2/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="57">
-          <caret line="3" column="30" selection-start-line="3" selection-start-column="30" selection-end-line="3" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/venv/HF2/submit_job_hf2" />
     <entry file="file://$PROJECT_DIR$/venv/HF2/denis_crystal" />
-    <entry file="file://$PROJECT_DIR$/venv/HF2/inp_layers_hf2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1900">
-          <caret line="100" column="1" selection-start-line="100" selection-start-column="1" selection-end-line="100" selection-end-column="115" />
-          <folding>
-            <element signature="e#20#29#0" expanded="true" />
-            <marker date="1545398272591" expanded="true" signature="508:850" ph="..." />
-            <marker date="1545398272591" expanded="true" signature="1072:1487" ph="..." />
-            <marker date="1545398272591" expanded="true" signature="2000:2009" ph="..." />
-            <marker date="1545398272591" expanded="true" signature="2478:2483" ph="..." />
-            <marker date="1545398272591" expanded="true" signature="2478:2734" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/AppData/Local/Programs/Python/Python36/Lib/shutil.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="346">
@@ -725,62 +728,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/venv/HF1/submit_job_hf1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret selection-end-column="18" />
-          <folding>
-            <element signature="e#19#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/HF2/submit_job_hf2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="447">
-          <caret line="164" column="1" selection-start-line="164" selection-start-column="1" selection-end-line="164" selection-end-column="1" />
-          <folding>
-            <element signature="e#19#28#0" expanded="true" />
-            <marker date="1545401982066" expanded="true" signature="1311:1761" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.PyCharmEdu2018.2/system/python_stubs/954202741/builtins.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="143">
           <caret line="802" column="8" selection-start-line="802" selection-start-column="8" selection-end-line="802" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/HF1/read_results_hf1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1427">
-          <caret line="117" lean-forward="true" selection-start-line="117" selection-end-line="117" />
-          <folding>
-            <element signature="e#19#28#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Pipeline.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="164">
-          <caret line="290" selection-start-line="290" selection-end-line="290" />
-          <folding>
-            <element signature="e#19#28#0" expanded="true" />
-            <marker date="1545391421283" expanded="true" signature="5944:11667" ph="..." />
-            <marker date="1545391421283" expanded="true" signature="9840:11667" ph="..." />
-            <marker date="1545391421283" expanded="true" signature="10700:11667" ph="..." />
-            <marker date="1545391421283" expanded="true" signature="11686:11691" ph="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -858,64 +809,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/venv/HF2/generation_input_hf2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="256">
-          <caret line="267" column="37" lean-forward="true" selection-start-line="261" selection-start-column="12" selection-end-line="267" selection-end-column="37" />
-          <folding>
-            <element signature="e#20#29#0" expanded="true" />
-            <element signature="e#349#534#0" />
-            <element signature="e#565#1135#0" />
-            <element signature="e#1162#1670#0" />
-            <marker date="1545391317252" expanded="true" signature="1693:2261" ph="..." />
-            <marker date="1545391317252" expanded="true" signature="2292:2301" ph="..." />
-            <marker date="1545391317252" expanded="true" signature="4759:5301" ph="..." />
-            <marker date="1545391317252" expanded="true" signature="7902:7911" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Localization/copy_inp_loc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="32">
-          <caret line="21" selection-start-line="21" selection-end-line="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Crystal/basisset_input.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="93">
-          <caret line="236" column="37" selection-start-line="236" selection-start-column="37" selection-end-line="236" selection-end-column="37" />
-          <folding>
-            <element signature="e#19#29#0" expanded="true" />
-            <element signature="e#411#687#0" />
-            <element signature="e#766#778#0" />
-            <element signature="e#839#862#0" />
-            <element signature="e#904#931#0" />
-            <element signature="e#949#1991#0" />
-            <element signature="e#427#634#0" />
-            <element signature="e#901#1046#0" />
-            <element signature="e#1291#2089#0" />
-            <element signature="e#1511#1650#0" />
-            <element signature="e#1684#2035#0" />
-            <element signature="e#905#1065#0" />
-            <element signature="e#2613#2877#0" />
-            <element signature="e#3002#3151#0" />
-            <element signature="e#2905#3402#0" />
-            <element signature="e#3871#4039#0" />
-            <element signature="e#3804#3926#0" />
-            <element signature="e#4260#4901#0" />
-            <element signature="e#3984#4564#0" />
-            <element signature="e#5635#6387#0" />
-            <element signature="e#6944#7735#0" />
-            <marker date="1546548837906" expanded="true" signature="2521:3297" ph="..." />
-            <marker date="1546548837906" expanded="true" signature="3699:8569" ph="..." />
-            <marker date="1546548837906" expanded="true" signature="5179:6606" ph="..." />
-            <marker date="1546548837906" expanded="false" signature="6659:6765" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/venv/Common/choose_bs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2869">
@@ -926,15 +819,233 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Localization/copy_inp_loc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="21" selection-start-line="21" selection-end-line="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/__init__.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/LMP2/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="38">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Localization/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+          <folding>
+            <element signature="e#20#57#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Localization/submit_job_loc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1957">
+          <caret line="106" column="12" selection-start-line="106" selection-start-column="12" selection-end-line="107" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/HF2/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="5" column="32" selection-start-line="5" selection-start-column="32" selection-end-line="5" selection-end-column="32" />
+          <folding>
+            <element signature="e#20#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/HF1/submit_job_hf1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="741">
+          <caret line="39" selection-start-line="39" selection-end-line="46" selection-end-column="19" />
+          <folding>
+            <element signature="e#19#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/HF2/submit_job_hf2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="274">
+          <caret line="174" selection-start-line="174" selection-end-line="174" />
+          <folding>
+            <element signature="e#19#28#0" expanded="true" />
+            <marker date="1546606106651" expanded="true" signature="1311:1761" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/HF1/read_results_hf1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2562">
+          <caret line="183" column="29" lean-forward="true" selection-start-line="183" selection-start-column="29" selection-end-line="183" selection-end-column="29" />
+          <folding>
+            <element signature="e#19#28#0" expanded="true" />
+            <element signature="e#161#1022#0" />
+            <element signature="e#1059#1325#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="4" column="28" lean-forward="true" selection-start-line="4" selection-start-column="28" selection-end-line="4" selection-end-column="28" />
+          <folding>
+            <marker date="1546865088292" expanded="true" signature="150:267" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Crystal/basisset_input.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2527">
+          <caret line="220" column="34" lean-forward="true" selection-start-line="220" selection-start-column="8" selection-end-line="220" selection-end-column="34" />
+          <folding>
+            <element signature="e#19#29#0" expanded="true" />
+            <element signature="e#1859#2249#0" />
+            <element signature="e#2499#3297#0" />
+            <element signature="e#4045#4194#0" />
+            <element signature="e#4273#4864#0" />
+            <element signature="e#4940#5116#0" />
+            <element signature="e#5390#6012#0" />
+            <element signature="e#6068#6606#0" />
+            <element signature="e#6668#6765#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Pipeline.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="96">
+          <caret line="297" selection-start-line="297" selection-end-line="297" />
+          <folding>
+            <element signature="e#19#28#0" expanded="true" />
+            <element signature="e#586#5927#0" />
+            <element signature="e#5950#9814#0" />
+            <element signature="e#9851#10906#0" />
+            <marker date="1546615048341" expanded="true" signature="5981:12319" ph="..." />
+            <marker date="1546615048341" expanded="true" signature="9882:12319" ph="..." />
+            <marker date="1546615048341" expanded="true" signature="10960:12319" ph="..." />
+            <marker date="1546615048341" expanded="true" signature="12338:12343" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Crystal/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="57">
+          <caret line="3" column="37" selection-start-line="3" selection-start-column="37" selection-end-line="3" selection-end-column="37" />
+          <folding>
+            <element signature="e#19#62#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/geometry_optimization/read_input.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="76">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+          <folding>
+            <element signature="e#19#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Crystal/guesdual.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1140">
+          <caret line="93" column="32" lean-forward="true" selection-start-line="93" selection-start-column="32" selection-end-line="93" selection-end-column="32" />
+          <folding>
+            <element signature="e#19#48#0" expanded="true" />
+            <element signature="e#859#871#0" />
+            <element signature="e#896#1218#0" />
+            <element signature="e#1032#1608#0" />
+            <element signature="e#1415#1433#0" />
+            <element signature="e#1466#1500#0" />
+            <element signature="e#1539#1595#0" />
+            <element signature="e#1628#1652#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Common/job_path.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3">
+          <caret column="18" lean-forward="true" selection-start-column="18" selection-end-column="18" />
+          <folding>
+            <marker date="1546622840765" expanded="true" signature="808:849" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/HF2/generation_input_hf2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="57">
+          <caret line="164" column="55" selection-start-line="164" selection-start-column="37" selection-end-line="164" selection-end-column="55" />
+          <folding>
+            <element signature="e#20#29#0" expanded="true" />
+            <element signature="e#401#587#0" />
+            <element signature="e#618#1188#0" />
+            <element signature="e#1215#1723#0" />
+            <element signature="e#3763#4514#0" />
+            <marker date="1546877847459" expanded="true" signature="1746:2184" ph="..." />
+            <marker date="1546877847459" expanded="true" signature="2220:2224" ph="..." />
+            <marker date="1546877847459" expanded="true" signature="3619:3723" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
+          <folding>
+            <element signature="e#19#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/venv/Crystal/geometry_input.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-152">
-          <caret line="27" selection-start-line="27" selection-end-line="31" selection-end-column="21" />
+        <state relative-caret-position="589">
+          <caret line="55" selection-start-line="55" selection-end-line="55" />
           <folding>
-            <element signature="e#120#484#0" />
             <marker date="1546518049139" expanded="true" signature="70:961" ph="..." />
             <marker date="1546518049139" expanded="true" signature="1423:1436" ph="..." />
             <marker date="1546518049139" expanded="true" signature="3539:3543" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/HF2/read_results_hf2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23">
+          <caret line="11" column="20" lean-forward="true" selection-start-line="11" selection-start-column="20" selection-end-line="11" selection-end-column="20" />
+          <folding>
+            <element signature="e#19#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/HF2/inp_layers_hf2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="59" column="15" lean-forward="true" selection-start-line="59" selection-start-column="15" selection-end-line="59" selection-end-column="15" />
+          <folding>
+            <element signature="e#20#29#0" expanded="true" />
+            <marker date="1546878309634" expanded="true" signature="349:708" ph="..." />
+            <marker date="1546878309634" expanded="true" signature="1098:1107" ph="..." />
+            <marker date="1546878309634" expanded="true" signature="1642:1644" ph="..." />
           </folding>
         </state>
       </provider>

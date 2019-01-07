@@ -8,6 +8,7 @@ from geometry_optimization import read_input
 from geometry_optimization import submit_job
 from geometry_optimization import read_results
 from Common.file_processing import mkdir
+from Common.job_path import Job_path
 from HF1 import generation_of_input
 from HF1 import input_of_layers
 from HF1 import submit_job_hf1
@@ -226,9 +227,9 @@ def hf1(path):
 
     #read calculation results
     read_results_hf1.read_all_results(job_dirs)
-
     read_results.write_init_distance(path, init_distance)
-    print('Geometry optimization finished!!!')
+
+    print('Hartree Fock calculation 1 finished!!!')
 
 
 def localization(path):
@@ -254,22 +255,32 @@ def localization(path):
     #submitted_paths = Localization.submit_job_loc.submit(loc_job_dirs)
 
     #test finished
+    while True:
+        if Localization.submit_job_loc.test_all_loc_finished(loc_job_dirs):
+            print ('Localization finished!')
+            break
+        else:
+            time.sleep(500)
+            continue
 
 
 def hf2(path):
 
     file = os.path.exists('INPUT')
     job_dirs = HF2.generation_input_hf2.get_job_dirs(path)
+    hf1_paths = []
+    for job in job_dirs:
+        job_path = Job_path(job)
+        hf1_paths.append(job_path)
 
     #catagorization
     bilayer = []
     singlelayer = []
-    for job_dir in job_dirs:
-        bs_type = HF2.generation_input_hf2.get_bs_type(job_dir)
-        if bs_type == 'bilayer':
-            bilayer.append(job_dir)
-        elif bs_type == 'underlayer' or bs_type == 'upperlayer':
-            singlelayer.append(job_dir)
+    for job_path in hf1_paths:
+        if job_path.layertype == 'bilayer':
+            bilayer.append(job_path)
+        elif job_path.layertype == 'underlayer' or job_path.layertype == 'upperlayer':
+            singlelayer.append(job_path)
 
     #read basic computation infomation
     if file:
@@ -288,7 +299,14 @@ def hf2(path):
         Inp.gen_input()
 
     #submit the jobs
+    hf2_job_dirs = bilayer + singlelayer
+    #submitted_path = HF2.submit_job_hf2.submit(hf2_job_dirs)
 
+    #read calculation results
+    #read_results_hf1.read_all_results(job_dirs)
+    #read_results.write_init_distance(path, init_distance)
+
+    print('Hartree Fock calculation 2 optimization finished!!!')
 
 
 def pipeline(path):
