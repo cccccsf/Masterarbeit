@@ -5,6 +5,7 @@ import re
 from copy import deepcopy
 import Initialization
 import Crystal
+from read_input import Read_input
 from Common.file_processing import mkdir
 from Common.test_variable import test_bs_type
 from Common import read_pob_tzvp_bs
@@ -76,8 +77,10 @@ class Input(object):
         self.geometry = []          #class geometry
         self.init_geometry()
 
+        self.Read_input = 0
         self.bs = []                #class Basis_set
         self.bs_type = 'default'
+        self.read_original_input()
 
         self.new_path = self.hf2_path.path
         self.if_bs_change = 0
@@ -159,10 +162,12 @@ class Input(object):
             f.write('END' + '\n')
             f.write('END' + '\n')
 
+    def read_original_input(self):
+        self.Read_input = Read_input(self.hf1_path.root_path)
+        self.bs_type = self.Read_input.hf2_bs
 
     def gen_input(self):
         self.geo_block = self.read_hf1_input()
-        self.bs_type = read_inp(self.hf2_path.root_path)
         self.write_geo_block()
         self.write_bs()
         self.write_cal_info()

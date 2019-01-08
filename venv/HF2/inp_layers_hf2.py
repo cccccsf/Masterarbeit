@@ -40,7 +40,6 @@ class Layer_Inp(Input):
     def gen_input(self):
         self.geo_block = self.read_hf1_input()
         self.read_ghost()
-        self.bs_type = read_inp(self.hf2_path.root_path)
         self.write_geo_block()
         self.write_bs()
         self.write_cal_info()
