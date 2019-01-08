@@ -12,30 +12,9 @@ def submit_hf2_job():
     subprocess.call(command, shell=True)
 
 
-def get_x_z_and_layertype(path):
-    z = os.path.split(path)[-1]
-    path = os.path.split(path)[0]
-    layertype = 'bilayer'
-    if z == 'underlayer' or z =='upperlayer':
-        layertype = z
-        z = os.path.split(path)[-1]
-        path  = os.path.split(path)[0]
-    z_dir = z
-    z = float(z.split('_')[-1])
-    x = os.path.split(path)[-1]
-    x_dir = x
-    root_path = os.path.split(path)[0]
-    x = float(x.split('_')[-1])
-    root_path = os.path.split(root_path)[0]
-    return x_dir, z_dir, layertype, root_path
-
 
 def copy_submit_scr(path):
-    x_dir, z_dir, layertype, root_path = get_x_z_and_layertype(path)
-    if layertype == 'bilayer':
-        ziel_path = root_path + '/hf_2/' + x_dir + '/' + z_dir
-    else:
-        ziel_path = root_path + '/hf_2/' + x_dir + '/' + z_dir + '/' + layertype
+    ziel_path = path.path.replace('hf_1', 'hf_2')
     scr_path = os.path.dirname(os.path.realpath(__file__)) + '/job_submit.bash'
     try:
         print(ziel_path)
@@ -46,12 +25,8 @@ def copy_submit_scr(path):
 
 
 def copy_fort9(path):
-    x_dir, z_dir, layertype, root_path = get_x_z_and_layertype(path)
-    if layertype == 'bilayer':
-        ziel_path = root_path + '/hf_2/' + x_dir + '/' + z_dir
-    else:
-        ziel_path = root_path + '/hf_2/' + x_dir + '/' + z_dir + '/' + layertype
-    scr_path = path + '/fort.9'
+    scr_path = path.path + '/fort.9'
+    ziel_path = path.path.replace('hf_1', 'hf_2')
     try:
         print(ziel_path)
         shutil.copy(scr_path, ziel_path+'/fort.9')
@@ -66,7 +41,7 @@ def if_cal_finish(path):
     :param path: string
     :return: Bool Ture of False
     """
-    os.chdir(path)
+    os.chdir(path.path)
     if not os.path.exists('hf.out'):
         return False
     else:
@@ -86,15 +61,11 @@ def if_cal_finish(path):
 
 
 def if_init_finished(path):
-    if os.path.split(path)[-1] != 'upperlayer' and os.path.split(path)[-1] != 'underlayer':
-        z_dirname = os.path.split(path)[-1]
-        superior_path = os.path.split(path)[0]
-        x_dirname = os.path.split(superior_path)[-1]
-        root_path = os.path.split(superior_path)[0]
-        x = float(x_dir.split('_')[-1])
+    if path.layertype != 'upperlayer' and path.layertype != 'underlayer':
+        x = path.get_x_value()
         if x == 0:
             return True
-        init_path = root_path + '/x_0/' + z_dirname
+        init_path = path.root_path + '/x_0/' + path.z_dirname
         if not if_cal_finish(init_path):
             return False
         file = os.path.exists(init_path+'/fort.9')
@@ -102,16 +73,10 @@ def if_init_finished(path):
             return False
         return True
     else:
-        layer = os.path.split(path)[-1]
-        path = os.path.split(path)[0]
-        z_dirname = os.path.split(path)[-1]
-        superior_path = os.path.split(path)[0]
-        x_dirname = os.path.split(superior_path)[-1]
-        root_path = os.path.split(superior_path)[0]
-        x = float(x_dir.split('_')[-1])
+        x = path.get_x_value()
         if x == 0:
             return True
-        init_path = root_path + '/x_0/' + z_dirname + '/' + layer
+        init_path = path.root_path + '/x_0/' + path.z_dirname + '/' + self.layertype
         if not if_cal_finish(init_path):
             return False
         file = os.path.exists(init_path+'/fort.9')
@@ -149,12 +114,12 @@ def submit(job_dirs):
     while i < len(job_dirs):
         test_finished(submitted_path)
         if count <= max_paralell:
-            os.chdir(job_dirs[i])
-            if not os.path.exists('hf1.bash'):
+            os.chdir(job_dirs[i].path)
+            if not os.path.exists('hf2.bash'):
                 print('wrong path:')
-                print(job_dirs[i])
+                print(job_dirs[i].path)
             else:
-                #submit_geo_opt_job()
+                #submit_hf2_job()
                 if if_init_finished(job_dirs[i]):
                     count += 1
                     submitted_path.append(job_dirs[i])

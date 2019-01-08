@@ -294,9 +294,13 @@ def hf2(path):
     for job in bilayer:
         Inp = HF2.generation_input_hf2.Input(job)
         Inp.gen_input()
+        HF2.submit_job_hf2.copy_submit_scr(job)
+        HF2.submit_job_hf2.copy_fort9(job)
     for job in singlelayer:
         Inp = HF2.inp_layers_hf2.Layer_Inp(job)
         Inp.gen_input()
+        HF2.submit_job_hf2.copy_submit_scr(job)
+        HF2.submit_job_hf2.copy_fort9(job)
 
     #submit the jobs
     hf2_job_dirs = bilayer + singlelayer

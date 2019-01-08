@@ -131,7 +131,7 @@ def submit(job_dirs):
                 print('wrong path:')
                 print(job_dirs[i])
             else:
-                #submit_geo_opt_job()
+                #submit_hf1_job()
                 if if_init_finished(job_dirs[i]):
                     count += 1
                     submitted_path.append(job_dirs[i])

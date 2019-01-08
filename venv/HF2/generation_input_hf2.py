@@ -25,27 +25,6 @@ def get_job_dirs(path):
     return job_dirs
 
 
-def split_block(lines):
-    sep = []
-    for num, line in enumerate(lines):
-        if line == 'END':
-            sep.append(num)
-    geo_block = lines[:(sep[0]+1)]
-    bs_block= lines[(sep[0]+1):(sep[1]+1)]
-    func_block = lines[(sep[1]+1):(sep[2]+1)]
-    cal_block = lines[(sep[2]+1):(sep[3]+1)]
-    hf1_block = lines[(sep[3]+1):(sep[4]+1)]
-    hf2_block = lines[(sep[4]+1):(sep[5]+1)]
-    blocks = []
-    blocks.append(geo_block)
-    blocks.append(bs_block)
-    blocks.append(func_block)
-    blocks.append(cal_block)
-    blocks.append(hf1_block)
-    blocks.append((hf2_block))
-    return blocks
-
-
 def read_inp(path):
     lines = read_input.read_input_file(path)
     blocks = split_block(lines)
