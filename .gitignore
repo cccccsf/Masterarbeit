@@ -12,12 +12,7 @@ dist
 build
 
 # My configurations:
-INPUT
-geo_opt/
-hf_1/
-hf_2/
-ziliao/
-../.idea/.workspace.xml.swp
-../.idea/.workspace.xml
-../.idea/workspace.xml
-*.xml
+.idea/.workspace.xml.swp
+.idea/.workspace.xml
+.idea/workspace.xml
+
