@@ -117,7 +117,7 @@ def data_saving_dis(i, path, disp, dis, energy):
         ws.write(i, 2, str(energy))
         wb.save(path + '/geo_opt.xls')
         count = i
-        #print('已写入%d条数据'%count)
+        print('%d data has been written '%count)
     except Exception as e:
         print(e)
 

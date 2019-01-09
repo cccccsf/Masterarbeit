@@ -223,7 +223,7 @@ def hf1(path):
 
     #Submit the calculation job
     hf1_job_dirs = submit_job_hf1.get_job_dirs(path)
-    #submitted_path = submit_job.submit(job_dirs)
+    #submitted_jobs_hf1 = submit_job.submit(job_dirs)
 
     #read calculation results
     read_results_hf1.read_all_results(job_dirs)
@@ -304,11 +304,10 @@ def hf2(path):
 
     #submit the jobs
     hf2_job_dirs = bilayer + singlelayer
-    #submitted_path = HF2.submit_job_hf2.submit(hf2_job_dirs)
+    #submitted_jobs_hf2 = HF2.submit_job_hf2.submit(hf2_job_dirs)
 
     #read calculation results
-    #read_results_hf1.read_all_results(job_dirs)
-    #read_results.write_init_distance(path, init_distance)
+    #HF2.read_all_results(submitted_jobs_hf2)
 
     print('Hartree Fock calculation 2 optimization finished!!!')
 

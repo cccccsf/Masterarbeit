@@ -118,14 +118,14 @@ def get_x_z_and_layertype(path, init_distance):
 
 def creatxls_dis(path):
     wb = xlwt.Workbook(encoding = 'utf-8')
-    ws = wb.add_sheet('hf1')   #新建工作表
+    ws = wb.add_sheet('hf1')   #creat new sheet
     ws.write(0, 0, 'displacement')
     ws.write(0, 1, 'distance(A)')
     ws.write(0, 2, 'E(au)')
     ws.write(0, 3, 'Eupperlayer(au)')
     ws.write(0, 4, 'Eunderlayer(au)')
     ws.write(0, 5, 'deltaE')
-    wb.save(path + '/hf1.xls')  #保存工作表
+    wb.save(path + '/hf1.xls')  #save the sheet
 
 
 def data_saving_dis(i, path, disp, dis, l, energy):
@@ -138,8 +138,6 @@ def data_saving_dis(i, path, disp, dis, l, energy):
         ws.write(i, 1, str(dis))
         ws.write(i, l, str(energy))
         wb.save(path + '/hf1.xls')
-        #count = i
-        #print('已写入%d条数据'%count)
     except Exception as e:
         print(e)
 
@@ -163,8 +161,8 @@ def read_all_results(job_dirs, init_distance = 3.1):
     #pick up the initial system
     loc = 0
     for dir in job_dirs:
-        x, z, layer_type = get_x_z_and_layertype(dir, 3.1)
-        if layer_type == 'bilayer' and x == 0 and z == 3.1:
+        x, z, layer_type = get_x_z_and_layertype(dir, init_distance)
+        if layer_type == 'bilayer' and x == 0 and z == init_distance:
             break
         loc += 1
     job_path = os.path.dirname(job_dirs[loc])
