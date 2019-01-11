@@ -12,7 +12,6 @@ dist
 build
 
 # My configurations:
-.idea/.workspace.xml.swp
-.idea/.workspace.xml
-.idea/workspace.xml
+.idea/
+venv/Test/
 

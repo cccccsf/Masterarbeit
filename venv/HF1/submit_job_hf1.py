@@ -131,8 +131,8 @@ def submit(job_dirs):
                 print('wrong path:')
                 print(job_dirs[i])
             else:
-                #submit_hf1_job()
                 if if_init_finished(job_dirs[i]):
+                    #submit_hf1_job()
                     count += 1
                     submitted_path.append(job_dirs[i])
                     i += 1
@@ -143,4 +143,4 @@ def submit(job_dirs):
             time.sleep(500)
             continue
 
-    return submitted_path
+    return finished_path

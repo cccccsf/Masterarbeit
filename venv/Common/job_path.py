@@ -54,7 +54,7 @@ class Job_path(object):
 
     @staticmethod
     def method_name_transfer(method):
-        method_dict = {'hf_2': 'HF2', 'hf_1': 'HF1', 'geo_opt': 'Geometry Optimization'}
+        method_dict = {'hf_2': 'HF2', 'hf_1': 'HF1', 'geo_opt': 'Geometry Optimization', 'lmp2': 'LMP2'}
         method = method.lower()
         if method in method_dict:
             method = method_dict[method]
@@ -99,14 +99,19 @@ class Job_path(object):
         :return:
         """
         old = self.__dict__[key]
+        print(old)
         path = self.path.replace(old, value)
+        print(path)
         self.__init__(path)
 
 # path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\hf_2\x_-0.150\z_-0.106'
 # job = Job_path(path)
+# job.reset('method', 'lmp2')
+# print(job)
 # print(job)
 # job2 = copy.deepcopy(job)
 # job2.reset('method', 'hf_1')
 # print(job)
 # print(job2)
+
 

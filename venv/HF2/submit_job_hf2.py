@@ -13,7 +13,6 @@ def submit_hf2_job():
     subprocess.call(command, shell=True)
 
 
-
 def copy_submit_scr(path):
     ziel_path = path.path.replace('hf_1', 'hf_2')
     scr_path = os.path.dirname(os.path.realpath(__file__)) + '/job_submit.bash'
@@ -61,30 +60,6 @@ def if_cal_finish(path):
     return True
 
 
-def if_init_finished(path):
-    if path.layertype != 'upperlayer' and path.layertype != 'underlayer':
-        x = path.get_x_value()
-        if x == 0:
-            return True
-        init_path = path.root_path + '/x_0/' + path.z_dirname
-        if not if_cal_finish(init_path):
-            return False
-        file = os.path.exists(init_path+'/fort.9')
-        if not file:
-            return False
-        return True
-    else:
-        x = path.get_x_value()
-        if x == 0:
-            return True
-        init_path = path.root_path + '/x_0/' + path.z_dirname + '/' + self.layertype
-        if not if_cal_finish(init_path):
-            return False
-        file = os.path.exists(init_path+'/fort.9')
-        if not file:
-            return False
-        return True
-
 def get_job_dirs(path):
     path = path + '/hf_2/'
     walks = os.walk(path)
@@ -121,18 +96,14 @@ def submit(job_dirs):
                 print(job_dirs[i].path)
             else:
                 #submit_hf2_job()
-                if if_init_finished(job_dirs[i]):
-                    count += 1
-                    submitted_path.append(job_dirs[i])
-                    i += 1
-                else:
-                    time.sleep(300)
-                    continue
+                count += 1
+                submitted_path.append(job_dirs[i])
+                i += 1
         else:
             time.sleep(500)
             continue
 
-    return submitted_path
+    return finished_path
 
 
 #path = 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\hf_1\\x_-0.150\\z_-0.106\\upperlayer'

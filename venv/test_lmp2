@@ -1,0 +1,54 @@
+#!/usr/bin/python3
+import os
+from LMP2 import input
+from LMP2 import submit_job_lmp2
+from Common.job_path import Job_path
+
+
+def test_Input():
+    path = os.getcwd()
+    path = path + '/Test/hf_2/x_-0.150/z_-0.106'
+    job = Job_path(path)
+    inp = input.Lmp2_Input(job)
+    inp.write_input()
+
+def test_get_jobs(path):
+    path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test'
+    jobs = input.get_jobs(path)
+    expected = ['C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\hf_2\\x_-0.150\\z_-0.106', 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\hf_2\\x_-0.150\\z_-0.106\\underlayer', 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\hf_2\\x_-0.150\\z_-0.106\\upperlayer']
+    #expected = ['/users/shch/project/Layer_Structure_Caculation/venv/Test/hf_2/x_-0.150/z_-0.106', '/users/shch/project/Layer_Structure_Caculation/venv/Test/hf_2/x_-0.150/z_-0.106/underlayer', '/users/shch/project/Layer_Structure_Caculation/venv/Test/hf_2/x_-0.150/z_-0.106/upperlayer']
+    assert(jobs == expected)
+
+
+def test_Input_Layer():
+    path = os.getcwd()
+    path = path + '/Test/hf_2/x_-0.150/z_-0.106/upperlayer'
+    job = Job_path(path)
+    inp = input.Lmp2_Input_Layer(job)
+    inp.write_input()
+
+
+def test_if_finished():
+    path = os.getcwd()
+    path = path + '/Test/lmp2/x_-0.150/z_-0.106'
+    job = Job_path(path)
+    if_finish = submit_job_lmp2.if_cal_finish(job)
+    expected = True
+    assert(expected == if_finish)
+
+
+
+
+
+
+
+def test_suite():
+    path = os.path.realpath(__file__)
+    path = os.path.dirname(path)
+    path = os.path.join(path, 'Test')
+    test_get_jobs(path)
+    #test_Input()
+    #test_Input_Layer()
+    test_if_finished()
+
+test_suite()

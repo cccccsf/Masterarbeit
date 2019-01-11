@@ -25,27 +25,6 @@ def get_job_dirs(path):
     return job_dirs
 
 
-def read_inp(path):
-    lines = read_input.read_input_file(path)
-    blocks = split_block(lines)
-    hf2_block = blocks[-1]
-    #print(hf2_block)
-    if len(hf2_block) == 1:
-        hf2_bs_type = 'default'
-    elif len(hf2_block) == 2:
-        hf2_bs_type = hf2_block[0]
-    if test_bs_type(hf2_bs_type):
-        return hf2_bs_type
-    else:
-        print(hf2_bs_type)
-        print('''
-basis set type not correct!!!
-Please correct and restart computation from HF1 setp!!!
-''')
-        read_input.exit_programm()
-        return None
-
-
 class Input(object):
 
     def __init__(self, hf1_job):

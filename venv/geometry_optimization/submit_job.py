@@ -120,7 +120,7 @@ def submit(job_dirs):
             time.sleep(500)
             continue
 
-    return submitted_path
+    return finished_path
 
 
 # path = 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_0\\z_0'

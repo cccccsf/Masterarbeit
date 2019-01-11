@@ -16,6 +16,7 @@ from HF1 import read_results_hf1
 from HF1.read_results_hf1 import get_x_z_and_layertype
 import Localization
 import HF2
+import LMP2
 
 
 def geo_opt(path):
@@ -304,16 +305,68 @@ def hf2(path):
 
     #submit the jobs
     hf2_job_dirs = bilayer + singlelayer
+    for i in range(len(hf2_job_dirss)):
+        hf2_job_dirs[i].reset('method', 'hf_2')
     #submitted_jobs_hf2 = HF2.submit_job_hf2.submit(hf2_job_dirs)
 
     #read calculation results
     #HF2.read_all_results(submitted_jobs_hf2)
 
-    print('Hartree Fock calculation 2 optimization finished!!!')
+    print('Hartree Fock calculation 2 finished!!!')
+
+
+def lmp2(path):
+
+    job_paths = LMP2.get_jobs(path)
+    hf2_jobs = []
+    for p in job_paths:
+        job = Job_path(p)
+        hf2_jobs.append(job)
+
+    #catagorization
+    bilayer = []
+    singlelayer = []
+    for job in hf2_jobs:
+        if job.layertype == 'bilayer':
+            bilayer.append(job)
+        elif job.layertype == 'underlayer' or job.layertype == 'upperlayer':
+            singlelayer.append(job)
+
+    #read basic computation infomation
+    file = os.path.exists('INPUT')
+    if file:
+        pass
+    else:
+        print('INPUT file does not exist!!!')
+        print('''Do you want to start initialization or exit?
+                 Please enter 1 to start initialization programm and enter 0 to exit the programm''')
+
+    #generation of all input files and copy needed files
+    for job in bilayer:
+        Inp = LMP2.Lmp2_Input(job)
+        Inp.write_input()
+        LMP2.copy_files(job)
+    for job in singlelayer:
+        Inp = LMP2.Lmp2_Input_Layer(job)
+        Inp.write_input()
+        LMP2.copy_files()
+
+    #submit the jobs
+    lmp2_jobs = bilayer + singlelayer
+    for i in range(len(lmp2_jobs)):
+        lmp2_jobs[i].reset('method', 'lmp2')
+    #finished_jobs_lmp2 = LMP2.submit(lmp2_jobs)
+
+    #read calculation results
+    #HF2.read_all_results(submitted_jobs_hf2)
+
+    print('LMP2 calculation finished!!!')
+
+
 
 
 def pipeline(path):
     #geo_opt(path)
     #hf1(path)
     #localization(path)
-    hf2(path)
+    #hf2(path)
