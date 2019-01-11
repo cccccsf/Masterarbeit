@@ -2,7 +2,6 @@
 import os
 import Initialization
 import Pipeline
-import tests
 
 def menu():
 
@@ -17,5 +16,4 @@ def menu():
 
 
 if  __name__ == "__main__":
-    #tests.testsuite()
     menu()

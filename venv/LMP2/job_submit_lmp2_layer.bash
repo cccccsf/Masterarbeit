@@ -6,13 +6,13 @@
 
 cd ${PBS_O_WORKDIR}
 path0=${PWD%/*}
-dirname1=${path0##/*/}
+zdirname=${path0##/*/}
 path1=${path0%/*}
-dirname2=${path1##/*/}
-dirname0=${PWD##/*/}
-dir0=/scratch/shch/cryscor/$dirname2/$dirname1/$dirname0
+xdirname=${path1##/*/}
+layertype=${PWD##/*/}
+dir0=/scratch/$USER/cryscor/$xdirname/$zdirname/$layertype
 mkdir -p $dir0
-cp inp_Slab1 $dir0
+cp INPUT $dir0
 cp fort.9 $dir0
 cp fort.78 $dir0
 cp fort.80 $dir0
@@ -20,15 +20,11 @@ cp ~/project/cryscor $dir0
 cd $dir0
 
 module load XE2016.0.3.210
-
 export MKL_NUM_THREADS=1
-#module load /srv/opt/Modules/IntelCompiler/XE2016.0.3.210
-
-./cryscor < inp_Slab1 > lmp2.out 2>lmp2.err
+./cryscor < inp_Slab2 > lmp2.out 2>lmp2.err
 
 
 cp lmp2.out ${PBS_O_WORKDIR}
-
 mv fort.177 _fort.177
 mv fort.178 _fort.178
 mv fort.179 _fort.179

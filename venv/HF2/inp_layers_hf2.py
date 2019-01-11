@@ -2,7 +2,6 @@
 
 import re
 from HF2.generation_input_hf2 import Input
-from HF2.generation_input_hf2 import read_inp
 from HF1.generation_of_input import default_basis_set
 from copy import deepcopy
 import Crystal

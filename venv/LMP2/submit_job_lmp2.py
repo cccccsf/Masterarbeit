@@ -38,7 +38,7 @@ def copy_fort9_fort78(ziel_path):
         print('fort.9 and fort.78 copied...')
     except Exception as e:
         print(e)
-        print('copy failed...')
+        print('fort.9 and fort.78 failed to copy...')
 
 
 def copy_submit_src(ziel_path):
@@ -49,7 +49,7 @@ def copy_submit_src(ziel_path):
         print('Submition file copied...')
     except Exception as e:
         print(e)
-        print('copy failed...')
+        print('submit scr failed to copy...')
 
 
 def copy_submit_src_layer(ziel_path):
@@ -65,9 +65,8 @@ def copy_submit_src_layer(ziel_path):
 
 def copy_files(path):
     ziel_path = path.path.replace('hf_2', 'lmp2')
-    print(ziel_path)
     if path.layertype == 'bilayer':
-        copy_submit_scr(ziel_path)
+        copy_submit_src(ziel_path)
     else:
         copy_submit_src_layer(ziel_path)
     copy_fort80(ziel_path)

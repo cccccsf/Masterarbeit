@@ -99,9 +99,7 @@ class Job_path(object):
         :return:
         """
         old = self.__dict__[key]
-        print(old)
         path = self.path.replace(old, value)
-        print(path)
         self.__init__(path)
 
 # path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\hf_2\x_-0.150\z_-0.106'

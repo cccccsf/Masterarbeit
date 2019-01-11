@@ -336,10 +336,11 @@ def lmp2(path):
     file = os.path.exists('INPUT')
     if file:
         pass
-    else:
-        print('INPUT file does not exist!!!')
-        print('''Do you want to start initialization or exit?
-                 Please enter 1 to start initialization programm and enter 0 to exit the programm''')
+    # else:
+    #
+    #     print('INPUT file does not exist!!!')
+    #     print('''Do you want to start initialization or exit?
+    #              Please enter 1 to start initialization programm and enter 0 to exit the programm''')
 
     #generation of all input files and copy needed files
     for job in bilayer:
@@ -349,7 +350,7 @@ def lmp2(path):
     for job in singlelayer:
         Inp = LMP2.Lmp2_Input_Layer(job)
         Inp.write_input()
-        LMP2.copy_files()
+        LMP2.copy_files(job)
 
     #submit the jobs
     lmp2_jobs = bilayer + singlelayer
@@ -358,10 +359,9 @@ def lmp2(path):
     #finished_jobs_lmp2 = LMP2.submit(lmp2_jobs)
 
     #read calculation results
-    #HF2.read_all_results(submitted_jobs_hf2)
+    #LMP2.read_all_results(finished_jobs_lmp2)
 
     print('LMP2 calculation finished!!!')
-
 
 
 
@@ -370,3 +370,4 @@ def pipeline(path):
     #hf1(path)
     #localization(path)
     #hf2(path)
+    lmp2(path)
