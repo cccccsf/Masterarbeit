@@ -7,7 +7,7 @@ import time
 
 
 
-def submit_hf2_job():
+def submit_lmp2_job():
     chmod = 'chmod u+x lmp2.bash'
     command = 'qsub lmp2.bash'
     subprocess.call(chmod, shell=True)
@@ -124,7 +124,7 @@ def submit(jobs):
                 print('wrong path:')
                 print(jobs[i].path)
             else:
-                #submit_hf2_job()
+                #submit_lmp2_job()
                 count += 1
                 submitted_jobs.append(jobs[i])
                 i += 1

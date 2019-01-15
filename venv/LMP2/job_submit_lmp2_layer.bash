@@ -40,4 +40,5 @@ mv _fort.180 fort.180
 mv _fort.181 fort.181
 
 rm INT2IDX_DF*
+cp molpro.inp ${PBS_O_WORKDIR}
 

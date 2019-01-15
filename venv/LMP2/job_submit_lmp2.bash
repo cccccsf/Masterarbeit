@@ -7,7 +7,7 @@
 cd ${PBS_O_WORKDIR}
 path0=${PWD%/*}
 zdirname=${path0##/*/}
-xdirname0=${PWD##/*/}
+xdirname=${PWD##/*/}
 dir0=/scratch/$USER/cryscor/$zdirname/$xdirname
 mkdir -p $dir0
 cp INPUT $dir0
@@ -37,3 +37,4 @@ mv _fort.180 fort.180
 mv _fort.181 fort.181
 
 rm INT2IDX_DF*
+cp molpro.inp ${PBS_O_WORKDIR}
