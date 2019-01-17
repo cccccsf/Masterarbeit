@@ -232,8 +232,13 @@ class Basis_set(object):
                             try:
                                 f.write(' ' + '{: }'.format(float(unit)).ljust(16) + ' ')
                             except Exception as e:
-                                print(e)
-                                f.write(' ' + str(unit).ljust(16) + ' ')
+                                try:
+                                    u = unit.replace('D', 'E', 1)
+                                    f.write(' ' + '{: }'.format(float(u)).ljust(16) + ' ')
+                                except Exception as er:
+                                    print(e)
+                                    print(er)
+                                    f.write(' ' + str(unit).ljust(16) + ' ')
                         f.write('\n')
 
     def reset_bs(self, arg, value):

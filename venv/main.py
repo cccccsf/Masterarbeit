@@ -5,7 +5,9 @@ import Pipeline
 
 def menu():
 
-    path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
+    #path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
+    path = os.getcwd()
+    path = os.path.join(path, 'Test')
     Pipeline.pipeline(path)
 
 
