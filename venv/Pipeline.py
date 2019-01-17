@@ -7,7 +7,6 @@ from read_input import Read_input
 from Crystal import Geometry
 import geometry_optimization
 from geometry_optimization import read_input
-from geometry_optimization import read_results
 from Common import mkdir
 from Common import Job_path
 from Common import record
@@ -136,7 +135,7 @@ def geo_opt(path):
         jobs.append(job)
 
     #Copy files and Submit the calculation job
-    #finished_jobs_geo_opt = geometry_optimization.submit(jobs)
+    finished_jobs_geo_opt = geometry_optimization.submit(jobs)
 
     #read calculation results
     geometry_optimization.read_all_results(jobs, init_distance)
