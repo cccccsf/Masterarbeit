@@ -5,7 +5,8 @@ import xlwt
 import xlrd
 import time
 from xlutils.copy import copy
-from geometry_optimization import submit_job
+from Common import Job_path
+
 
 def get_optimized_geometry(path):
 
@@ -121,65 +122,38 @@ def data_saving_dis(i, path, disp, dis, energy):
     except Exception as e:
         print(e)
 
-def read_and_record_result(j, path, init_distance):
+def read_and_record_result(j, job, init_distance):
+    path = job.path
     lattice_parameter, geometry = get_optimized_geometry(path)
     energy = get_optimized_energy(path)
     write_optimized_geometry(path, geometry)
     write_optimized_lattice_parameter(path, lattice_parameter)
-    z = os.path.split(path)[-1]
-    distance = re.search('_.*', z).group(0)
-    distance = distance[1:]
+    distance = job.z
     distance = float(distance) + float(init_distance)
-    x = os.path.split(path)[0]
-    x = os.path.split(x)[-1]
-    displacement = re.search('_.*', x).group(0)
-    displacement = displacement[1:]
-    path = path + '/../..'
+    displacement = job.x
+    path = job.root_path
     data_saving_dis(j, path, displacement, distance, energy)
 
 # path = 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_-0.150\\z_-0.106'
 # read_and_record_result(path)
 
-def read_all_results(job_dirs, init_distance):
-    finished_path = []
+def read_all_results(jobs, init_distance):
     readed_path = []
-    creatxls_dis(job_dirs[0] + '/../..')
 
-    def test_finished(paths):
-        """
-        test one job is finished or not,
-        if finished, add the path to list finished_path, and delete it from the original list
-        :param paths:
-        :return:
-        """
-        for path in paths:
-            if submit_job.if_cal_finish(path):
-                finished_path.append(path)
-                paths.remove(path)
-            else:
-                pass
-    i = 0
-    length = len(job_dirs)
-    while i < length:
-        test_finished(job_dirs)
-        if len(finished_path) > i:
-            j = i + 1
-            read_and_record_result(j, finished_path[i], init_distance)
-            readed_path.append(finished_path[i])
-            i += 1
-        else:
-            time.sleep(500)
-            continue
+    creatxls_dis(jobs[0].root_path)
+
+    j = 1
+    for i in range(len(jobs)):
+        read_and_record_result(j, jobs[i], init_distance)
+        readed_path.append(jobs[i])
+        j += 1
 
 
-def write_init_distance(path, dist):
-    path = path + '/geo_opt'
-    with open(path + '/init_distance', 'w') as f:
-        f.write(str(dist) + '\n')
 
-
-# path = 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_-0.150\\z_-0.106'
-# read_and_record_result(path)
+# path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
+# job = Job_path(path)
+# a = [job]
+# read_all_results(a, init_distance=3.1)
 
 # job_dirs=['C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_-0.150\\z_-0.106', 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_0\\z_0']
 # read_all_results(job_dirs, init_distance=3.1)

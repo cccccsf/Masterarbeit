@@ -2,13 +2,15 @@
 import os
 import sys
 import Initialization
-from geometry_optimization import gen_input
-from geometry_optimization import gen_displacement_series
+from copy import deepcopy
+from read_input import Read_input
+from Crystal import Geometry
+import geometry_optimization
 from geometry_optimization import read_input
-from geometry_optimization import submit_job
 from geometry_optimization import read_results
-from Common.file_processing import mkdir
-from Common.job_path import Job_path
+from Common import mkdir
+from Common import Job_path
+from Common import record
 from HF1 import generation_of_input
 from HF1 import input_of_layers
 from HF1 import submit_job_hf1
@@ -22,20 +24,26 @@ import RPA
 
 def geo_opt(path):
 
+    rec = 'Geometry Optimization begins...'
+    print(rec)
+    record(path, rec)
+
     #path = os.getcwd()
-    file = os.path.exists('INPUT')
+    file = os.path.join(path, 'INPUT')
+    file = os.path.exists(file)
 
     if file:
-        name, slab_or_molecule, group, lattice_parameter, number_of_atoms, geometry_info, bs_type, functional = read_input.read_input(path)
-        if bs_type == 'END':
-            if_bs_change = 0
-            bs_type = 'default'
-        else:
-            if_bs_change = 1
-        Bs_Init = Initialization.Bs_Init(geometry_info, bs_type)
-        ele_to_bs_type, elements = Bs_Init.gen_bs_info(if_bs_change)
-        #print(elements)
-        #print(ele_to_bs_type)
+        Input_Reading = Read_input(path)
+        geometry = Input_Reading.geometry
+        geometry = Geometry(geometry = geometry)
+        original_geometry = deepcopy(geometry)
+        name = Input_Reading.name
+        slab_or_molecule = Input_Reading.slab_or_molecule
+        group = Input_Reading.group
+        lattice_parameter = Input_Reading.lattice_parameter
+        bs_type = Input_Reading.bs_type
+        functional = Input_Reading.functional
+
     else:
         print('INPUT file does not exist!!!')
         print('''Do you want to start initialization or exit?
@@ -64,69 +72,77 @@ def geo_opt(path):
             else:
                 print('Please enter the right number!!')
 
+    jobs = []
+
     #generation of the first INPUT
     dirname = 'x_0/z_0'
-    Geo_Inp = gen_input.Geometry_Input(path, name, slab_or_molecule, group, lattice_parameter, number_of_atoms, geometry_info, dirname)
+    job = os.path.join(path, 'geo_opt')
+    job = os.path.join(job, dirname)
+    job = Job_path(job)
+    Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
     Geo_Inp.gen_input()
-    #optimization input
-    Opt_Inp = gen_input.Opt_Input(path, number_of_atoms, geometry_info, dirname)
-    Opt_Inp.write_opt_info()
-    fixed_atoms = Opt_Inp.fixed_atoms
-    #basis set input
-    #print(path, ele_to_bs_type, dirname, if_bs_change)
-    Bs_Inp = gen_input.Basis_Set_Input(path, ele_to_bs_type, dirname, if_bs_change)
-    Bs_Inp.write_basis_set()
-    #calculation input
-    Cal_Inp = gen_input.Cal_Input(path, elements, dirname, functional)
-    Cal_Inp.write_cal_input_init()
-    submit_job.copy_submit_scr(path, dirname, init=1)
+    jobs.append(job)
+    geometry_optimization.get_and_write_init_distance(geometry, path)
 
-    #Generation of the INPUTs with different layer distance
-    Range_of_Distance = gen_displacement_series.Range_of_Distances(geometry_info, fixed_atoms)
-    geo_with_diff_distance = Range_of_Distance.get_geo_series()
-    init_distance = Range_of_Distance.init_distance
 
-    #print(geo_with_diff_distance)
+    job_geo_dict = {}
+    #Generation of the job with different layer distance
+    diff_distances = geometry_optimization.Range_of_Distances(geometry, job)
+    geo_with_diff_distance = diff_distances.get_geo_series()
+    init_distance = diff_distances.init_distance
+
+
     for distance, geometry in geo_with_diff_distance.items():
-        dirname = 'x_0/z_{0:.3f}'.format(distance)
-        #print(dirname)
-        gen_input.write_input(path, name, slab_or_molecule, group, lattice_parameter, number_of_atoms, geometry, ele_to_bs_type, elements, functional, dirname, if_bs_change, init=1)
-        submit_job.copy_submit_scr(path, dirname, init=1)
+        new_job = deepcopy(job)
+        new_z_dirname = 'z_{0:.3f}'.format(distance)
+        new_job.reset('z_dirname', new_z_dirname)
+        job_geo_dict[new_job] = geometry
 
-    #Generation of the INPUTs with different displacement
-    range_of_displacement = gen_displacement_series.Range_of_Displacement(geometry_info, fixed_atoms)
-    geo_with_diff_displacement = range_of_displacement.get_geometry_series()
-    for displace, geometry in geo_with_diff_displacement.items():
-        dirname = 'x_{0:.3f}/z_0'.format(displace)
-        gen_input.write_input(path, name, slab_or_molecule, group, lattice_parameter, number_of_atoms, geometry, ele_to_bs_type, elements, functional, dirname, if_bs_change)
-        submit_job.copy_submit_scr(path, dirname)
 
-    #Generation of the INPUTs with different displacement and different layer distance
-    for displace, geometry in geo_with_diff_displacement.items():
-        Geo_with_diff_Dis_diff_Distance = gen_displacement_series.Range_of_Distances(geometry, fixed_atoms)
+    #Generation of the job with different displacement
+    range_of_displacement = geometry_optimization.Range_of_Displacement(original_geometry, job)
+    geo_with_diff_displacement = range_of_displacement.get_geo_series()
+    job_geo_dict_dis = {}
+
+    for displacement, geometry in geo_with_diff_displacement.items():
+        new_job = deepcopy(job)
+        new_x_dirname = 'x_{0:.2f}'.format(displacement)
+        new_job.reset('x_dirname', new_x_dirname)
+        job_geo_dict_dis[new_job] = geometry
+        job_geo_dict[new_job] = geometry
+
+
+    #Generation of the jobs with different displacement and different layer distance
+    for job, geometry in job_geo_dict_dis.items():
+        Geo_with_diff_Dis_diff_Distance = geometry_optimization.Range_of_Distances(geometry, job)
         geo_with_diff_dis_diff_distance = Geo_with_diff_Dis_diff_Distance.get_geo_series()
-        distances = list(geo_with_diff_dis_diff_distance.keys())
-        distances.sort()
-        #Select the some of the distance values
-        for key in list(geo_with_diff_dis_diff_distance.keys()):
-            if key not in distances[1:5]:
-                #print(key)
-                del geo_with_diff_dis_diff_distance[key]
-        #print(list(geo_with_diff_dis_diff_distance.keys()))
-        for distance, geo in geo_with_diff_dis_diff_distance.items():
-            dirname = 'x_{0:.3f}/z_{1:.3f}'.format(displace, distance)
-            gen_input.write_input(path, name, slab_or_molecule, group, lattice_parameter, number_of_atoms, geo, ele_to_bs_type, elements, functional, dirname, if_bs_change)
-            submit_job.copy_submit_scr(path, dirname)
+        dist_list = list(geo_with_diff_dis_diff_distance.keys())
+        #print(dist_list)
+        dist_list.sort()
+        dist_list = dist_list[1:5]
+        #print(dist_list)
+        for distance, geometry in geo_with_diff_dis_diff_distance.items():
+            if distance in dist_list:
+                new_job = deepcopy(job)
+                new_z_dirname = 'z_{0:.3f}'.format(distance)
+                new_job.reset('z_dirname', new_z_dirname)
+                job_geo_dict[new_job] = geometry
 
-    #Submit the calculation job
-    job_dirs = submit_job.get_job_dirs(path)
-    #submitted_path = submit_job.submit(job_dirs)
+
+    #generation all INPUT files besides the first one
+    for job, geometry in job_geo_dict.items():
+        Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
+        Geo_Inp.gen_input()
+        jobs.append(job)
+
+    #Copy files and Submit the calculation job
+    #finished_jobs_geo_opt = geometry_optimization.submit(jobs)
 
     #read calculation results
-    #read_results.read_all_results(job_dirs, init_distance)
+    geometry_optimization.read_all_results(jobs, init_distance)
 
-    read_results.write_init_distance(path, init_distance)
     print('Geometry optimization finished!!!')
+    record(path, 'Geometry optimization finished!!!')
 
 
 def hf1(path):
@@ -365,6 +381,7 @@ def lmp2(path):
     print('LMP2 calculation finished!!!')
 
 
+
 def rpa(path):
 
     jobs = RPA.get_jobs(path)
@@ -403,10 +420,11 @@ def rpa(path):
 
     print('LRPA calculation finished!!!')
 
+
 def pipeline(path):
-    #geo_opt(path)
+    geo_opt(path)
     #hf1(path)
     #localization(path)
     #hf2(path)
     #lmp2(path)
-    rpa(path)
+    #rpa(path)
