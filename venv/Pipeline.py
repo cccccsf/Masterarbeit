@@ -6,19 +6,18 @@ from copy import deepcopy
 from read_input import Read_input
 from Crystal import Geometry
 import geometry_optimization
-from geometry_optimization import read_input
 from Common import mkdir
 from Common import Job_path
 from Common import record
-from HF1 import generation_of_input
-from HF1 import input_of_layers
-from HF1 import submit_job_hf1
-from HF1 import read_results_hf1
-from HF1.read_results_hf1 import get_x_z_and_layertype
-import Localization
-import HF2
-import LMP2
-import RPA
+# from HF1 import generation_of_input
+# from HF1 import input_of_layers
+# from HF1 import submit_job_hf1
+# from HF1 import read_results_hf1
+# from HF1.read_results_hf1 import get_x_z_and_layertype
+# import Localization
+# import HF2
+# import LMP2
+# import RPA
 
 
 def geo_opt(path):
@@ -135,10 +134,10 @@ def geo_opt(path):
         jobs.append(job)
 
     #Copy files and Submit the calculation job
-    finished_jobs_geo_opt = geometry_optimization.submit(jobs)
+    #finished_jobs_geo_opt = geometry_optimization.submit(jobs)
 
     #read calculation results
-    geometry_optimization.read_all_results(jobs, init_distance)
+    #geometry_optimization.read_all_results(finished_jobs_geo_opt, init_distance)
 
     print('Geometry optimization finished!!!')
     record(path, 'Geometry optimization finished!!!')

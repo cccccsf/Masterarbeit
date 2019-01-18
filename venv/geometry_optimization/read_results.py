@@ -1,10 +1,8 @@
 #!/usr/bin/python3
 import os
 import re
-import xlwt
-import xlrd
 import time
-from xlutils.copy import copy
+import csv
 from Common import Job_path
 
 
@@ -100,27 +98,25 @@ def write_optimized_lattice_parameter(path, lattice):
 
 
 def creatxls_dis(path):
-    wb = xlwt.Workbook(encoding = 'utf-8')
-    ws = wb.add_sheet('geo_opt')   #新建工作表
-    ws.write(0, 0, 'displacement')
-    ws.write(0, 1, 'distance(A)')
-    ws.write(0, 2, 'E(au)')
-    wb.save(path + '/geo_opt.xls')  #保存工作表
+    csv_path = os.path.join(path, 'geo_opt.csv')
+    headers = ['displacement', 'distance(A)', 'E(au)']
+    with open(csv_path, 'w', newline='') as f:
+        f_csv = csv.writer(f)
+        f_csv.writerow(headers)
 
-def data_saving_dis(i, path, disp, dis, energy):
+
+def data_saving(i, path, disp, dis, energy):
     try:
-        file = path + '/geo_opt.xls'
-        rb = xlrd.open_workbook(file, formatting_info=True)
-        wb = copy(rb)
-        ws = wb.get_sheet(0)
-        ws.write(i, 0, str(disp))
-        ws.write(i, 1, str(dis))
-        ws.write(i, 2, str(energy))
-        wb.save(path + '/geo_opt.xls')
+        csv_path = os.path.join(path, 'geo_opt.csv')
+        new_line = [str(disp), str(dis), str(energy)]
+        with open(csv_path, 'a', newline='') as f:
+            f_csv = csv.writer(f)
+            f_csv.writerow(new_line)
         count = i
         print('%d data has been written '%count)
     except Exception as e:
         print(e)
+
 
 def read_and_record_result(j, job, init_distance):
     path = job.path
@@ -132,14 +128,11 @@ def read_and_record_result(j, job, init_distance):
     distance = float(distance) + float(init_distance)
     displacement = job.x
     path = job.root_path
-    data_saving_dis(j, path, displacement, distance, energy)
+    data_saving(j, path, displacement, distance, energy)
 
-# path = 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_-0.150\\z_-0.106'
-# read_and_record_result(path)
 
 def read_all_results(jobs, init_distance):
     readed_path = []
-
     creatxls_dis(jobs[0].root_path)
 
     j = 1
@@ -150,10 +143,31 @@ def read_all_results(jobs, init_distance):
 
 
 
-# path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
-# job = Job_path(path)
-# a = [job]
-# read_all_results(a, init_distance=3.1)
 
-# job_dirs=['C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_-0.150\\z_-0.106', 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_0\\z_0']
-# read_all_results(job_dirs, init_distance=3.1)
+
+def test_data_saving():
+    path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
+    energy = get_optimized_energy(path)
+    job = Job_path(path)
+    path = job.root_path
+    creatxls_dis(path)
+    read_and_record_result(2, job, 3.1)
+
+
+def test_read_all_results():
+    path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
+    walks = os.walk(path)
+    jobs = []
+    for root, dirs, files in walks:
+        if 'geo_opt.out' in files:
+            job = Job_path(root)
+            jobs.append(job)
+    read_all_results(jobs, 3.1)
+
+
+def test_suite():
+    #test_data_saving()
+    test_read_all_results()
+
+#test_suite()
+

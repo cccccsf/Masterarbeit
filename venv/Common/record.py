@@ -5,7 +5,8 @@ from datetime import datetime
 
 def record(path, content, begin_time = 0):
     now = datetime.now()
-    prossing_time = now - begin_time
+    if begin_time != 0:
+        prossing_time = now - begin_time
     now = now.strftime("%b %d %Y %H:%M:%S")
     record_file = os.path.join(path, 'record')
     with open(record_file, 'a') as f:
