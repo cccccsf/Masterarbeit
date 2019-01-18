@@ -129,7 +129,7 @@ class Basis_set(object):
     @staticmethod
     def read_bs_geo_opt_default_nonmetal(element):
         bs_ahlrichs = choose_bs.read_basis_set_file(element, 'Ahlrichs_VTZ')
-        bs_cc = choose_bs.read_basis_set_file(element, 'cc-PVTZ')
+        bs_cc = choose_bs.read_basis_set_file(element, 'cc-pVTZ')
         bs_combine = []
         for shell_ahl in bs_ahlrichs:
             if shell_ahl[0][0] == 'S' or shell_ahl[0][0] == 'SP' or shell_ahl[0][0] == 'P':

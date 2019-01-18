@@ -120,7 +120,7 @@ class Geo_Opt_Input(object):
     def write_cal_input(self):
         self.write_functional()
         self.write_grimme_dispersion()
-        if self.job.z == '0' and self.job.x == '0':
+        if self.job.z != '0' or self.job.x != '0':
             self.write_gussp()
         self.write_other_info()
         print('INPUT file generated...')

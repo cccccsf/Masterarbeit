@@ -135,10 +135,10 @@ def geo_opt(path):
         jobs.append(job)
 
     #Copy files and Submit the calculation job
-    #finished_jobs_geo_opt = geometry_optimization.submit(jobs)
+    finished_jobs_geo_opt = geometry_optimization.submit(jobs)
 
     #read calculation results
-    #geometry_optimization.read_all_results(finished_jobs_geo_opt, init_distance)
+    geometry_optimization.read_all_results(finished_jobs_geo_opt, init_distance)
 
     print('Geometry optimization finished!!!')
     record(path, 'Geometry optimization finished!!!')

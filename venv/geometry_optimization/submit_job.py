@@ -9,8 +9,8 @@ from Common import record
 
 
 def submit_geo_opt_job():
-    chmod = 'chmod u+x geo_opt.bash'
-    command = 'qsub geo_opt.bash'
+    chmod = 'chmod u+x geo_opt'
+    command = 'qsub geo_opt'
     subprocess.call(chmod, shell=True)
     subprocess.call(command, shell=True)
     print('job submitted...')
@@ -36,7 +36,7 @@ def copy_submit_scr(job):
     ziel_path = job.path
     scr_path = os.path.dirname(os.path.realpath(__file__))
     scr_from = os.path.join(scr_path, 'job_submit.bash')
-    scr_to = os.path.join(ziel_path, 'geo_opt.bash')
+    scr_to = os.path.join(ziel_path, 'geo_opt')
     shutil.copy(scr_from, scr_to)
     print('Submition file copied...')
 
@@ -81,16 +81,18 @@ def submit(jobs):
         loc += 1
 
     job_init = jobs.pop(loc)
+    os.chdir(job_init.path)
     copy_submit_scr(job)
     submit_geo_opt_job()
     submitted_jobs.append(job_init)
     rec = job_init.path
+    print(rec)
     rec += '\n'
     rec += 'job submitted...'
     record(job_init.root_path, rec)
     r = 0
     while True:
-        finished = test_finished(job_init)
+        finished = if_cal_finish(job_init)
         if finished == True:
             rec = job_init.path
             rec += '\n'

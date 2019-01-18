@@ -17,9 +17,12 @@ def read_basis_set_file(element, bs_type):
     #print(element)
     element = Periodict_Table.periodic_table_rev[int(element)]
 
-    #for a in range(len(elements)):
-    file_input_basis = os.path.dirname(os.path.realpath(__file__)) + '/../Basis_Set/' + bs_type +'.py'
-    f = open(file_input_basis, 'r')
+    bs_path = os.path.dirname(os.path.realpath(__file__))
+    bs_path = os.path.dirname(bs_path)
+    bs_path = os.path.join(bs_path, 'Basis_Set')
+    bs_file_name = '{}.py'.format(bs_type)
+    bs_path = os.path.join(bs_path, bs_file_name)
+    f = open(bs_path, 'r')
     lines = f.read().replace('\n', ':')
     f.close()
 
