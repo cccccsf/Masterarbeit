@@ -22,6 +22,7 @@ from Common import record
 
 def geo_opt(path):
 
+    mkdir(path)
     rec = 'Geometry Optimization begins...'
     print(rec)
     record(path, rec)
