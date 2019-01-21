@@ -127,16 +127,21 @@ class Basis_set(object):
         return bs
 
     @staticmethod
-    def read_bs_geo_opt_default_nonmetal(element):
+    def read_bs_geo_opt_default_nonmetal(element, method = 'HF1'):
         bs_ahlrichs = choose_bs.read_basis_set_file(element, 'Ahlrichs_VTZ')
         bs_cc = choose_bs.read_basis_set_file(element, 'cc-pVTZ')
         bs_combine = []
         for shell_ahl in bs_ahlrichs:
             if shell_ahl[0][0] == 'S' or shell_ahl[0][0] == 'SP' or shell_ahl[0][0] == 'P':
                 bs_combine.append(shell_ahl)
-        for shell_cc in bs_cc:
-            if shell_cc[0][0] == 'D' or shell_cc[0][0] == 'F':
-                bs_combine.append(shell_cc)
+        if method == 'HF1':
+            for shell_cc in bs_cc:
+                if shell_cc[0][0] == 'D' or shell_cc[0][0] == 'F':
+                    bs_combine.append(shell_cc)
+        elif method == 'GEO_OPT':
+            for shell_cc in bs_cc:
+                if shell_cc[0][0] == 'D':
+                    bs_combine.append(shell_cc)
         bs_combine = choose_bs.transfer_crystal_formatted_bs_input([bs_combine],[element])[0]
         return bs_combine
 
@@ -160,12 +165,12 @@ class Basis_set(object):
             if if_metal == 1:
                 bs = Basis_set.read_bs_geo_opt_default_metal(element)
             elif if_metal == 0:
-                bs = Basis_set.read_bs_geo_opt_default_nonmetal(element)
+                bs = Basis_set.read_bs_geo_opt_default_nonmetal(element, method='GEO_OPT')
         elif method == 'HF1':
             if if_metal == 1:
                 bs = Basis_set.read_bs_hf1_default_metal(element)
             elif if_metal == 0:
-                bs = Basis_set.read_bs_geo_opt_default_nonmetal(element)
+                bs = Basis_set.read_bs_geo_opt_default_nonmetal(element, method='HF1')
         elif method == 'HF2':
             bs = Basis_set.read_bs_default('HF1', element, if_metal)
             bs = Basis_set.hf2_add_shells(bs)
@@ -253,6 +258,9 @@ class Basis_set(object):
 # print(bs)
 # p = path + '/assss'
 
-
+# bs = Basis_set.read_bs_geo_opt_default_metal(20)
+# bs0 = Basis_set.read_bs_hf1_default_metal(20)
+# print(bs)
+# print(bs0)
 
 

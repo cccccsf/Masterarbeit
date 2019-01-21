@@ -9,6 +9,7 @@ import geometry_optimization
 from Common import mkdir
 from Common import Job_path
 from Common import record
+from Common import ReadIni
 # from HF1 import generation_of_input
 # from HF1 import input_of_layers
 # from HF1 import submit_job_hf1
@@ -26,22 +27,19 @@ def geo_opt(path):
     rec = 'Geometry Optimization begins...'
     print(rec)
     record(path, rec)
+    geometry_optimization.creat_geo_lat_json(path)
 
-    #path = os.getcwd()
-    file = os.path.join(path, 'INPUT')
+    ini_path = os.path.dirname(__file__)
+    file = os.path.join(ini_path, 'input.ini')
     file = os.path.exists(file)
 
     if file:
-        Input_Reading = Read_input(path)
-        geometry = Input_Reading.geometry
+        Ini = ReadIni(ini_path)
+        name, slab_or_molecule, group, lattice_parameter, number_of_atoms = Ini.get_basic_info()
+        geometry = Ini.get_geometry()
         geometry = Geometry(geometry = geometry)
         original_geometry = deepcopy(geometry)
-        name = Input_Reading.name
-        slab_or_molecule = Input_Reading.slab_or_molecule
-        group = Input_Reading.group
-        lattice_parameter = Input_Reading.lattice_parameter
-        bs_type = Input_Reading.bs_type
-        functional = Input_Reading.functional
+        bs_type, functional, nodes = Ini.get_geo_opt_info()
 
     else:
         print('INPUT file does not exist!!!')

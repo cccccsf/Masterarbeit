@@ -20,7 +20,7 @@ def read_basis_set_file(element, bs_type):
     bs_path = os.path.dirname(os.path.realpath(__file__))
     bs_path = os.path.dirname(bs_path)
     bs_path = os.path.join(bs_path, 'Basis_Set')
-    bs_file_name = '{}.py'.format(bs_type)
+    bs_file_name = '{}.gbs'.format(bs_type)
     bs_path = os.path.join(bs_path, bs_file_name)
     f = open(bs_path, 'r')
     lines = f.read().replace('\n', ':')

@@ -2,14 +2,7 @@
 
 
 def choose_shrink(lattice_parameter):
-    length = []
-    angle = []
-    for i in lattice_parameter:
-        i = float(i)
-        if i <= 20:
-            length.append(i)
-        else:
-            angle.append(i)
+    length = lattice_parameter[0]
     avr = sum(length)/len(length)
     if avr <= 3:
         shrink = 14

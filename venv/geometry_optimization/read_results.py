@@ -3,6 +3,7 @@ import os
 import re
 import time
 import csv
+import json
 from Common import Job_path
 
 
@@ -83,18 +84,41 @@ def get_optimized_energy(path):
     return energy
 
 
-def write_optimized_geometry(path, geometry):
-    with open(path + '/optimized_geometry', 'w') as f:
-            for geo in geometry:
-                for unit in geo:
-                    f.write(unit + ' ')
-                f.write('\n')
+def write_geometry_json(job, geometry):
+    path = job.root_path
+    json_file = os.path.join(path, 'opt_geo_and_latt.json')
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+    x = job.x
+    z = job.z
+    x_and_z = '({}, {})'.format(x, z)
+    geo_json = data['geometry']
+    geo_dict = []
+    for atom in geometry:
+        atom_dict = {}
+        atom_dict['nat'] = atom[0]
+        atom_dict['x'] = atom[1]
+        atom_dict['y'] = atom[2]
+        atom_dict['z'] = atom[3]
+        geo_dict.append(atom_dict)
+    geo_json[x_and_z] = geo_dict
+    with open(json_file, 'w') as f:
+        json.dump(data, f, indent=4)
 
 
-def write_optimized_lattice_parameter(path, lattice):
-    with open(path + '/optimized_lattice_parameter', 'w') as f:
-            for unit in lattice:
-                f.write(unit + ' ')
+def write_latt_json(job, latt):
+    path = job.root_path
+    json_file = os.path.join(path, 'opt_geo_and_latt.json')
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+    x = job.x
+    z = job.z
+    x_and_z = '({}, {})'.format(x, z)
+    latt_json = data['lattice_parameter']
+    latt_json[x_and_z] = latt
+    with open(json_file, 'w') as f:
+        json.dump(data, f, indent=4)
+
 
 
 def creatxls_dis(path):
@@ -122,8 +146,8 @@ def read_and_record_result(j, job, init_distance):
     path = job.path
     lattice_parameter, geometry = get_optimized_geometry(path)
     energy = get_optimized_energy(path)
-    write_optimized_geometry(path, geometry)
-    write_optimized_lattice_parameter(path, lattice_parameter)
+    write_geometry_json(job, geometry)
+    write_latt_json(job, lattice_parameter)
     distance = job.z
     distance = float(distance) + float(init_distance)
     displacement = job.x
@@ -165,9 +189,30 @@ def test_read_all_results():
     read_all_results(jobs, 3.1)
 
 
+def test_write_geo_json():
+    # path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
+    # job = Job_path(path)
+    # path = job.path
+    # lattice_para, geometry = get_optimized_geometry(path)
+    path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
+    walks = os.walk(path)
+    jobs = []
+    for root, dirs, files in walks:
+        if 'geo_opt.out' in files:
+            job = Job_path(root)
+            jobs.append(job)
+    for job in jobs:
+        path = job.path
+        lattice_para, geometry = get_optimized_geometry(path)
+        write_geometry_json(job, geometry)
+        write_latt_json(job, lattice_para)
+
+
 def test_suite():
     #test_data_saving()
-    test_read_all_results()
+    #test_read_all_results()
+    test_write_geo_json()
+
 
 #test_suite()
 

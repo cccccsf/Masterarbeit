@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import re
 import os
+from copy import deepcopy
 from Data import Periodict_Table
 
 
@@ -42,7 +43,7 @@ def read_pob_bs(element):
 
 def transfer_to_target_bs(bs):
     """
-    for metal atoms, we use POB-tvzp BS for s, p orbitals, and 1/3 of POB-tvzp for d orbitals and 2/3 of POB-tvzp for f orbitals
+    for metal atoms, we use POB-tvzp BS for s, p orbitals, and 1/3 of POB-tvzp for d orbitals and 2/3 of POB-tvzp for f orbitals in HF1
     :param bs: [shell[line[unit]]]
     :return: bs: after calculation
     """
@@ -51,15 +52,30 @@ def transfer_to_target_bs(bs):
         for j, line in enumerate(shell):
             shell[j] = line.split()
 
-    for shell in bs:
-        if shell[0][1] == '3':
-            for i in range(1,len((shell))):
-                shell[i][0] = str(float(shell[i][0]) / 3)
-        if shell[0][1] == '4':
-            for i in range(1,len((shell))):
-                shell[i][0] = str(float(shell[i][0]) * (2/3))
+    shell_d = [shell for shell in bs if shell[0][1] == '3']
 
-    return bs
+    new_bs = [shell for shell in bs if int(shell[0][1]) < 3]
+
+    new_shells_d = []
+    new_shells_f = []
+    for shell in shell_d:
+        new_shell_d = []
+        new_shell_f = []
+        new_shell_d.append(shell[0][:])
+        new_shell_f.append(shell[0][:])
+        for line in shell[1:]:
+            new_line_d = [str(float(line[0])/3), line[1]]
+            new_line_f = [str(float(line[0])*(2/3)), line[1]]
+            new_shell_d.append(new_line_d)
+            new_shell_f[0][1] = '4'
+            new_shell_f.append(new_line_f)
+        new_shells_d.append(new_shell_d)
+        new_shells_f.append(new_shell_f)
+
+    new_bs += new_shells_d
+    new_bs += new_shells_f
+
+    return new_bs
 
 #head, bs0 = read_pob_bs(15)
 #bs = transfer_to_target_bs(bs0)

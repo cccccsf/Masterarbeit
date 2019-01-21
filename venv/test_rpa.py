@@ -36,11 +36,24 @@ def test_get_energy():
     expected = '-0.950588132848'
     assert(expected == e)
 
+def test_read_all_results():
+    path = os.getcwd()
+    path  = os.path.join(path, 'Test')
+    path = os.path.join(path, 'rpa')
+    walks = os.walk(path)
+    jobs = []
+    for root, dirs, files in walks:
+        if 'rpa.out' in files:
+            job = Job_path(root)
+            jobs.append(job)
+    read_results_rpa.read_and_record_all_results(jobs)
+
 
 def test_suite():
     #test_rpa_input()
     #test_copy_job()
-    test_if_finished()
-    test_get_energy()
+    #test_if_finished()
+    #test_get_energy()
+    test_read_all_results()
 
 test_suite()

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 import time
+import json
 from Data import Functionals
 from Data import Grimme_parameter
 from Common.file_processing import mkdir
@@ -41,7 +42,9 @@ class Geo_Opt_Input(object):
 
     def write_lattice_parameter(self):
         with open(self.input_path, 'a') as f:
-            for a in self.lattice_vector:
+            for l in self.lattice_vector[0]:
+                f.write(str(l) + ' ')
+            for a in self.lattice_vector[1]:
                 f.write(str(a) + ' ')
             f.write('\n')
 
@@ -143,3 +146,10 @@ def get_and_write_init_distance(geometry, path):
     with open(dis_path, 'w') as f:
         f.write(str(distance) + '\n')
 
+
+def creat_geo_lat_json(path):
+    geo_lat_json = {'geometry': {}, 'lattice_parameter': {}}
+    json_path = os.path.join(path, 'opt_geo_and_latt.json')
+    print(json_path)
+    with open(json_path, 'w') as f:
+        json.dump(geo_lat_json, f, indent=4)
