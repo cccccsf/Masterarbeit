@@ -57,7 +57,10 @@ def copy_fort9(job):
 def copy_submit_scr(job, nodes):
     ziel_path = job.path
     scr_path = os.path.dirname(os.path.realpath(__file__))
-    scr_from = os.path.join(scr_path, 'job_submit.bash')
+    if job.x == '0' and job.z == '0':
+        scr_from = os.path.join(scr_path, 'job_submit.bash')
+    else:
+        scr_from = os.path.join(scr_path, 'job_submit_nonini.bash')
     scr_to = os.path.join(ziel_path, 'geo_opt')
     shutil.copy(scr_from, scr_to)
     if nodes != '':
