@@ -172,12 +172,15 @@ class Basis_set(object):
             elif if_metal == 0:
                 bs = Basis_set.read_bs_geo_opt_default_nonmetal(element, method='HF1')
         elif method == 'HF2':
-            bs = Basis_set.read_bs_default('HF1', element, if_metal)
-            bs = Basis_set.hf2_add_shells(bs)
+            if if_metal == 1:
+                bs = Basis_set.read_bs_default('HF1', element, if_metal)
+                bs = Basis_set.hf2_add_shells_metal(bs)
+            elif if_metal == 0:
+                bs = Basis_set.read_bs_hf2_default_nonmetal(element)
         return bs
 
     @staticmethod
-    def hf2_add_shells(bs):
+    def hf2_add_shells_metal(bs):
         add_d = []
         add_f = []
         for shell in bs:
@@ -193,6 +196,26 @@ class Basis_set(object):
                 shell[i][0] = str(float(shell[i][0])/3)
         new_bs = bs + add_d + add_f
         return new_bs
+
+    @staticmethod
+    def read_bs_hf2_default_nonmetal(element):
+        bs_ahlrichs = choose_bs.read_basis_set_file(element, 'Ahlrichs_VTZ')
+        bs_cc = choose_bs.read_basis_set_file(element, 'cc-pVTZ')
+        bs_aug = choose_bs.read_basis_set_file(element, 'aug-cc-pVTZ')
+        bs_combine = []
+        ahl_s = [shell for shell in bs_ahlrichs if shell[0][0] == 'S' or shell[0][0] == 'SP']
+        ahl_p = [shell for shell in bs_ahlrichs if shell[0][0] == 'P']
+        cc_d = [shell for shell in bs_cc if shell[0][0] == 'D']
+        cc_f = [shell for shell in bs_cc if shell [0][0] == 'F']
+        aug_d = [shell for shell in bs_aug if shell[0][0] == 'D']
+        aug_f = [shell for shell in bs_aug if shell[0][0] == 'F']
+        bs_combine = ahl_s + ahl_p + cc_d
+        bs_combine.append(aug_d[-1])
+        bs_combine = bs_combine + cc_f
+        bs_combine.append(aug_f[-1])
+        bs_combine = choose_bs.transfer_crystal_formatted_bs_input([bs_combine],[element])[0]
+        return bs_combine
+
 
     @staticmethod
     def get_bs_head(element, bs):
@@ -250,17 +273,16 @@ class Basis_set(object):
         self.__dict__[arg] = value
         self.__init__(self.elements, self.method, self.bs_type)
 
-# path = 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_-0.150\\z_-0.106'
+# path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
 # geo = geometry_input.Geometry(path)
 # elements = geo.elements
-# method = 'HF1'
+# method = 'HF2'
 # bs = Basis_set([15], method)
 # print(bs)
-# p = path + '/assss'
+
 
 # bs = Basis_set.read_bs_geo_opt_default_metal(20)
-# bs0 = Basis_set.read_bs_hf1_default_metal(20)
-# print(bs)
+# bs = Basis_set.read_bs_default('HF2', 15, 0)
 # print(bs0)
 
 

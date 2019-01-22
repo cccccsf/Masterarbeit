@@ -5,6 +5,7 @@ from geometry_optimization.gen_input import get_and_write_init_distance
 from geometry_optimization.gen_input import creat_geo_lat_json
 from geometry_optimization.gen_displacement_series import Range_of_Distances
 from geometry_optimization.gen_displacement_series import Range_of_Displacement
+from geometry_optimization.gen_displacement_series import Range_Distance_Noninit
 from geometry_optimization.submit_job import submit
 from geometry_optimization.read_results import read_all_results
 

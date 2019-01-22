@@ -16,6 +16,28 @@ def submit_geo_opt_job():
     print('job submitted...')
 
 
+def update_nodes(path, nodes):
+    scr = os.path.join(path, 'geo_opt')
+    with open(scr, 'r') as f:
+        lines = f.readlines()
+    nodes_line = lines[3]
+    loc = 3
+    if nodes_line.startswith('#PBS -l nodes'):
+        pass
+    else:
+        i = 0
+        for line in lines:
+            if line.startswith('#PBS -l nodes'):
+                nodes_line = line
+                loc = i
+            i += 1
+    nodes_line = nodes_line.replace('12', str(nodes))
+    lines[loc] = nodes_line
+    with open(scr, 'w') as f:
+        f.writelines(lines)
+
+
+
 def copy_fort9(job):
     ziel_path = job.path
     z_dirname = job.z_dirname
@@ -32,12 +54,18 @@ def copy_fort9(job):
         print('fort.9 failed to copy...')
 
 
-def copy_submit_scr(job):
+def copy_submit_scr(job, nodes):
     ziel_path = job.path
     scr_path = os.path.dirname(os.path.realpath(__file__))
     scr_from = os.path.join(scr_path, 'job_submit.bash')
     scr_to = os.path.join(ziel_path, 'geo_opt')
     shutil.copy(scr_from, scr_to)
+    if nodes != '':
+        try:
+            nodes = int(nodes)
+            update_nodes(ziel_path, nodes)
+        except Exception as e:
+            print(e)
     print('Submition file copied...')
 
 
@@ -67,7 +95,7 @@ def if_cal_finish(job):
     return True
 
 
-def submit(jobs):
+def submit(jobs, nodes):
     job_numbers = len(jobs)
     max_paralell = 5
     count = 0
@@ -81,15 +109,15 @@ def submit(jobs):
         loc += 1
 
     job_init = jobs.pop(loc)
-    os.chdir(job_init.path)
-    copy_submit_scr(job)
-    submit_geo_opt_job()
-    submitted_jobs.append(job_init)
-    rec = job_init.path
-    print(rec)
-    rec += '\n'
-    rec += 'job submitted...'
-    record(job_init.root_path, rec)
+    # os.chdir(job_init.path)
+    # copy_submit_scr(job, nodes)
+    # submit_geo_opt_job()
+    # submitted_jobs.append(job_init)
+    # rec = job_init.path
+    # print(rec)
+    # rec += '\n'
+    # rec += 'job submitted...'
+    # record(job_init.root_path, rec)
     r = 0
     while True:
         finished = if_cal_finish(job_init)
@@ -132,7 +160,7 @@ def submit(jobs):
         if count <= max_paralell:
             print(jobs[i].path)
             os.chdir(jobs[i].path)
-            copy_submit_scr(jobs[i])
+            copy_submit_scr(jobs[i], nodes)
             copy_fort9(jobs[i])
             submit_geo_opt_job()
             count += 1
@@ -152,7 +180,5 @@ def submit(jobs):
     return finished_jobs
 
 
-# path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
-# path = job_path.Job_path(path)
-# aa = if_cal_finish(path)
-# print(aa)
+# path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test\geo_opt\x_0\z_0'
+# update_nodes(path, nodes=12)

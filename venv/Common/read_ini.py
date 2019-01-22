@@ -11,6 +11,7 @@ class ReadIni(object):
         self.cfg = ConfigParser()
 
         self.project_path = ''
+        self.start = ''
 
         self.project_name = ''
         self.system_type = 'SLAB'
@@ -39,6 +40,7 @@ class ReadIni(object):
             self.cfg.read(ini_path, encoding='utf-8')
 
             self.project_path = self.cfg.get('Initilization', 'path')
+            self.start = self.cfg.get('Initilization', 'start')
 
             self.project_name = self.cfg.get('Basic_Info', 'project_name')
             self.system_type = self.cfg.get('Basic_Info', 'system_type')
@@ -102,7 +104,7 @@ class ReadIni(object):
         return geometry
 
     def get_initialization_info(self):
-        return self.project_path
+        return self.project_path, self.start
 
     def get_basic_info(self):
         return self.project_name, self.system_type, self.group_type, self.lattice_parameter, self.number_atoms

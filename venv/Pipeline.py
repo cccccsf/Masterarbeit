@@ -109,21 +109,21 @@ def geo_opt(path):
         job_geo_dict[new_job] = geometry
 
 
-    #Generation of the jobs with different displacement and different layer distance
-    for job, geometry in job_geo_dict_dis.items():
-        Geo_with_diff_Dis_diff_Distance = geometry_optimization.Range_of_Distances(geometry, job)
-        geo_with_diff_dis_diff_distance = Geo_with_diff_Dis_diff_Distance.get_geo_series()
-        dist_list = list(geo_with_diff_dis_diff_distance.keys())
-        #print(dist_list)
-        dist_list.sort()
-        dist_list = dist_list[1:5]
-        #print(dist_list)
-        for distance, geometry in geo_with_diff_dis_diff_distance.items():
-            if distance in dist_list:
-                new_job = deepcopy(job)
-                new_z_dirname = 'z_{0:.3f}'.format(distance)
-                new_job.reset('z_dirname', new_z_dirname)
-                job_geo_dict[new_job] = geometry
+    # #Generation of the jobs with different displacement and different layer distance
+    # for job, geometry in job_geo_dict_dis.items():
+    #     Geo_with_diff_Dis_diff_Distance = geometry_optimization.Range_Distance_Noninit(geometry, job)
+    #     geo_with_diff_dis_diff_distance = Geo_with_diff_Dis_diff_Distance.get_geo_series()
+    #     dist_list = list(geo_with_diff_dis_diff_distance.keys())
+    #     print(dist_list)
+    #     dist_list.sort()
+    #     dist_list = dist_list[1:6]
+    #     print(dist_list)
+    #     for distance, geometry in geo_with_diff_dis_diff_distance.items():
+    #         if distance in dist_list:
+    #             new_job = deepcopy(job)
+    #             new_z_dirname = 'z_{0:.3f}'.format(distance)
+    #             new_job.reset('z_dirname', new_z_dirname)
+    #             job_geo_dict[new_job] = geometry
 
 
     #generation all INPUT files besides the first one
@@ -133,7 +133,7 @@ def geo_opt(path):
         jobs.append(job)
 
     #Copy files and Submit the calculation job
-    finished_jobs_geo_opt = geometry_optimization.submit(jobs)
+    finished_jobs_geo_opt = geometry_optimization.submit(jobs, nodes)
 
     #read calculation results
     geometry_optimization.read_all_results(finished_jobs_geo_opt, init_distance)
@@ -418,7 +418,7 @@ def rpa(path):
     print('LRPA calculation finished!!!')
 
 
-def pipeline(path):
+def pipeline(path, start):
     geo_opt(path)
     #hf1(path)
     #localization(path)

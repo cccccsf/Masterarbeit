@@ -141,5 +141,34 @@ class Range_of_Displacement(Range_of_Distances):
 
 
 
+class Range_Distance_Noninit(Range_of_Distances):
 
+    def __init__(self, geometry, job):
+        super().__init__(geometry, job)
+
+
+    def get_distance_series(self, min_dist):
+        max_delta_dist = self.init_distance
+        max_dist = self.init_distance + max_delta_dist
+        min_delta_dist = self.init_distance - min_dist
+        sum_forward = sum(fibo_num[:5])
+        sum_backward = sum(fibo_num[1:5])
+        dist = 0
+        delta_dist_forward = []
+        delta_dist_backward = []
+        accum = 0
+        for i in fibo_num[:5]:
+            dist = max_delta_dist * (i / sum_forward)
+            accum = dist + accum
+            accum = round(accum, 12)
+            delta_dist_forward.append(accum)
+        accum_1 = 0
+        for i in fibo_num[1:4]:
+            dist = -(min_delta_dist * (i / sum_backward))
+            accum_1 = dist + accum_1
+            accum_1 = round(accum_1, 12)
+            delta_dist_backward.append(accum_1)
+        self.delta_distances = delta_dist_backward + delta_dist_forward
+        self.distances = [(self.init_distance + delta) for delta in self.delta_distances]
+        self.distances.sort()
 

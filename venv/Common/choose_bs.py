@@ -3,6 +3,7 @@ import re
 import os
 from Common.get_e_configuration import count_num_of_shells
 from Common.get_e_configuration import electron_config
+from Basis_Set.basis_set_catalog import bs_dicts
 from Data import Periodict_Table
 
 def read_basis_set_file(element, bs_type):
@@ -20,6 +21,8 @@ def read_basis_set_file(element, bs_type):
     bs_path = os.path.dirname(os.path.realpath(__file__))
     bs_path = os.path.dirname(bs_path)
     bs_path = os.path.join(bs_path, 'Basis_Set')
+    bs_type = bs_type.lower()
+    bs_type = bs_dicts[bs_type]
     bs_file_name = '{}.gbs'.format(bs_type)
     bs_path = os.path.join(bs_path, bs_file_name)
     f = open(bs_path, 'r')
