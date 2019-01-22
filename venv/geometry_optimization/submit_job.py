@@ -97,7 +97,7 @@ def if_cal_finish(job):
 
 def submit(jobs, nodes):
     job_numbers = len(jobs)
-    max_paralell = 5
+    max_paralell = 4
     count = 0
     submitted_jobs = []
     finished_jobs = []
@@ -118,26 +118,26 @@ def submit(jobs, nodes):
     # rec += '\n'
     # rec += 'job submitted...'
     # record(job_init.root_path, rec)
-    r = 0
-    while True:
-        finished = if_cal_finish(job_init)
-        if finished == True:
-            rec = job_init.path
-            rec += '\n'
-            rec += 'calculation finished...'
-            record(job_init.root_path, rec)
-            break
-        else:
-            time.sleep(500)
-            r += 1
-            if r > 15:
-                rec = job_init.path
-                rec += '\n'
-                rec += 'calculation still not finished...'
-                record(job_init.root_path, rec)
-                r = 0
-            continue
-
+#    r = 0
+#    while True:
+#        finished = if_cal_finish(job_init)
+#        if finished == True:
+#            rec = job_init.path
+#            rec += '\n'
+#            rec += 'calculation finished...'
+#            record(job_init.root_path, rec)
+#            break
+#        else:
+#            time.sleep(500)
+#            r += 1
+#            if r > 15:
+#                rec = job_init.path
+#                rec += '\n'
+#                rec += 'calculation still not finished...'
+#                record(job_init.root_path, rec)
+#                r = 0
+#            continue
+#
 
     def test_finished(paths):
         for path in paths:
