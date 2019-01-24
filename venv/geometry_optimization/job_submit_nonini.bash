@@ -12,7 +12,7 @@ cd ${PBS_O_WORKDIR}
 currdir=/scratch/$USER/$$tmp
 mkdir -p $currdir
 cp INPUT $currdir
-cp fort.9 $currdir/fort.20
+cp fort.20 $currdir/fort.20
 cd $currdir
 
 mpirun -np 12 ~usvyat/Crystal14_new/bin/Linux-ifort-i64-t/std/Pcrystal >& ${PBS_O_WORKDIR}/geo_opt.out

@@ -138,17 +138,18 @@ class Geo_Opt_Input(object):
         self.write_cal_input()
 
 
-
-def get_and_write_init_distance(geometry, path):
-    distance = geometry.layer_distance
-    path = os.path.join(path, 'geo_opt')
-    dis_path = os.path.join(path, 'init_distance')
-    with open(dis_path, 'w') as f:
-        f.write(str(distance) + '\n')
+def write_init_dist(geometry, path):
+    init_dist = geometry.layer_distance
+    json_file = os.path.join(path, 'opt_geo_and_latt.json')
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+    data['init_dist'] = init_dist
+    with open(json_file, 'w') as f:
+        json.dump(data, f, indent=4)
 
 
 def creat_geo_lat_json(path):
-    geo_lat_json = {'geometry': {}, 'lattice_parameter': {}}
+    geo_lat_json = {'geometry': {}, 'lattice_parameter': {}, 'init_dist': 0}
     json_path = os.path.join(path, 'opt_geo_and_latt.json')
     print(json_path)
     with open(json_path, 'w') as f:

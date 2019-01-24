@@ -172,3 +172,27 @@ class Range_Distance_Noninit(Range_of_Distances):
         self.distances = [(self.init_distance + delta) for delta in self.delta_distances]
         self.distances.sort()
 
+
+class Select_Opt_Dis(Range_of_Distances):
+
+    def __init__(self, geometry, job, direct=0):
+        super().__init__(geometry, job)
+        self.direct = direct
+
+    def get_distance_series(self, min_dist):
+        distance = self.init_distance
+        delta_dis = 0.1*distance
+        if self.direct == 0:
+            self.delta_distances = [-delta_dis, delta_dis]
+        elif self.direct == 1:
+            self.delta_distances = [delta_dis]
+        elif self.direct == 2:
+            self.delta_distances = [delta_dis, 2*delta_dis]
+        elif self.direct == 3:
+            self.delta_distances = [2*delta_dis]
+        elif self.direct == -1:
+            self.delta_distances = [-delta_dis]
+        elif self.direct == -2:
+            self.delta_distances = [-delta_dis, -2*delta_dis]
+        self.distances = [(self.init_distance + delta) for delta in self.delta_distances]
+        self.distances.sort()

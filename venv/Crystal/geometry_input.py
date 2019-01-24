@@ -4,7 +4,7 @@ from copy import deepcopy
 
 class Geometry(object):
 
-    def __init__(self, init_path = '', geometry = []):
+    def __init__(self, init_path = '', geometry = [], fixed_atoms = []):
         self.elements = []
         self.x = []
         self.y = []
@@ -22,6 +22,10 @@ class Geometry(object):
         self.z_fixed_co = [0, 0]
         self.z_free_no = []
         self.get_layerdistance()
+
+        if fixed_atoms != []:
+            self.set_fixed_atoms(fixed_atoms)
+
 
     def __len__(self):
         return len(self.geometry)
@@ -146,14 +150,21 @@ class Geometry(object):
         self.__dict__[key] = value
         self.__init__(self.init_path, self.geometry)
 
+    def set_fixed_atoms(self, fixed_atoms):
+        self.z_fixed_no = [int(i) for i in fixed_atoms]
+        self.z_fixed_co = [self.z[int(i)-1] for i in fixed_atoms]
+        self.layer_distance = abs(float(self.z_fixed_co[0]) - float(self.z_fixed_co[1]))
+        self.z_free_no = [i for i in self.no if i not in self.z_fixed_no]
 
 
 
 
 
-# path = 'C:\\Users\\ccccc\\PycharmProjects\\Layer_Structure_Caculation\\venv\\geo_opt\\x_-0.150\\z_-0.106'
-# geo = Geometry(path)
-# f = geo.get_fixed_atom_number()
-# print(f)
+
+# path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_-0.150\z_-0.106'
+# geo = Geometry(path, fixed_atoms=[4, 6])
+# print(geo.layer_distance)
+
+
 
 

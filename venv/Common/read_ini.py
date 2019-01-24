@@ -19,6 +19,7 @@ class ReadIni(object):
         self.lattice_parameter = []
         self.number_atoms = 0
         self.geometry = []
+        self.fixed_atoms = []
 
         self.bs_geo_opt = ''
         self.functional = ''
@@ -48,6 +49,7 @@ class ReadIni(object):
             self.lattice_parameter = self.read_lattice_parameter()
             self.number_atoms = self.cfg.getint('Basic_Info', 'number_of_atoms')
             self.geometry = self.read_geometry()
+            self.fixed_atoms = self.cfg.get('Basic_Info', 'fixed_atoms')
 
             self.bs_geo_opt = self.cfg.get('Geo_Opt', 'basis_set')
             self.bs_geo_opt = self.if_none(self.bs_geo_opt)
@@ -103,11 +105,16 @@ class ReadIni(object):
         geometry = [geoline.split() for geoline in geoLines]
         return geometry
 
+    def read_fixed_atoms(self):
+        fixed_atoms = self.cfg.get('Basic_Info', 'fixed_atoms')
+        fixed_atoms = fixed_atoms.split()
+        self.fixed_atoms = fixed_atoms
+
     def get_initialization_info(self):
         return self.project_path, self.start
 
     def get_basic_info(self):
-        return self.project_name, self.system_type, self.group_type, self.lattice_parameter, self.number_atoms
+        return self.project_name, self.system_type, self.group_type, self.lattice_parameter, self.number_atoms, self.fixed_atoms
 
     def get_geometry(self):
         return self.geometry
@@ -190,10 +197,8 @@ def exit_programm():
 def test_read_ini():
     path = os.path.dirname(__file__)
     path = os.path.dirname(path)
-    path = os.path.dirname(path)
-    path = os.path.join(path, 'Test')
     Ini = ReadIni(path)
-    print(Ini.read_geometry())
+    Ini.read_fixed_atoms()
 
 
-#test_read_ini()
+test_read_ini()

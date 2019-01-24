@@ -166,7 +166,27 @@ def read_all_results(jobs, init_distance):
         j += 1
 
 
-
+def read_and_select_lowest_e(jobs):
+    jobs = sorted(jobs, key=lambda job: float(job.z))
+    z = [float(job.z) for job in jobs]
+    e_list = []
+    for job in jobs:
+        try:
+            energy = float(get_optimized_energy(job.path))
+            e_list.append(energy)
+        except Exception as e:
+            print(e)
+    if len(e_list) != 0:
+        min_e = min(e_list)
+        i = 0
+        for en in e_list:
+            if en == min_e:
+                loc = i
+            i += 1
+        min_dist = z[loc]
+        min_job = jobs[loc]
+        return min_dist, min_job
+    return None, None
 
 
 def test_data_saving():
@@ -207,11 +227,23 @@ def test_write_geo_json():
         write_geometry_json(job, geometry)
         write_latt_json(job, lattice_para)
 
+def test_read_lowest_e():
+    path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
+    walks = os.walk(path)
+    jobs = []
+    for root, dirs, files in walks:
+        if 'geo_opt.out' in files:
+            job = Job_path(root)
+            jobs.append(job)
+    read_and_select_lowest_e(jobs)
+
+
 
 def test_suite():
     #test_data_saving()
     #test_read_all_results()
-    test_write_geo_json()
+    #test_write_geo_json()
+    test_read_lowest_e()
 
 
 #test_suite()
