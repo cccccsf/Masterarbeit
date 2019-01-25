@@ -51,8 +51,13 @@ class Basis_set(object):
                         try:
                             l += ' ' + '{: }'.format(float(unit)).ljust(16) + ' '
                         except Exception as e:
-                            print(e)
-                            l += ' ' + str(unit).ljust(16) + ' '
+                            try:
+                                u = unit.replace('D', 'E', 1)
+                                l += ' ' + '{: }'.format(float(u)).ljust(16) + ' '
+                            except Exception as er:
+                                print(e)
+                                print(er)
+                                l += ' ' + str(unit).ljust(16) + ' '
                     l += '\n'
                     string += l
         return string

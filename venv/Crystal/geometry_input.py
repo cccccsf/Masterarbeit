@@ -4,19 +4,23 @@ from copy import deepcopy
 
 class Geometry(object):
 
-    def __init__(self, init_path = '', geometry = [], fixed_atoms = []):
+    def __init__(self, init_path = '', geometry = [], fixed_atoms = [], json_form = []):
         self.elements = []
         self.x = []
         self.y = []
         self.z = []
         self.no = []
         self.geometry = geometry
-        self.number_of_atoms = 0
 
         self.init_path = init_path
-        self.read_geometry(init_path)
-        self.collect_geometry()
+        self.json_form = json_form
+        if self.json_form != []:
+            self.init_geo_from_json()
+        else:
+            self.read_geometry(init_path)
+            self.collect_geometry()
 
+        self.number_of_atoms = len(self.geometry)
         self.layer_distance = 0
         self.z_fixed_no = [0, 0]
         self.z_fixed_co = [0, 0]
@@ -59,7 +63,6 @@ class Geometry(object):
                 count += 1
         else:
             pass
-        self.number_of_atoms = len(self.geometry)
 
     def read_geometry(self, path):
         if self.geometry == []:
@@ -155,6 +158,21 @@ class Geometry(object):
         self.z_fixed_co = [self.z[int(i)-1] for i in fixed_atoms]
         self.layer_distance = abs(float(self.z_fixed_co[0]) - float(self.z_fixed_co[1]))
         self.z_free_no = [i for i in self.no if i not in self.z_fixed_no]
+
+    def init_geo_from_json(self):
+        geometry = []
+        for atom in self.json_form:
+            line = [atom['nat'], atom['x'], atom['y'], atom['z']]
+            geometry.append(line)
+        self.geometry = geometry
+        for i in range(len(self.geometry)):
+            if len(self.geometry[i]) == 4:
+                self.geometry[i].insert(0, (i+1))
+            self.elements.append(self.geometry[i][1])
+            self.x.append(self.geometry[i][2])
+            self.y.append(self.geometry[i][3])
+            self.z.append(self.geometry[i][4])
+            self.no.append(i+1)
 
 
 

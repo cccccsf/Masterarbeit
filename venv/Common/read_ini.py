@@ -55,7 +55,7 @@ class ReadIni(object):
             self.bs_geo_opt = self.if_none(self.bs_geo_opt)
             self.functional = self.cfg.get('Geo_Opt', 'functional')
             self.functional = self.if_none(self.functional)
-            if self.functional == 'default':
+            if self.functional == 'default' or self.functional == '':
                 self.functional = 'PBE0'
             self.nodes_geo_opt = self.cfg.get('Geo_Opt', 'nodes')
 
