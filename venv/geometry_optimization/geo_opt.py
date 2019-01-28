@@ -179,7 +179,7 @@ def geo_opt(path):
     pos_min_10 = look_for_in_list(jobs_10, min_job_10)
     pos_init_10 = look_for_in_list(jobs_10, init_job_10)
     diff = pos_min_10 - pos_init_10
-    jobs_25, x_25, min_job_25, jobs_25_finished = geometry_optimization.select_optimal_dist(x_25, diff)
+    jobs_25, x_25, min_job_25, jobs_25_finished = geometry_optimization.select_optimal_dist(x_25, diff, para)
     jobs += jobs_25
     #x_35
     x_35 = {job: geometry for job, geometry in job_geo_dict_dis.items() if job.x == '0.35'}
@@ -187,7 +187,7 @@ def geo_opt(path):
     pos_min_25 = look_for_in_list(jobs_25, min_job_25)
     pos_init_25 = look_for_in_list(jobs_25, init_job_25)
     diff = pos_min_25 - pos_init_25
-    jobs_35, x_35, min_job_35, jobs_35_finished = geometry_optimization.select_optimal_dist(x_35, diff)
+    jobs_35, x_35, min_job_35, jobs_35_finished = geometry_optimization.select_optimal_dist(x_35, diff, para)
     jobs += jobs_35
     #x_50
     x_50 = {job: geometry for job, geometry in job_geo_dict_dis.items() if job.x == '0.50'}
@@ -195,7 +195,7 @@ def geo_opt(path):
     pos_min_35 = look_for_in_list(jobs_35, min_job_35)
     pos_init_35 = look_for_in_list(jobs_35, init_job_35)
     diff = pos_min_35 - pos_init_35
-    jobs_50, x_50, min_job_50, jobs_50_finished = geometry_optimization.select_optimal_dist(x_50, diff)
+    jobs_50, x_50, min_job_50, jobs_50_finished = geometry_optimization.select_optimal_dist(x_50, diff, para)
     jobs += jobs_50
 
     #read calculation results
