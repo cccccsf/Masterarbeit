@@ -16,8 +16,8 @@ def submit_geo_opt_job():
     command = 'qsub geo_opt'
     subprocess.call(chmod, shell=True)
     try:
-        out_bytes = b'\xe4\xb8\xad\xe6\x96\x87'
-        #out_bytes = subprocess.check_output(['qsub', 'geo_opt'])
+        #out_bytes = b'\xe4\xb8\xad\xe6\x96\x87'
+        out_bytes = subprocess.check_output(['qsub', 'geo_opt'])
     except subprocess.CalledProcessError as e:
         out_bytes = e.output
         code = e.returncode
@@ -243,12 +243,17 @@ def select_optimal_dist(job_geo_dict, diff, para):
         new_geo_dict[new_job] = geometry
         job_geo_dict[new_job] = geometry
     new_jobs = []
+    jobs_finished = []
     for job, geometry in new_geo_dict.items():
-        Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
-        Geo_Inp.gen_input()
-        new_jobs.append(job)
+        if not if_cal_finish(job):
+            Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
+            Geo_Inp.gen_input()
+            new_jobs.append(job)
+        else:
+            jobs_finished.append(job)
         jobs.append(job)
-    jobs_finished = geometry_optimization.submit(new_jobs, nodes)
+    new_jobs_finished = geometry_optimization.submit(new_jobs, nodes)
+    jobs_finished += new_jobs_finished
     min_dist, min_job = geometry_optimization.read_and_select_lowest_e(jobs_finished)
     #print('MIN: ', min_dist, min_job)
     while True:
@@ -273,12 +278,18 @@ def select_optimal_dist(job_geo_dict, diff, para):
             new_job = Job_path(new_path)
             new_geo_dict[new_job] = geometry
             job_geo_dict[new_job] = geometry
+        new_jobs = []
         for job, geometry in new_geo_dict.items():
-            Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
-            Geo_Inp.gen_input()
+            if not if_cal_finish(job):
+                print(job)
+                Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
+                Geo_Inp.gen_input()
+                new_jobs.append(job)
+            else:
+                jobs_finished.append(job)
             jobs.append(job)
-            new_jobs_finished = geometry_optimization.submit(new_jobs, nodes)
-            jobs_finished += new_jobs_finished
+        new_jobs_finished = geometry_optimization.submit(new_jobs, nodes)
+        jobs_finished += new_jobs_finished
         min_dist, min_job = geometry_optimization.read_and_select_lowest_e(jobs_finished)
     return jobs, job_geo_dict, min_job, jobs_finished
 
