@@ -3,70 +3,20 @@
 import os
 import re
 import json
+import sys
 from Common.file_processing import mkdir
-from Common.test_variable import test_bs_type
-from Common import read_pob_tzvp_bs
-from Common import choose_bs
 from Common import Job_path
 from Crystal import Geometry
 from Crystal import choose_shrink
 from Crystal import Basis_set
-from geometry_optimization import read_input
-from HF1 import default_basis_set
 
-
-def get_job_dirs(path):
-    path = path + '/geo_opt/'
-    walks = os.walk(path)
-    job_dirs = []
-    for root, dirs, files in walks:
-        if 'geo_opt.out' in files:
-            job_dirs.append(root)
-    return job_dirs
-
-
-def split_block(lines):
-    sep = []
-    for num, line in enumerate(lines):
-        if line == 'END':
-            sep.append(num)
-    geo_block = lines[:(sep[0]+1)]
-    bs_block= lines[(sep[0]+1):(sep[1]+1)]
-    func_block = lines[(sep[1]+1):(sep[2]+1)]
-    cal_block = lines[(sep[2]+1):(sep[3]+1)]
-    hf1_block = lines[(sep[3]+1):(sep[4]+1)]
-    blocks = []
-    blocks.append(geo_block)
-    blocks.append(bs_block)
-    blocks.append(func_block)
-    blocks.append(cal_block)
-    blocks.append(hf1_block)
-    return blocks
-
-
-def read_inp(path):
-    lines = read_input.read_input_file(path)
-    blocks = split_block(lines)
-    hf_block = blocks[-1]
-    if len(hf_block) == 1:
-        hf1_bs_type = 'default'
-    elif len(hf_block) == 2:
-        hf1_bs_type = hf_block[0]
-    if test_bs_type(hf1_bs_type):
-        return hf1_bs_type
-    else:
-        print(hf1_bs_type)
-        print('''
-basis set type not correct!!!
-Please correct and restart computation from HF1 setp!!!
-''')
-        read_input.exit_programm()
 
 
 class Input(object):
 
-    def __init__(self, job, name, slab_or_molecule, layer_group, bs_type, fiexed_atoms):
+    def __init__(self, job, name, slab_or_molecule, layer_group, bs_type, layertype = 'bilayer', fiexed_atoms=[]):
         self.job_GeoOpt = job
+        self.layertype = layertype
         self.job_hf1 = self.get_new_job()
         self.job_path = self.job_hf1.path
         self.input_path = os.path.join(self.job_path, 'INPUT')
@@ -133,13 +83,15 @@ class Input(object):
             print(e)
             print('Optimized lattice parameter not found!'
                   'Please check out?')
-            geometry = []
+            sys.exit()	#here need a better way to deal with
         return geometry
 
 
     def get_new_job(self):
         path_GeoOpt = self.job_GeoOpt.path
-        path_hf1 = path_GeoOpt.replace('geo_opt', 'hf_1')
+        path_hf1 = path_GeoOpt.replace('geo_opt', 'hf1')
+        if self.layertype != 'bilayer':
+            path_hf1 = os.path.join(path_hf1, self.layertype)
         job_hf1 = Job_path(path_hf1)
         return job_hf1
 

@@ -210,11 +210,7 @@ def test_read_all_results():
 
 
 def test_write_geo_json():
-    # path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
-    # job = Job_path(path)
-    # path = job.path
-    # lattice_para, geometry = get_optimized_geometry(path)
-    path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
+    path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test'
     walks = os.walk(path)
     jobs = []
     for root, dirs, files in walks:
@@ -242,9 +238,9 @@ def test_read_lowest_e():
 def test_suite():
     #test_data_saving()
     #test_read_all_results()
-    #test_write_geo_json()
-    test_read_lowest_e()
+    test_write_geo_json()
+    #test_read_lowest_e()
 
 
-#test_suite()
+test_suite()
 

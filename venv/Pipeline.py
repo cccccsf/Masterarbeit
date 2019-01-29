@@ -11,129 +11,11 @@ from Common import ReadIni
 from Common import look_for_in_list
 import geometry_optimization
 import HF1
-# from HF1 import generation_of_input
-# from HF1 import input_of_layers
-# from HF1 import submit_job_hf1
-# from HF1 import read_results_hf1
-# from HF1.read_results_hf1 import get_x_z_and_layertype
 # import Localization
 # import HF2
 # import LMP2
 # import RPA
 
-
-
-
-
-def hf1(path):
-
-    rec = 'First Hartree Fock Calculation begins...'
-    print(rec)
-    record(path, rec)
-
-    ini_path = os.path.dirname(__file__)
-    ini_file = os.path.join(ini_path, 'input.ini')
-    ini_file = os.path.exists(ini_file)
-    job_dirs = generation_of_input.get_job_dirs(path)
-
-    #read basic computation infomation
-    if ini_file:
-        hf1_bs_type = generation_of_input.read_inp(path)
-        Gen_Input = generation_of_input.Gen_Inp(job_dirs[0])
-        geometry = Gen_Input.get_geometry()
-        #print(job_dirs)
-
-        if hf1_bs_type == 'default':
-            if_bs_change = 0
-
-        else:
-            if_bs_change = 1
-            Bs_Init = Initialization.Bs_Init(geometry, bs_type=hf1_bs_type)
-            ele_to_bs_type, elements = Bs_Init.gen_bs_info(if_bs_change)
-    else:
-        print('input.ini file does not exist!!!')
-        print('Please write initial infomation in initial file and Programm exit...')
-        sys.exit()
-
-    #input for the whole system
-    for job_dir in job_dirs:
-        if if_bs_change == 0:
-            Input = generation_of_input.Gen_Inp(job_dir)
-            if Input.x_dirname == '0':
-                Input.gen_input_init()
-            else:
-                Input.gen_input()
-        elif if_bs_change == 1:
-            Input = generation_of_input.Gen_Inp(job_dir, if_bs_change=1, ele_to_bs_type=ele_to_bs_type, elements=elements)
-            if Input.x_dirname == '0':
-                Input.gen_input_init()
-            else:
-                Input.gen_input()
-        #copy submit file to the directory
-        x = float(Input.x_dirname.split('_')[-1])
-        if x == 0:
-            init = 1
-        else:
-            init = 0
-        dirname = Input.x_dirname + '/' + Input.z_dirname
-        submit_job_hf1.copy_submit_scr(path, dirname, init)
-
-
-    #input for underlayer
-    for job_dir in job_dirs:
-        if if_bs_change == 0:
-            Under_Inp = input_of_layers.Under_Layer_Inp(job_dir)
-            if Under_Inp.x_dirname == '0':
-                Under_Inp.write_underlayer_inp_init()
-            else:
-                Under_Inp.write_underlayer_inp()
-        elif if_bs_change == 1:
-            Under_Inp = input_of_layers.Under_Layer_Inp(job_dir, if_bs_change=1, ele_to_bs_type=ele_to_bs_type, elements=elements)
-            if Under_Inp.x_dirname == '0':
-                Under_Inp.write_underlayer_inp_init()
-            else:
-                Under_Inp.write_underlayer_inp()
-        #copy submit file to the directory
-        x = float(Input.x_dirname.split('_')[-1])
-        if x == 0:
-            init = 1
-        else:
-            init = 0
-        dirname = Input.x_dirname + '/' + Input.z_dirname + '/underlayer'
-        submit_job_hf1.copy_submit_scr(path, dirname, init)
-
-    #input for upperlayer
-    for job_dir in job_dirs:
-        if if_bs_change == 0:
-            Upper_Inp = input_of_layers.Upper_Layer_Inp(job_dir)
-            if Upper_Inp.x_dirname == '0':
-                Upper_Inp.write_upperlayer_inp_init()
-            else:
-                Upper_Inp.write_upperlayer_inp()
-        elif if_bs_change == 1:
-            Upper_Inp = input_of_layers.Upper_Layer_Inp(job_dir, if_bs_change=1, ele_to_bs_type=ele_to_bs_type, elements=elements)
-            if Upper_Inp.x_dirname == '0':
-                Upper_Inp.write_upperlayer_inp_init()
-            else:
-                Upper_Inp.write_upperlayer_inp()
-        #copy submit file to the directory
-        x = float(Input.x_dirname.split('_')[-1])
-        if x == 0:
-            init = 1
-        else:
-            init = 0
-        dirname = Input.x_dirname + '/' + Input.z_dirname + '/upperlayer'
-        submit_job_hf1.copy_submit_scr(path, dirname, init)
-
-    #Submit the calculation job
-    hf1_job_dirs = submit_job_hf1.get_job_dirs(path)
-    #submitted_jobs_hf1 = submit_job.submit(job_dirs)
-
-    #read calculation results
-    read_results_hf1.read_all_results(job_dirs)
-    read_results.write_init_distance(path, init_distance)
-
-    print('Hartree Fock calculation 1 finished!!!')
 
 
 def localization(path):
@@ -308,9 +190,21 @@ def rpa(path):
 
 
 def pipeline(path, start):
-    geometry_optimization.geo_opt(path)
-    #hf1(path)
-    #localization(path)
-    #hf2(path)
-    #lmp2(path)
-    #rpa(path)
+    if start == 0:
+        geometry_optimization.geo_opt(path)
+        start += 1
+    if start == 1:
+        HF1.hf1(path)
+        start += 1
+    # if start == 2:
+    #     localization(path)
+    #     start += 1
+    # if start == 3:
+    #     hf2(path)
+    #     start += 1
+    # if start == 4:
+    #     lmp2(path)
+    #     start += 1
+    # if start == 5:
+    #     rpa(path)
+    #     start += 1

@@ -71,7 +71,7 @@ class Job_path(object):
 
     @staticmethod
     def method_name_transfer(method):
-        method_dict = {'hf_2': 'HF2', 'hf_1': 'HF1', 'geo_opt': 'Geometry Optimization', 'lmp2': 'LMP2', 'rpa': 'LRPA', 'lrpa': 'LRPA'}
+        method_dict = {'hf_2': 'HF2', 'hf2': 'HF2', 'hf_1': 'HF1', 'hf1': 'HF1', 'geo_opt': 'Geometry Optimization', 'lmp2': 'LMP2', 'rpa': 'LRPA', 'lrpa': 'LRPA'}
         method = method.lower()
         if method in method_dict:
             method = method_dict[method]

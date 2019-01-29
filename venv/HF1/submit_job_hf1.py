@@ -1,146 +1,208 @@
 #!/usr/bin/python3
 import os
+import re
 import subprocess
 import shutil
 import time
+from Common import record
 
 
 
 def submit_hf1_job():
     chmod = 'chmod u+x hf1.bash'
-    command = 'qsub hf1.bash'
     subprocess.call(chmod, shell=True)
-    subprocess.call(command, shell=True)
+    try:
+        out_bytes = subprocess.check_output(['qsub', 'hf'])
+    except subprocess.CalledProcessError as e:
+        out_bytes = e.output
+        code = e.returncode
+        print(code)
+    out_text = out_bytes.decode('utf-8')
+    out_text = out_text.strip('\n')
+    print('job submitted...')
+    print(out_text)
+    return out_text
 
 
-def copy_submit_scr(path, dirname, init = 0):
-    #path = os.path.join(path, '/geo_opt', dirname)
-    path = path + '/hf_1/' + dirname
-    layer = os.path.split(path)[-1]
-    if layer != 'underlayer' and layer != 'upperlayer':
-        if init == 1:
-            scr_path = os.path.dirname(os.path.realpath(__file__)) + '/job_submit_init.bash'
-        else:
-            scr_path = os.path.dirname(os.path.realpath(__file__)) + '/job_submit.bash'
-    elif layer == 'underlayer':
-        if init == 1:
-            scr_path = os.path.dirname(os.path.realpath(__file__)) + '/job_submit_init.bash'
-        else:
-            scr_path = os.path.dirname(os.path.realpath(__file__)) + '/job_submit_underlayer'
-    elif layer == 'upperlayer':
-        if init == 1:
-            scr_path = os.path.dirname(os.path.realpath(__file__)) + '/job_submit_init.bash'
-        else:
-            scr_path = os.path.dirname(os.path.realpath(__file__)) + '/job_submit_upperlayer'
-    print(scr_path)
-    shutil.copy(scr_path, path+'/hf1.bash')
+def copy_submit_scr(job, nodes):
+    ziel_path = job.path
+    scr_path = os.path.dirname(os.path.realpath(__file__))
+    if job.x == '0' and job.z == '0':
+        scr_from = os.path.join(scr_path, 'job_submit_init.bash')
+    else:
+        scr_from = os.path.join(scr_path, 'job_submit.bash')
+    scr_to = os.path.join(ziel_path, 'hf')
+    shutil.copy(scr_from, scr_to)
+    if nodes != '':
+        try:
+            nodes = int(nodes)
+            update_nodes(ziel_path, nodes)
+        except Exception as e:
+            print(e)
     print('Submition file copied...')
 
 
-def get_job_dirs(path):
-    path = path + '/hf_1/'
-    walks = os.walk(path)
-    job_dirs = []
-    for root, dirs, files in walks:
-        if 'hf1.bash' in files:
-            job_dirs.append(root)
-    return job_dirs
+def update_nodes(path, nodes):
+    scr = os.path.join(path, 'hf')
+    with open(scr, 'r') as f:
+        lines = f.readlines()
+    nodes_line = lines[3]
+    loc = 3
+    if nodes_line.startswith('#PBS -l nodes'):
+        pass
+    else:
+        i = 0
+        for line in lines:
+            if line.startswith('#PBS -l nodes'):
+                nodes_line = line
+                loc = i
+            i += 1
+    nodes_line = nodes_line.replace('12', str(nodes))
+    lines[loc] = nodes_line
+    loc2 = 0
+    j = 0
+    for line in lines:
+        if line.startswith('mpirun -np'):
+            loc2 = j
+        j += 1
+    lines[loc2] = lines[loc2].replace('12', str(nodes))
+    with open(scr, 'w') as f:
+        f.writelines(lines)
 
-def if_cal_finish(path):
+
+def copy_fort9(job):
+    ziel_path = job.path
+    z_dirname = job.z_dirname
+    x_dirname = job.x_dirname
+    fort9_path = ziel_path.replace(z_dirname, 'z_0')
+    fort9_path = fort9_path.replace(x_dirname, 'x_0')
+    fort9_from = os.path.join(fort9_path, 'fort.9')
+    fort9_to = os.path.join(ziel_path, 'fort.20')
+    try:
+        shutil.copy(fort9_from, fort9_to)
+        print('fort.9 file copied...')
+    except Exception as e:
+        print(e)
+        print('fort.9 failed to copy...')
+
+
+def if_cal_finish(job):
     """
     check the calculation is finished or not through the output file
     :param path: string
     :return: Bool Ture of False
     """
-    os.chdir(path)
-    if not os.path.exists('hf.out'):
-        return False
-    else:
-        file = open('hf.out', 'r')
-        lines = file.read().replace('\n', ':')
-        lines = ' '.join(lines.split()) + '#'
-        regex = 'TOTAL CPU TIME'
-        line = re.search(regex, lines)
-        if line == None:
+    path = job.path
+    out_file = os.path.join(path, 'hf.out')
+    try:
+        if not os.path.exists(out_file):
             return False
         else:
-            if line.group(0) != 'TOTAL CPU TIME':
+            with open(out_file, 'r') as f:
+                lines = f.read().replace('\n', ':')
+            lines = ' '.join(lines.split()) + '#'
+            regex = 'TOTAL CPU TIME'
+            line = re.search(regex, lines)
+            if line == None:
                 return False
             else:
-                return True
-    return True
-
-
-def if_init_finished(path):
-    if os.path.split(path)[-1] != 'upperlayer' and os.path.split(path)[-1] != 'underlayer':
-        z_dirname = os.path.split(path)[-1]
-        superior_path = os.path.split(path)[0]
-        x_dirname = os.path.split(superior_path)[-1]
-        root_path = os.path.split(superior_path)[0]
-        x = float(x_dir.split('_')[-1])
-        if x == 0:
-            return True
-        init_path = root_path + '/x_0/' + z_dirname
-        if not if_cal_finish(init_path):
-            return False
-        file = os.path.exists(init_path+'/fort.9')
-        if not file:
-            return False
+                if line.group(0) != 'TOTAL CPU TIME':
+                    return False
+                else:
+                    return True
         return True
-    else:
-        layer = os.path.split(path)[-1]
-        path = os.path.split(path)[0]
-        z_dirname = os.path.split(path)[-1]
-        superior_path = os.path.split(path)[0]
-        x_dirname = os.path.split(superior_path)[-1]
-        root_path = os.path.split(superior_path)[0]
-        x = float(x_dir.split('_')[-1])
-        if x == 0:
-            return True
-        init_path = root_path + '/x_0/' + z_dirname + '/' + layer
-        if not if_cal_finish(init_path):
-            return False
-        file = os.path.exists(init_path+'/fort.9')
-        if not file:
-            return False
-        return True
+    except FileNotFoundError as e:
+        return False
 
 
-def submit(job_dirs):
+def submit(jobs):
+    job_num = len(jobs)
     max_paralell = 5
     count = 0
-    submitted_path = []
-    finished_path = []
+    submitted_jobs = []
+    finished_jobs = []
 
-    def test_finished(paths):
-        for path in paths:
-            if if_cal_finish(path):
-                finished_path.append(path)
-                print(path)
-                print('calculation finished..')
-                paths.remove(path)
+    def test_finished(jobs):
+        nonlocal count
+        for job in jobs:
+            if if_cal_finish(job):
+                finished_jobs.append(job)
+                rec = job.path
+                rec += '\n'
+                rec += 'calculation finished...'
+                print(rec)
+                record(job.root_path, rec)
+                jobs.remove(job)
                 count -= 1
-            else:
-                pass
-    i = 0
-    while i < len(job_dirs):
-        test_finished(submitted_path)
-        if count <= max_paralell:
-            os.chdir(job_dirs[i])
-            if not os.path.exists('hf1.bash'):
-                print('wrong path:')
-                print(job_dirs[i])
-            else:
-                if if_init_finished(job_dirs[i]):
-                    #submit_hf1_job()
-                    count += 1
-                    submitted_path.append(job_dirs[i])
-                    i += 1
-                else:
-                    time.sleep(300)
-                    continue
+
+    #test if there is some job which is already finished
+    for job in jobs:
+        if if_cal_finish(job):
+            finished_jobs.append(job)
+            jobs.remove(job)
+
+    #find and submit the initial job
+    init_jobs = []
+    for job in jobs:
+        if job.x == '0' and job.z == '0':
+            init_jobs.append(job)
+            jobs.remove(job)
+    for job in init_jobs:
+        if not if_cal_finish(job):
+            os.chdir(job.path)
+            out = submit_hf1_job()
+            count += 1
+            submitted_jobs.append(job)
+            rec = job.path
+            print(rec)
+            rec += '\n'
+            rec += 'job submitted...'
+            rec += '\n' + out
+            record(job.root_path, rec)
+        else:
+            finished_jobs.append(job)
+    #detect if init jobs finished
+    r = 0
+    while True:
+        test_finished(submitted_jobs)
+        if len(submitted_jobs) == 0:
+            break
         else:
             time.sleep(500)
-            continue
+            r += 1
+            if r > 15:
+                rec = job_init.path
+                rec += '\n'
+                rec += 'initial calculation still not finished...'
+                record(submitted_jobs[0].root_path, rec)
+                r = 0
 
-    return finished_path
+    #submit and detect the other jobs
+    j = 0
+    while True:
+        test_finished(submitted_jobs)
+        if len(finished_jobs) == job_num and len(submitted_jobs) == 0:
+            break
+        else:
+            if count < max_paralell:
+                new_job = jobs.pop()
+                print(new_job)
+                os.chdir(new_job.path)
+                copy_fort9(new_job)
+                out = submit_hf1_job()
+                count += 1
+                submitted_jobs.append(new_job)
+                rec = new_job.path + '\n'
+                rec += 'job submitted...'
+                rec += '\n' + out
+                record(new_job.root_path, rec)
+            else:
+                time.sleep(500)
+                j += 1
+                if j > 15:
+                    rec += 'noting changes...'
+                    record(submitted_jobs[0].root_path, rec)
+                    j = 0
+                continue
+
+    return finished_jobs
