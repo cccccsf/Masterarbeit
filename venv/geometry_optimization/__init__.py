@@ -9,6 +9,7 @@ from geometry_optimization.gen_displacement_series import Range_Distance_Noninit
 from geometry_optimization.gen_displacement_series import Select_Opt_Dis
 from geometry_optimization.submit_job import submit
 from geometry_optimization.submit_job import select_optimal_dist
+from geometry_optimization.submit_job import if_cal_finish
 from geometry_optimization.read_results import read_all_results
 from geometry_optimization.read_results import read_and_select_lowest_e
 from geometry_optimization.geo_opt import geo_opt

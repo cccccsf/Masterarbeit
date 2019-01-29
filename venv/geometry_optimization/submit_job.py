@@ -8,6 +8,7 @@ import datetime
 import geometry_optimization
 from Common import record
 from Common import Job_path
+from Common import look_for_in_list
 
 
 def submit_geo_opt_job():
@@ -15,6 +16,7 @@ def submit_geo_opt_job():
     command = 'qsub geo_opt'
     subprocess.call(chmod, shell=True)
     try:
+        #out_bytes = b'\xe4\xb8\xad\xe6\x96\x87'
         out_bytes = subprocess.check_output(['qsub', 'geo_opt'])
     except subprocess.CalledProcessError as e:
         out_bytes = e.output
@@ -166,12 +168,13 @@ def submit(jobs, nodes):
     #test if there is some job which is already finished
     for job in jobs:
         if if_cal_finish(job):
+            #print('Job already finished: ', job)
             finished_jobs.append(job)
             jobs.remove(job)
 
 
     def test_finished(paths):
-        global count    #debug: UnboundLocalError: local variable 'count' referenced before assignment
+        nonlocal count    #debug: UnboundLocalError: local variable 'count' referenced before assignment
         for path in paths:
             if if_cal_finish(path):
                 finished_jobs.append(path)
@@ -183,36 +186,39 @@ def submit(jobs, nodes):
                 paths.remove(path)
                 count -= 1
 
-    i = 0
-    j = 0
-    while True:
-        test_finished(submitted_jobs)
-        if len(finished_jobs) == job_numbers and len(submitted_jobs) == 0:
-            break
-        else:
-            if count <= max_paralell and i < len(jobs):
-                print(jobs[i].path)
-                os.chdir(jobs[i].path)
-                copy_submit_scr(jobs[i], nodes)
-                copy_fort9(jobs[i])
-                out = submit_geo_opt_job()
-                count += 1
-                submitted_jobs.append(jobs[i])
-                rec = jobs[i].path + '\n'
-                rec += 'job submitted...'
-                rec += '\n' + out
-                record(jobs[i].root_path, rec)
-                i += 1
+    if len(jobs) == 0:
+        return finished_jobs
+    else:
+        i = 0
+        j = 0
+        while True:
+            test_finished(submitted_jobs)
+            if len(finished_jobs) == job_numbers and len(submitted_jobs) == 0:
+                break
             else:
-                time.sleep(500)
-                j += 1
-                if j > 15:
-                    rec += 'noting changes...'
-                    record(job_init.root_path, rec)
-                    j = 0
-                continue
-
-    return finished_jobs
+                if count <= max_paralell and i < len(jobs):
+                    print(jobs[i].path)
+                    os.chdir(jobs[i].path)
+                    copy_submit_scr(jobs[i], nodes)
+                    copy_fort9(jobs[i])
+                    out = submit_geo_opt_job()
+                    count += 1
+                    submitted_jobs.append(jobs[i])
+                    rec = jobs[i].path + '\n'
+                    rec += 'job submitted...'
+                    rec += '\n' + out
+                    record(jobs[i].root_path, rec)
+                    i += 1
+                else:
+                    time.sleep(500)
+                    j += 1
+                    if j > 15:
+                        rec += 'noting changes...'
+                        record(jobs[i].root_path, rec)
+                        j = 0
+                    continue
+    
+        return finished_jobs
 
 
 def select_optimal_dist(job_geo_dict, diff, para):
@@ -237,13 +243,19 @@ def select_optimal_dist(job_geo_dict, diff, para):
         new_geo_dict[new_job] = geometry
         job_geo_dict[new_job] = geometry
     new_jobs = []
+    jobs_finished = []
     for job, geometry in new_geo_dict.items():
-        Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
-        Geo_Inp.gen_input()
-        new_jobs.append(job)
+        if not if_cal_finish(job):
+            Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
+            Geo_Inp.gen_input()
+            new_jobs.append(job)
+        else:
+            jobs_finished.append(job)
         jobs.append(job)
-    jobs_finished = geometry_optimization.submit(new_jobs, nodes)
+    new_jobs_finished = geometry_optimization.submit(new_jobs, nodes)
+    jobs_finished += new_jobs_finished
     min_dist, min_job = geometry_optimization.read_and_select_lowest_e(jobs_finished)
+    #print('MIN: ', min_dist, min_job)
     while True:
         jobs = sorted(jobs, key=lambda job: float(job.z))
         point = look_for_in_list(jobs, min_job)
@@ -266,12 +278,18 @@ def select_optimal_dist(job_geo_dict, diff, para):
             new_job = Job_path(new_path)
             new_geo_dict[new_job] = geometry
             job_geo_dict[new_job] = geometry
+        new_jobs = []
         for job, geometry in new_geo_dict.items():
-            Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
-            Geo_Inp.gen_input()
+            if not if_cal_finish(job):
+                print(job)
+                Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
+                Geo_Inp.gen_input()
+                new_jobs.append(job)
+            else:
+                jobs_finished.append(job)
             jobs.append(job)
-            new_jobs_finished = geometry_optimization.submit(new_jobs, nodes)
-            jobs_finished += new_jobs_finished
+        new_jobs_finished = geometry_optimization.submit(new_jobs, nodes)
+        jobs_finished += new_jobs_finished
         min_dist, min_job = geometry_optimization.read_and_select_lowest_e(jobs_finished)
     return jobs, job_geo_dict, min_job, jobs_finished
 

@@ -10,6 +10,7 @@ from Common import record
 from Common import ReadIni
 from Common import look_for_in_list
 import geometry_optimization
+from geometry_optimization import if_cal_finish
 
 def geo_opt(path):
 
@@ -64,14 +65,16 @@ def geo_opt(path):
                 print('Please enter the right number!!')
 
     jobs = []
-
+    new_jobs = []
     #generation of the first INPUT
     dirname = 'x_0/z_0'
     job = os.path.join(path, 'geo_opt')
     job = os.path.join(job, dirname)
     job = Job_path(job)
-    Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
-    #Geo_Inp.gen_input()
+    if not if_cal_finish(job):
+        Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
+        Geo_Inp.gen_input()
+        new_jobs.append(job)
     jobs.append(job)
     geometry_optimization.write_init_dist(geometry, path)
 
@@ -104,13 +107,16 @@ def geo_opt(path):
 
     #generation all INPUT files besides the first one above
     for job, geometry in job_geo_dict.items():
-        Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
-        #Geo_Inp.gen_input()
+        if not if_cal_finish(job):
+            #print('JOB not finished yet: ', job)
+            Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
+            Geo_Inp.gen_input()
+            new_jobs.append(job)
         jobs.append(job)
     #Copy files and Submit the calculation job above
     jobs_finished = []
-    #jobs_finished = geometry_optimization.submit(jobs, nodes)
-
+    new_jobs_finished = geometry_optimization.submit(new_jobs, nodes)
+    jobs_finished.append(new_jobs_finished)
 
     #Select the optimal distance of each x point
     para = [name, slab_or_molecule, group, lattice_parameter, bs_type, functional, nodes]
@@ -120,58 +126,6 @@ def geo_opt(path):
     init_job_10 = jobs_10[0]
     jobs_10, x_10, min_job_10, jobs_10_finished = geometry_optimization.select_optimal_dist(x_10, 0, para)
     jobs += jobs_10
-    # New_Geo_10 = geometry_optimization.Select_Opt_Dis(x_10[init_job_10], init_job_10)
-    # new_geo_10 = New_Geo_10.get_geo_series()
-    # new_geo_10_dict = {}
-    # for distance, geometry in new_geo_10.items():
-    #     print(distance)
-    #     new_job = deepcopy(list(x_10.keys())[0])
-    #     new_z_dirname = 'z_{0:.3f}'.format(distance)
-    #     new_job.reset('z_dirname', new_z_dirname)
-    #     new_geo_10_dict[new_job] = geometry
-    #     x_10[new_job] = geometry
-    # for job, geometry in new_geo_10_dict.items():
-    #     Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
-    #     Geo_Inp.gen_input()
-    #     jobs.append(job)
-    #     jobs_10.append(job)
-    # #jobs_10_finished = geometry_optimization.submit(new_jobs, nodes)
-    # # jobs_finished += jobs_10_finished
-    # min_dist_10, min_job_10 = geometry_optimization.read_and_select_lowest_e(jobs_10)
-    # while True:
-    #     jobs_10 = sorted(jobs_10, key=lambda job: float(job.z))
-    #     point = look_for_in_list(jobs_10, min_job_10)
-    #     if (len(jobs_10) - point) == 1:
-    #         New_Geo_10 = geometry_optimization.Select_Opt_Dis(x_10[min_job_10], min_job_10, direct=2)
-    #         new_geo_10 = New_Geo_10.get_geo_series()
-    #     if (len(jobs_10) - point) == 2:
-    #         New_Geo_10 = geometry_optimization.Select_Opt_Dis(x_10[min_job_10], min_job_10, direct=3)
-    #         new_geo_10 = New_Geo_10.get_geo_series()
-    #     if (len(jobs_10) - point) >= 3:
-    #         if len(jobs_10) >= 4:
-    #             break
-    #         else:
-    #             New_Geo_10 = geometry_optimization.Select_Opt_Dis(x_10[min_job_10], min_job_10, direct=-2)
-    #             new_geo_10 = New_Geo_10.get_geo_series()
-    #     new_geo_10_dict = {}
-    #     for distance, geometry in new_geo_10.items():
-    #         new_dist = distance + min_dist_10
-    #         new_z_dirname = 'z_{0:.3f}'.format(new_dist)
-    #         old_z_dirmane = min_job_10.z_dirname
-    #         new_path = min_job_10.path.replace(old_z_dirmane, new_z_dirname)
-    #         new_job = Job_path(new_path)
-    #         new_geo_10_dict[new_job] = geometry
-    #         x_10[new_job] = geometry
-    #         dist_list_10.append(new_dist)
-    #     new_jobs = []
-    #     for job, geometry in new_geo_10_dict.items():
-    #         Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
-    #         #Geo_Inp.gen_input()
-    #         jobs.append(job)
-    #         jobs_10.append(job)
-    #         new_jobs.append(job)
-    #         #jobs_10_finished = geometry_optimization.submit(new_jobs, nodes)
-    #     min_dist_10, min_job_10 = geometry_optimization.read_and_select_lowest_e(jobs_10)
     #x_25
     x_25 = {job: geometry for job, geometry in job_geo_dict_dis.items() if job.x == '0.25'}
     jobs_25 = [job for job in job_geo_dict_dis.keys() if job.x == '0.25']
@@ -179,7 +133,7 @@ def geo_opt(path):
     pos_min_10 = look_for_in_list(jobs_10, min_job_10)
     pos_init_10 = look_for_in_list(jobs_10, init_job_10)
     diff = pos_min_10 - pos_init_10
-    jobs_25, x_25, min_job_25, jobs_25_finished = geometry_optimization.select_optimal_dist(x_25, diff)
+    jobs_25, x_25, min_job_25, jobs_25_finished = geometry_optimization.select_optimal_dist(x_25, diff, para)
     jobs += jobs_25
     #x_35
     x_35 = {job: geometry for job, geometry in job_geo_dict_dis.items() if job.x == '0.35'}
@@ -187,7 +141,7 @@ def geo_opt(path):
     pos_min_25 = look_for_in_list(jobs_25, min_job_25)
     pos_init_25 = look_for_in_list(jobs_25, init_job_25)
     diff = pos_min_25 - pos_init_25
-    jobs_35, x_35, min_job_35, jobs_35_finished = geometry_optimization.select_optimal_dist(x_35, diff)
+    jobs_35, x_35, min_job_35, jobs_35_finished = geometry_optimization.select_optimal_dist(x_35, diff, para)
     jobs += jobs_35
     #x_50
     x_50 = {job: geometry for job, geometry in job_geo_dict_dis.items() if job.x == '0.50'}
@@ -195,7 +149,7 @@ def geo_opt(path):
     pos_min_35 = look_for_in_list(jobs_35, min_job_35)
     pos_init_35 = look_for_in_list(jobs_35, init_job_35)
     diff = pos_min_35 - pos_init_35
-    jobs_50, x_50, min_job_50, jobs_50_finished = geometry_optimization.select_optimal_dist(x_50, diff)
+    jobs_50, x_50, min_job_50, jobs_50_finished = geometry_optimization.select_optimal_dist(x_50, diff, para)
     jobs += jobs_50
 
     #read calculation results
