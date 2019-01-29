@@ -16,4 +16,6 @@ build
 .idea/
 venv/Test/
 Test/
+*.pyc
+*.cpython-36.pyc
 

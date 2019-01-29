@@ -19,17 +19,11 @@ class Job_path(object):
         self.coord = (self.x, self.z)
 
     def __str__(self):
-        return self.method + ' (x: {}, z: {})'.format(self.x, self.z)
+        return self.method + ' (x: {}, z: {}) '.format(self.x, self.z) + self.layertype
 
     def __repr__(self):
-        return self.method + ' (x: {}, z: {})'.format(self.x, self.z)
-        # string = ''
-        # string += 'job path:  '.ljust(16) + self.path + '\n'
-        # string += 'method:  '.ljust(16) + self.method + '\n'
-        # string += 'layer type: '.ljust(16) + self.layertype + '\n'
-        # string += 'x value:'.ljust(16) + self.x + '\n'
-        # string += 'z value:'.ljust(16) + self.z + '\n'
-        # return string
+        return self.method + ' (x: {}, z: {}) '.format(self.x, self.z) + self.layertype
+
 
     def __setattr__(self, key, value):
         self.__dict__[key] = value

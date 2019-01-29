@@ -11,43 +11,14 @@ from Common import ReadIni
 from Common import look_for_in_list
 import geometry_optimization
 import HF1
-# import Localization
-# import HF2
+import Localization
+import HF2
 # import LMP2
 # import RPA
 
 
 
-def localization(path):
 
-    job_dirs = Localization.copy_inp_loc.get_job_dirs(path)
-
-    #copy input file of localiztion
-    if len(job_dirs) != 0:
-        Localization.copy_inp_loc.copy_all_files(job_dirs)
-    else:
-        print('There is no appropriate Hartree Fock calculation results!!! ')
-        print('Programm will exit and correct the error and restart from localization step!!!')
-        try:
-            sys.exit(1)
-        except:
-            print('Program Exits.')
-        finally:
-            print('---------------------------------------------------------------------------------------')
-
-    #copy job submit file to each directory
-    Localization.submit_job_loc.copy_all_files(job_dirs)
-    loc_job_dirs = Localization.submit_job_loc.get_job_dirs(path)
-    #submitted_paths = Localization.submit_job_loc.submit(loc_job_dirs)
-
-    #test finished
-    while True:
-        if Localization.submit_job_loc.test_all_loc_finished(loc_job_dirs):
-            print ('Localization finished!')
-            break
-        else:
-            time.sleep(500)
-            continue
 
 
 def hf2(path):
@@ -196,12 +167,12 @@ def pipeline(path, start):
     if start == 1:
         HF1.hf1(path)
         start += 1
-    # if start == 2:
-    #     localization(path)
-    #     start += 1
-    # if start == 3:
-    #     hf2(path)
-    #     start += 1
+    if start == 2:
+        Localization.localization(path)
+        start += 1
+    if start == 3:
+        HF2.hf2(path)
+        start += 1
     # if start == 4:
     #     lmp2(path)
     #     start += 1

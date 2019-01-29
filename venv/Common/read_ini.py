@@ -31,6 +31,8 @@ class ReadIni(object):
         self.bs_hf2 = ''
         self.nodes_hf2 = 12
 
+        self.nodes_loc = 1
+
         self.read_ini_file()
         self.test_parameters()
 
@@ -66,6 +68,8 @@ class ReadIni(object):
             self.bs_hf2 = self.cfg.get('HF2', 'basis_set')
             self.bs_hf2 = self.if_none(self.bs_hf2)
             self.nodes_hf2 = self.cfg.get('HF1', 'nodes')
+
+            self.nodes_loc = self.cfg.get('Localization', 'nodes')
         except Exception as e:
             print(e)
 
@@ -127,6 +131,9 @@ class ReadIni(object):
 
     def get_hf2_info(self):
         return self.bs_hf2, self.nodes_hf2
+
+    def get_loc_info(self):
+        return self.nodes_loc
 
     def test_parameters(self):
         if not test_variable.test_slab_or_molecule(self.system_type):

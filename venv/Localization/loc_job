@@ -3,9 +3,10 @@
 #PBS -r n
 #PBS -l nodes=1
 
+module load XE2016.0.3.210
 
 cd ${PBS_O_WORKDIR}
-currdir=/scratch/shch/$$tmp
+currdir=/scratch/$USER/$$tmp
 mkdir -p $currdir
 cp fort.9 $currdir/
 cp input.loc $currdir/

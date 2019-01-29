@@ -2,7 +2,6 @@
 import os
 import re
 from Common import read_all_results
-from HF1 import submit_job_hf1
 
 
 def get_layer_distance(path):

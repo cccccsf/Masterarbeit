@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import os
 import sys
-import Initialization
 from copy import deepcopy
 from Crystal import Geometry
 from Common import mkdir

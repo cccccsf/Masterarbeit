@@ -1,34 +1,32 @@
 #!/usr/bin/python3
 import os
 import shutil
+from Common import Job_path
+from HF1 import if_cal_finish
 
 
-def get_job_dirs(path):
-    path = path + '/hf_1/'
+def get_jobs(path):
+    path = os.path.join(path, 'hf1')
     walks = os.walk(path)
-    job_dirs = []
+    jobs = []
     for root, dirs, files in walks:
         if ('hf.out' in files) and ('fort.9' in files):
-            job_dirs.append(root)
-    return job_dirs
+            new_path = root
+            new_job = Job_path(new_path)
+            if if_cal_finish(job):
+                jobs.append(new_job)
+    return jobs
 
 
-def copy_inp_file(path):
+def copy_inp_file(job):
 
-    scr_path = os.path.dirname(os.path.realpath(__file__)) + '/input.loc'
-    shutil.copy(scr_path, path+'/input.loc')
-    print(path)
+    ziel_path = job.path
+    inp_path = os.path.dirname(__file__)
+    inp_from = os.path.join(scr_path, 'input.loc')
+    inp_to = os.path.join(ziel_path, 'input.loc')
+    shutil.copy(inp_from, inp_to)
+    print(ziel_path)
     print('input.loc copied...')
 
-
-def copy_all_files(job_dirs):
-
-    #job_dirs_with_locinp = []
-    try:
-        for job_dir in job_dirs:
-            copy_inp_file(job_dir)
-            #job_dirs_with_locinp.append(job_dir)
-    except Exception as e:
-        print(e)
 
 
