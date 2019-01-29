@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 import os
 import re
-import xlwt
-import xlrd
-from xlutils.copy import copy
+from Common import read_all_results
 from HF1 import submit_job_hf1
 
 
@@ -154,53 +152,5 @@ def read_and_record_result(path, init_distance):
     data_saving_dis(j, path, x, z, l, energy)
 
 
-def read_all_results(job_dirs, init_distance = 3.1):
-    finished_path = []
-    readed_path = []
-
-    #pick up the initial system
-    loc = 0
-    for dir in job_dirs:
-        x, z, layer_type = get_x_z_and_layertype(dir, init_distance)
-        if layer_type == 'bilayer' and x == 0 and z == init_distance:
-            break
-        loc += 1
-    job_path = os.path.dirname(job_dirs[loc])
-    job_path = os.path.dirname(job_path)
-    creatxls_dis(job_path)
-
-    #get the initial distance of the system
-    try:
-        init_distance = read_init_distance(job_dirs[loc])
-    except Exception as e:
-        print(e)
-        init_distance = None
-    if init_distance == None:
-        init_distance = get_layer_distance(job_dirs[loc])
-    x_dict, z_dict = get_all_x_and_z(job_dirs, init_distance)
-
-    def test_finished(paths):
-        """
-        test one job is finished or not,
-        if finished, add the path to list finished_path, and delete it from the original list
-        :param paths:
-        :return:
-        """
-        for path in paths:
-            if submit_job_hf1.if_cal_finish(path):
-                finished_path.append(path)
-                paths.remove(path)
-            else:
-                pass
-
-    i = 0
-    length = len(job_dirs)
-    while i < length:
-        test_finished(job_dirs)
-        if len(finished_path) > i:
-            read_and_record_result(finished_path[i], init_distance)
-            readed_path.append(finished_path[i])
-            i += 1
-        else:
-            time.sleep(500)
-            continue
+def read_all_results_hf1(jobs, init_dist = 3.1):
+    read_all_results(jobs, 'hf1', energy_func=get_energy, init_distance=init_dist)

@@ -8,7 +8,6 @@ from Common import mkdir
 from Common import Job_path
 from Common import record
 from Common import ReadIni
-from Common import look_for_in_list
 import HF1
 
 
@@ -19,7 +18,10 @@ def hf1(path):
     print(rec)
     record(path, rec)
 
-    ini_path = os.path.join(path, 'input.ini')
+    init_dist = HF1.read_init_dis(path)
+    ini_path = os.path.dirname(__file__)
+    ini_path = os.path.dirname(ini_path)
+    ini_file = os.path.join(ini_path, 'input.ini')
     ini_file = os.path.exists(ini_file)
 
     #read basic computation infomation
@@ -30,97 +32,51 @@ def hf1(path):
         name, slab_or_molecule, group, lattice_parameter, number_of_atoms, fixed_atoms = Ini.get_basic_info()
         bs_type, nodes = Ini.get_hf1_info()
         if nodes == '' or nodes == 'default':
-            nodes = 14
+            nodes = 12
     else:
         print('Initilization file input.ini not found!')
         print('Please check it in the work directory!')
         print('Programm exit and Please reatart it from HF1 step.')
         sys.exit()
 
-        if hf1_bs_type == 'default':
-            if_bs_change = 0
-
-        else:
-            if_bs_change = 1
-            Bs_Init = Initialization.Bs_Init(geometry, bs_type=hf1_bs_type)
-            ele_to_bs_type, elements = Bs_Init.gen_bs_info(if_bs_change)
-
+    jobs_HF1 = []
+    new_jobs = []
     #input for the whole system
-    for job_dir in job_dirs:
-        if if_bs_change == 0:
-            Input = generation_of_input.Gen_Inp(job_dir)
-            if Input.x_dirname == '0':
-                Input.gen_input_init()
-            else:
-                Input.gen_input()
-        elif if_bs_change == 1:
-            Input = generation_of_input.Gen_Inp(job_dir, if_bs_change=1, ele_to_bs_type=ele_to_bs_type, elements=elements)
-            if Input.x_dirname == '0':
-                Input.gen_input_init()
-            else:
-                Input.gen_input()
-        #copy submit file to the directory
-        x = float(Input.x_dirname.split('_')[-1])
-        if x == 0:
-            init = 1
-        else:
-            init = 0
-        dirname = Input.x_dirname + '/' + Input.z_dirname
-        submit_job_hf1.copy_submit_scr(path, dirname, init)
-
-
-    #input for underlayer
-    for job_dir in job_dirs:
-        if if_bs_change == 0:
-            Under_Inp = input_of_layers.Under_Layer_Inp(job_dir)
-            if Under_Inp.x_dirname == '0':
-                Under_Inp.write_underlayer_inp_init()
-            else:
-                Under_Inp.write_underlayer_inp()
-        elif if_bs_change == 1:
-            Under_Inp = input_of_layers.Under_Layer_Inp(job_dir, if_bs_change=1, ele_to_bs_type=ele_to_bs_type, elements=elements)
-            if Under_Inp.x_dirname == '0':
-                Under_Inp.write_underlayer_inp_init()
-            else:
-                Under_Inp.write_underlayer_inp()
-        #copy submit file to the directory
-        x = float(Input.x_dirname.split('_')[-1])
-        if x == 0:
-            init = 1
-        else:
-            init = 0
-        dirname = Input.x_dirname + '/' + Input.z_dirname + '/underlayer'
-        submit_job_hf1.copy_submit_scr(path, dirname, init)
-
-    #input for upperlayer
-    for job_dir in job_dirs:
-        if if_bs_change == 0:
-            Upper_Inp = input_of_layers.Upper_Layer_Inp(job_dir)
-            if Upper_Inp.x_dirname == '0':
-                Upper_Inp.write_upperlayer_inp_init()
-            else:
-                Upper_Inp.write_upperlayer_inp()
-        elif if_bs_change == 1:
-            Upper_Inp = input_of_layers.Upper_Layer_Inp(job_dir, if_bs_change=1, ele_to_bs_type=ele_to_bs_type, elements=elements)
-            if Upper_Inp.x_dirname == '0':
-                Upper_Inp.write_upperlayer_inp_init()
-            else:
-                Upper_Inp.write_upperlayer_inp()
-        #copy submit file to the directory
-        x = float(Input.x_dirname.split('_')[-1])
-        if x == 0:
-            init = 1
-        else:
-            init = 0
-        dirname = Input.x_dirname + '/' + Input.z_dirname + '/upperlayer'
-        submit_job_hf1.copy_submit_scr(path, dirname, init)
+    for job in jobs_GeoOpt:
+        path_GeoOpt = job.path
+        #Bilayer
+        path_HF1 = path_GeoOpt.replace('geo_opt', 'hf1')
+        new_job = Job_path(path_HF1)
+        if not HF1.if_cal_finish(new_job):
+            Inp = HF1.Input(job, name, slab_or_molecule, group, bs_type, layertype = 'bilayer', fiexed_atoms=fixed_atoms)
+            Inp.gen_input()
+            HF1.copy_submit_scr(new_job, nodes)
+            new_jobs.append(new_job)
+        jobs_HF1.append(new_job)
+        #upperlayer
+        path_upper = os.path.join(path_HF1, 'upperlayer')
+        new_job = Job_path(path_upper)
+        if not HF1.if_cal_finish(new_job):
+            Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype = 'upperlayer', fiexed_atoms=fixed_atoms)
+            Inp.gen_input()
+            HF1.copy_submit_scr(new_job, nodes)
+            new_jobs.append(new_job)
+        jobs_HF1.append(new_job)
+        #underlayer
+        path_under = os.path.join(path_HF1, 'underlayer')
+        new_job = Job_path(path_under)
+        if not HF1.if_cal_finish(new_job):
+            Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype = 'underlayer', fiexed_atoms=fixed_atoms)
+            Inp.gen_input()
+            HF1.copy_submit_scr(new_job, nodes)
+            new_jobs.append(new_job)
+        jobs_HF1.append(new_job)
 
     #Submit the calculation job
-    hf1_job_dirs = submit_job_hf1.get_job_dirs(path)
-    #submitted_jobs_hf1 = submit_job.submit(job_dirs)
+    hf1_jobs_finished = HF1.submit(new_jobs)
 
     #read calculation results
-    read_results_hf1.read_all_results(job_dirs)
-    read_results.write_init_distance(path, init_distance)
+    HF1.read_all_results(hf1_jobs_finished, init_distance=init_dist)
 
     print('Hartree Fock calculation 1 finished!!!')
+    record(path, 'Hartree Fock calculation 1 finished!!!')
