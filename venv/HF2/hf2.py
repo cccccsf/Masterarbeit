@@ -7,6 +7,7 @@ from Common import ReadIni
 from Common import Job_path
 from HF1 import read_init_dis
 
+
 def hf2(path):
 
     rec = 'Second Hartree Fock Calculation begins...'
