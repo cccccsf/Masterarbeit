@@ -12,6 +12,7 @@ class ReadIni(object):
 
         self.project_path = ''
         self.start = ''
+        self.end = ''
 
         self.project_name = ''
         self.system_type = 'SLAB'
@@ -33,6 +34,8 @@ class ReadIni(object):
 
         self.nodes_loc = 1
 
+        self.nodes_lmp2 = 1
+
         self.read_ini_file()
         self.test_parameters()
 
@@ -44,6 +47,7 @@ class ReadIni(object):
 
             self.project_path = self.cfg.get('Initilization', 'path')
             self.start = self.cfg.get('Initilization', 'start')
+            self.end = self.cfg.get('Initilization', 'end')
 
             self.project_name = self.cfg.get('Basic_Info', 'project_name')
             self.system_type = self.cfg.get('Basic_Info', 'system_type')
@@ -70,6 +74,8 @@ class ReadIni(object):
             self.nodes_hf2 = self.cfg.get('HF1', 'nodes')
 
             self.nodes_loc = self.cfg.get('Localization', 'nodes')
+
+            self.nodes_lmp2 = self.cfg.get('LMP2', 'nodes')
         except Exception as e:
             print(e)
 
@@ -115,7 +121,7 @@ class ReadIni(object):
         self.fixed_atoms = fixed_atoms
 
     def get_initialization_info(self):
-        return self.project_path, self.start
+        return self.project_path, self.start, self.end
 
     def get_basic_info(self):
         return self.project_name, self.system_type, self.group_type, self.lattice_parameter, self.number_atoms, self.fixed_atoms
@@ -134,6 +140,9 @@ class ReadIni(object):
 
     def get_loc_info(self):
         return self.nodes_loc
+
+    def get_lmp2_info(self):
+        return self.nodes_lmp2
 
     def test_parameters(self):
         if not test_variable.test_slab_or_molecule(self.system_type):

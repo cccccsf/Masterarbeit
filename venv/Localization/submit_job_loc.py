@@ -134,7 +134,6 @@ def submit(jobs):
         else:
             if count <= max_paralell:
                 new_job = jobs.pop()
-                print(new_job)
                 os.chdir(new_job)
                 out = submit_loc_job()
                 count += 1
@@ -143,6 +142,7 @@ def submit(jobs):
                 rec += 'job submitted...'
                 rec += '\n' + out
                 record(new_job.root_path, rec)
+				print(rec)
             else:
                 time.sleep(500)
                 j += 1

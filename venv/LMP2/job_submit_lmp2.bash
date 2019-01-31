@@ -8,7 +8,7 @@ cd ${PBS_O_WORKDIR}
 path0=${PWD%/*}
 zdirname=${path0##/*/}
 xdirname=${PWD##/*/}
-dir0=/scratch/$USER/cryscor/$zdirname/$xdirname
+dir0=/scratch/$USER/lmp2/$zdirname/$xdirname
 mkdir -p $dir0
 cp INPUT $dir0
 cp fort.9 $dir0

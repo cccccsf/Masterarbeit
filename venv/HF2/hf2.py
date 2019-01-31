@@ -60,10 +60,12 @@ def hf2(path):
         new_path = job.path
         new_path = new_path.replace('hf1', 'hf2')
         new_job = Job_path(new_path)
+		hf2_jobs.append(new_job)
     for job in singlelayer:
         new_path = job.path
         new_path = new_path.replace('hf1', 'hf2')
         new_job = Job_path(new_path)
+		hf2_jobs.append(new_job)
     hf2_jobs_finished = HF2.submit(hf2_jobs)
 
     #read calculation results

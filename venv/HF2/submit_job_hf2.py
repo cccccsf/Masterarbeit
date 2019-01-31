@@ -78,12 +78,13 @@ def update_nodes(path, nodes):
         f.writelines(lines)
 
 
-def if_cal_finish(path):
+def if_cal_finish(job):
     """
     check the calculation is finished or not through the output file
     :param path: string
     :return: Bool Ture of False
     """
+    path = job.path
     os.chdir(path.path)
     if not os.path.exists('hf.out'):
         return False
@@ -138,7 +139,6 @@ def submit(jobs):
         else:
             if count < max_paralell:
                 new_job = jobs.pop()
-                print(new_job)
                 os.chdir(new_job.path)
                 out = submit_hf2_job()
                 count += 1
@@ -147,6 +147,7 @@ def submit(jobs):
                 rec += 'job submitted...'
                 rec += '\n' + out
                 record(new_job.root_path, rec)
+				print(rec)
             else:
                 time.sleep(500)
                 j += 1

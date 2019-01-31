@@ -75,7 +75,7 @@ def hf1(path):
     hf1_jobs_finished = HF1.submit(new_jobs)
 
     #read calculation results
-    HF1.read_all_results(hf1_jobs_finished, init_distance=init_dist)
+    HF1.read_all_results(hf1_jobs_finished, init_dist=init_dist)
 
     print('Hartree Fock calculation 1 finished!!!')
     record(path, 'Hartree Fock calculation 1 finished!!!')
