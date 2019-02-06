@@ -21,7 +21,7 @@ def submit_loc_job():
     return out_text
 
 
-def copy_loc_scr(job, nodes):
+def copy_loc_scr(job, nodes, crystal_path):
 
     ziel_path = job.path
     scr_path = os.path.dirname(__file__)
@@ -31,14 +31,14 @@ def copy_loc_scr(job, nodes):
     if nodes != '':
         try:
             nodes = int(nodes)
-            update_nodes(ziel_path, nodes)
+            update_nodes(ziel_path, nodes, crystal_path)
         except Exception as e:
             print(e)
     print('loc submit scr copied...')
 
 
-def update_nodes(path, nodes):
-    scr = os.path.join(path, 'loc')
+def update_nodes(path, nodes, crystal_path):
+    scr = os.path.join(path, 'geo_opt')
     with open(scr, 'r') as f:
         lines = f.readlines()
     nodes_line = lines[3]
@@ -52,8 +52,18 @@ def update_nodes(path, nodes):
                 nodes_line = line
                 loc = i
             i += 1
-    nodes_line = nodes_line.replace('1', str(nodes))
-    lines[loc] = nodes_line
+    loc_cry = 0, 0
+    j = 0
+    for line in lines:
+        if line.startswith('crystal_path='):
+            loc_cry = j
+        j += 1
+    if nodes != '':
+        nodes_line = '#PBS -l nodes={}\n'.format(nodes)
+        lines[loc] = nodes_line
+    if crystal_path != '':
+        lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
+
     with open(scr, 'w') as f:
         f.writelines(lines)
 
@@ -142,7 +152,7 @@ def submit(jobs):
                 rec += 'job submitted...'
                 rec += '\n' + out
                 record(new_job.root_path, rec)
-				print(rec)
+                print(rec)
             else:
                 time.sleep(500)
                 j += 1

@@ -24,7 +24,7 @@ def lmp2(path):
         hf2_jobs = LMP2.get_jobs(path)
 
         Ini = ReadIni(ini_path)
-        nodes = Ini.get_lmp2_info()
+        nodes, cryscor_path = Ini.get_lmp2_info()
         if nodes == '' or nodes == 'default':
             nodes = 1
     else:
@@ -46,11 +46,11 @@ def lmp2(path):
     for job in bilayer:
         Inp = LMP2.Lmp2_Input(job)
         Inp.write_input()
-        LMP2.copy_files(job, nodes)
+        LMP2.copy_files(job, nodes, cryscor_path)
     for job in singlelayer:
         Inp = LMP2.Lmp2_Input_Layer(job)
         Inp.write_input()
-        LMP2.copy_files(job, nodes)
+        LMP2.copy_files(job, nodes, cryscor_path)
 
     #submit the jobs
     lmp2_jobs = []

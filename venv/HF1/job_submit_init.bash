@@ -10,11 +10,12 @@ export PATH=${MPIROOT}/bin:${PATH}
 
 cd ${PBS_O_WORKDIR}
 currdir=/scratch/$USER/$$tmp
+crystal_path=~usvyat/Crystal14_new/bin/Linux-ifort-i64-t/std
 mkdir -p $currdir
 cp INPUT $currdir
 cd $currdir
 
-mpirun -np 12 ~usvyat/Crystal14_new/bin/Linux-ifort-i64-t/std/Pcrystal >& ${PBS_O_WORKDIR}/hf.out
+mpirun -np 12 $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/hf.out
 
 cp fort.9 ${PBS_O_WORKDIR}/
 cd ${PBS_O_WORKDIR}

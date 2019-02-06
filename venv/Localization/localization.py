@@ -22,7 +22,7 @@ def localization(path):
     #read info
     if ini_file:
         Ini = ReadIni(ini_path)
-        nodes = Ini.get_loc_info()
+        nodes, crystal_path = Ini.get_loc_info()
         if nodes == '' or nodes == 'default':
             nodes = 1
 
@@ -39,7 +39,7 @@ def localization(path):
             for job in hf1_jobs:
                 if not Localization.if_loc_finish(job):
                     Localization.copy_inp_file(job)
-                    Localization.copy_loc_scr(job, nodes)
+                    Localization.copy_loc_scr(job, nodes, crystal_path)
                     loc_jobs.append(job)
         except Exception as e:
             print(e)

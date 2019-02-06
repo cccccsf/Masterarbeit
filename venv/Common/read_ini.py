@@ -25,6 +25,7 @@ class ReadIni(object):
         self.bs_geo_opt = ''
         self.functional = ''
         self.nodes_geo_opt = 12
+        self.crystal_path = ''
 
         self.bs_hf1 = ''
         self.nodes_hf1 = 12
@@ -35,6 +36,12 @@ class ReadIni(object):
         self.nodes_loc = 1
 
         self.nodes_lmp2 = 1
+        self.cryscor_path = ''
+
+        self.nodes_rpa_b = 1
+        self.nodes_rpa_s = 28
+        self.molpro_key = ''
+        self.molpro_path = ''
 
         self.read_ini_file()
         self.test_parameters()
@@ -56,26 +63,6 @@ class ReadIni(object):
             self.number_atoms = self.cfg.getint('Basic_Info', 'number_of_atoms')
             self.geometry = self.read_geometry()
             self.fixed_atoms = self.cfg.get('Basic_Info', 'fixed_atoms')
-
-            self.bs_geo_opt = self.cfg.get('Geo_Opt', 'basis_set')
-            self.bs_geo_opt = self.if_none(self.bs_geo_opt)
-            self.functional = self.cfg.get('Geo_Opt', 'functional')
-            self.functional = self.if_none(self.functional)
-            if self.functional == 'default' or self.functional == '':
-                self.functional = 'PBE0'
-            self.nodes_geo_opt = self.cfg.get('Geo_Opt', 'nodes')
-
-            self.bs_hf1 = self.cfg.get('HF1', 'basis_set')
-            self.bs_hf1 = self.if_none(self.bs_hf1)
-            self.nodes_hf1 = self.cfg.get('HF1', 'nodes')
-
-            self.bs_hf2 = self.cfg.get('HF2', 'basis_set')
-            self.bs_hf2 = self.if_none(self.bs_hf2)
-            self.nodes_hf2 = self.cfg.get('HF1', 'nodes')
-
-            self.nodes_loc = self.cfg.get('Localization', 'nodes')
-
-            self.nodes_lmp2 = self.cfg.get('LMP2', 'nodes')
         except Exception as e:
             print(e)
 
@@ -130,19 +117,43 @@ class ReadIni(object):
         return self.geometry
 
     def get_geo_opt_info(self):
-        return self.bs_geo_opt, self.functional, self.nodes_geo_opt
+        self.bs_geo_opt = self.cfg.get('Geo_Opt', 'basis_set')
+        self.bs_geo_opt = self.if_none(self.bs_geo_opt)
+        self.functional = self.cfg.get('Geo_Opt', 'functional')
+        self.functional = self.if_none(self.functional)
+        if self.functional == 'default' or self.functional == '':
+            self.functional = 'PBE0'
+        self.nodes_geo_opt = self.cfg.get('Geo_Opt', 'nodes')
+        self.crystal_path = self.cfg.get('Geo_Opt', 'crystal_path')
+        return self.bs_geo_opt, self.functional, self.nodes_geo_opt, self.crystal_path
 
     def get_hf1_info(self):
-        return self.bs_hf1, self.nodes_hf1
+        self.bs_hf1 = self.cfg.get('HF1', 'basis_set')
+        self.bs_hf1 = self.if_none(self.bs_hf1)
+        self.nodes_hf1 = self.cfg.get('HF1', 'nodes')
+        return self.bs_hf1, self.nodes_hf1, self.crystal_path
 
     def get_hf2_info(self):
-        return self.bs_hf2, self.nodes_hf2
+        self.bs_hf2 = self.cfg.get('HF2', 'basis_set')
+        self.bs_hf2 = self.if_none(self.bs_hf2)
+        self.nodes_hf2 = self.cfg.get('HF1', 'nodes')
+        return self.bs_hf2, self.nodes_hf2, self.crystal_path
 
     def get_loc_info(self):
-        return self.nodes_loc
+        self.nodes_loc = self.cfg.get('Localization', 'nodes')
+        return self.nodes_loc, self.crystal_path
 
     def get_lmp2_info(self):
-        return self.nodes_lmp2
+        self.nodes_lmp2 = self.cfg.get('LMP2', 'nodes')
+        self.cryscor_path = self.cfg.get('LMP2', 'cryscor_path')
+        return self.nodes_lmp2, self.cryscor_path
+
+    def get_rpa_info(self):
+        self.nodes_rpa_b = self.cfg.get('RPA', 'bilayer_nodes')
+        self.nodes_rpa_s = self.cfg.get('RPA', 'singlelayer_nodes')
+        self.molpro_key = self.cfg.get('RPA', 'molpro_KEY')
+        self.molpro_path = self.cfg.get('RPA', 'molpro_path')
+        return self.nodes_rpa_b, self.nodes_rpa_s, self.molpro_key, self.molpro_path
 
     def test_parameters(self):
         if not test_variable.test_slab_or_molecule(self.system_type):
@@ -217,4 +228,4 @@ def test_read_ini():
     Ini.read_fixed_atoms()
 
 
-test_read_ini()
+#test_read_ini()

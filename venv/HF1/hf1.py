@@ -29,7 +29,7 @@ def hf1(path):
 
         Ini = ReadIni(ini_path)
         name, slab_or_molecule, group, lattice_parameter, number_of_atoms, fixed_atoms = Ini.get_basic_info()
-        bs_type, nodes = Ini.get_hf1_info()
+        bs_type, nodes, crystal_path = Ini.get_hf1_info()
         if nodes == '' or nodes == 'default':
             nodes = 12
     else:
@@ -49,7 +49,7 @@ def hf1(path):
         if not HF1.if_cal_finish(new_job):
             Inp = HF1.Input(job, name, slab_or_molecule, group, bs_type, layertype = 'bilayer', fiexed_atoms=fixed_atoms)
             Inp.gen_input()
-            HF1.copy_submit_scr(new_job, nodes)
+            HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
         jobs_HF1.append(new_job)
         #upperlayer
@@ -58,7 +58,7 @@ def hf1(path):
         if not HF1.if_cal_finish(new_job):
             Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype = 'upperlayer', fiexed_atoms=fixed_atoms)
             Inp.gen_input()
-            HF1.copy_submit_scr(new_job, nodes)
+            HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
         jobs_HF1.append(new_job)
         #underlayer
@@ -67,7 +67,7 @@ def hf1(path):
         if not HF1.if_cal_finish(new_job):
             Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype = 'underlayer', fiexed_atoms=fixed_atoms)
             Inp.gen_input()
-            HF1.copy_submit_scr(new_job, nodes)
+            HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
         jobs_HF1.append(new_job)
 

@@ -13,7 +13,7 @@ zdirname=${path0##/*/}
 xdirname=${PWD##/*/}
 
 export scr1=/scratch/$LOGNAME
-export SCRATCHDIR=/scratch/$USER/cryscor/$zdirname/$xdirname
+export SCRATCHDIR=/scratch/$USER/lmp2/$zdirname/$xdirname
 export TMPDIR=$SCRATCHDIR
 export TMPDIR4=$scr1/run
 export TMPDIR5=$scr1/run

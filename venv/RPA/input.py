@@ -5,6 +5,8 @@ import shutil
 import subprocess
 from copy import  deepcopy
 from Common import mkdir
+from Common import Job_path
+from LMP2.submit_job_lmp2 import if_cal_finish
 
 
 def get_jobs(path):
@@ -13,7 +15,9 @@ def get_jobs(path):
     jobs = []
     for root, dirs, files in walks:
         if 'lmp2.out' in files and 'molpro.inp' in files:
-            jobs.append(root)
+            new_job = Job_path(root)
+            if if_cal_finish(new_job):
+                jobs.append(new_job)
     return jobs
 
 
