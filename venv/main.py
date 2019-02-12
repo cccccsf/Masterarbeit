@@ -7,7 +7,7 @@ from Common import record
 
 def menu():
 
-    ini_path = os.path.dirname(__file__)
+    ini_path = os.path.dirname(os.path.realpath(__file__))
     Ini = ReadIni(ini_path)
     path, start, end = Ini.get_initialization_info()
 
