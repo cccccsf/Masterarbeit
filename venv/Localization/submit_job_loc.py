@@ -142,7 +142,7 @@ def submit(jobs):
                 rec += 'job submitted...'
                 rec += '\n' + out
                 record(new_job.root_path, rec)
-				print(rec)
+                print(rec)
             else:
                 time.sleep(500)
                 j += 1

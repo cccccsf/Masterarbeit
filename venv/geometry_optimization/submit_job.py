@@ -204,6 +204,7 @@ def submit(jobs, nodes):
                     copy_submit_scr(jobs[i], nodes)
                     copy_fort9(jobs[i])
                     out = submit_geo_opt_job()
+                    #out = '00000.rigi'
                     count += 1
                     submitted_jobs.append(jobs[i])
                     rec = jobs[i].path + '\n'
@@ -214,9 +215,10 @@ def submit(jobs, nodes):
                 else:
                     time.sleep(500)
                     j += 1
-                    if j > 15:
-                        rec += 'noting changes...'
-                        record(jobs[i].root_path, rec)
+                    if j > 20:
+                        rec = 'noting changes...'
+                        #print(rec)
+                        record(submitted_jobs[0].root_path, rec)
                         j = 0
                     continue
     
