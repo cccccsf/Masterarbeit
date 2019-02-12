@@ -155,6 +155,16 @@ class ReadIni(object):
         self.molpro_path = self.cfg.get('RPA', 'molpro_path')
         return self.nodes_rpa_b, self.nodes_rpa_s, self.molpro_key, self.molpro_path
 
+    def get_cluster_info(self):
+        size = self.cfg.get('Cluster', 'size')
+        size = size.upper()
+        center_atoms = self.cfg.get('Cluster', 'center_atoms')
+        if center_atoms == '' or center_atoms == None:
+            center_atoms = []
+        else:
+            center_atoms = center_atoms.split()
+        return size, center_atoms
+
     def test_parameters(self):
         if not test_variable.test_slab_or_molecule(self.system_type):
             print('''

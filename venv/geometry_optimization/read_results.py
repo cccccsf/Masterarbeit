@@ -223,6 +223,7 @@ def test_write_geo_json():
         write_geometry_json(job, geometry)
         write_latt_json(job, lattice_para)
 
+
 def test_read_lowest_e():
     path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
     walks = os.walk(path)
