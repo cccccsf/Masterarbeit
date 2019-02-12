@@ -7,6 +7,7 @@ from Common import ReadIni
 from Common import Job_path
 from HF1 import read_init_dis
 
+
 def hf2(path):
 
     rec = 'Second Hartree Fock Calculation begins...'
@@ -24,7 +25,7 @@ def hf2(path):
         jobs_HF1 = HF2.get_jobs(path)
         Ini = ReadIni(ini_path)
         name, slab_or_molecule, group, lattice_parameter, number_of_atoms, fixed_atoms = Ini.get_basic_info()
-        bs_type, nodes = Ini.get_hf2_info()
+        bs_type, nodes, crystal_path = Ini.get_hf2_info()
         if nodes == '' or nodes == 'default':
             nodes = 12
     else:
@@ -46,12 +47,12 @@ def hf2(path):
     for job in bilayer:
         Inp = HF2.Input(job, name, slab_or_molecule, group, bs_type=bs_type, layertype = 'bilayer', fixed_atoms = fixed_atoms)
         Inp.gen_input()
-        HF2.copy_submit_scr(job, nodes)
+        HF2.copy_submit_scr(job, nodes, crystal_path)
         HF2.copy_fort9(job)
     for job in singlelayer:
         Inp = HF2.Layer_Inp(job, name, slab_or_molecule, group, bs_type=bs_type, layertype = job.layertype, fixed_atoms = fixed_atoms)
         Inp.gen_input()
-        HF2.copy_submit_scr(job, nodes)
+        HF2.copy_submit_scr(job, nodes, crystal_path)
         HF2.copy_fort9(job)
 
     #submit the jobs
@@ -60,12 +61,12 @@ def hf2(path):
         new_path = job.path
         new_path = new_path.replace('hf1', 'hf2')
         new_job = Job_path(new_path)
-		hf2_jobs.append(new_job)
+        hf2_jobs.append(new_job)
     for job in singlelayer:
         new_path = job.path
         new_path = new_path.replace('hf1', 'hf2')
         new_job = Job_path(new_path)
-		hf2_jobs.append(new_job)
+        hf2_jobs.append(new_job)
     hf2_jobs_finished = HF2.submit(hf2_jobs)
 
     #read calculation results

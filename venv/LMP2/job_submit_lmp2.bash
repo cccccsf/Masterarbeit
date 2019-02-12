@@ -2,24 +2,24 @@
 #PBS -j eo
 #PBS -r n
 #PBS -l nodes=1
-#ulimit -S -s 131072
 
-cd ${PBS_O_WORKDIR}
-path0=${PWD%/*}
-zdirname=${path0##/*/}
-xdirname=${PWD##/*/}
-dir0=/scratch/$USER/lmp2/$zdirname/$xdirname
-mkdir -p $dir0
-cp INPUT $dir0
-cp fort.9 $dir0
-cp fort.78 $dir0
-cp fort.80 $dir0
-cp ~/project/cryscor $dir0
-cd $dir0
 
 module load XE2016.0.3.210
 export MKL_NUM_THREADS=1
+
+cd ${PBS_O_WORKDIR}
+cryscor_path=~shch/project/
+currdir=/scratch/$USER/lmp2/x_0/z_0
+mkdir -p $currdir
+cp INPUT $currdir
+cp fort.9 $currdir
+cp fort.78 $currdir
+cp fort.80 $currdir
+cp $cryscor_path/cryscor $currdir
+cd $currdir
+
 ./cryscor < INPUT > lmp2.out 2>lmp2.err
+
 
 cp lmp2.out ${PBS_O_WORKDIR}
 mv fort.177 _fort.177

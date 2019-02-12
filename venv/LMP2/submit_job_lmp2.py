@@ -50,32 +50,27 @@ def copy_fort9_fort78(ziel_path):
         print('fort.9 and fort.78 failed to copy...')
 
 
-def copy_submit_src(job, nodes):
+def copy_submit_src(job, nodes, cryscor_path):
     ziel_path = job.path
     scr_path = os.path.dirname(__file__)
-    if job.layertype == 'bilayer':
-        scr_from = os.path.join(scr_path, 'job_submit.bash')
-    else:
-        scr_from = os.path.join(scr_path, 'job_submit_lmp2_layer.bash')
+    scr_from = os.path.join(scr_path, 'job_submit_lmp2.bash')
     scr_to = os.path.join(ziel_path, 'hf2')
     try:
         shutil.copy(scr_from, scr_to)
-        if nodes != '':
-            try:
-                nodes = int(nodes)
-                update_nodes(ziel_path, nodes)
-            except Exception as e:
-                print(e)
+        update_scr(job, nodes, cryscor_path)
         print('Submition file copied...')
     except Exception as e:
         print(e)
         print('submit scr failed to copy...')
 
 
-def update_nodes(path, nodes):
+def update_scr(job, nodes, cryscor_path):
+    path = job.path
     scr = os.path.join(path, 'lmp2')
     with open(scr, 'r') as f:
         lines = f.readlines()
+
+    #update nodes
     nodes_line = lines[3]
     loc = 3
     if nodes_line.startswith('#PBS -l nodes'):
@@ -87,8 +82,29 @@ def update_nodes(path, nodes):
                 nodes_line = line
                 loc = i
             i += 1
-    nodes_line = nodes_line.replace('1', str(nodes))
-    lines[loc] = nodes_line
+    if nodes != '' and nodes != 'default':
+        nodes_line = '#PBS -l nodes={}'.format(nodes)
+        lines[loc] = nodes_line
+
+    #update cryscor path and currdir
+    loc_cry, loc_curr, i = 0, 0, 0
+    for line in lines:
+        if line.startswith('cryscor_path'):
+            cryscor_line = line
+            loc_cry = i
+        if line.startswith('currdir='):
+            currdir_line = line
+            loc_curr = i
+        i += 1
+    if cryscor_path != '':
+        cryscor_line = 'cryscor_path={}\n'.format(cryscor_path)
+        lines[loc_cry] = cryscor_line
+    if job.layertype == 'bilayer':
+        currdir_line = 'currdir=/scratch/$USER/lmp2/{}/{}\n'.format(job.x_dirname, job.z_dirname)
+    else:
+        currdir_line = 'currdir=/scratch/$USER/lmp2/{}/{}/{}\n'.format(job.x_dirname, job.z_dirname, job.layertype)
+    lines[loc_curr] = currdir_line
+
     with open(scr, 'w') as f:
         f.writelines(lines)
 

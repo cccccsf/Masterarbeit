@@ -5,15 +5,32 @@ import RPA
 from HF1 import read_init_dis
 from Common import record
 from Common import ReadIni
+from Common import Job_path
 
 
 def rpa(path):
 
-    jobs = RPA.get_jobs(path)
-    lmp2_jobs = []
-    for p in jobs:
-        job = Job_path(p)
-        lmp2_jobs.append(job)
+    rec = 'Second Hartree Fock Calculation begins...'
+    print(rec)
+    record(path, rec)
+
+    init_dist = read_init_dis(path)
+    ini_path = os.path.dirname(__file__)
+    ini_path = os.path.dirname(ini_path)
+    ini_file = os.path.join(ini_path, 'input.ini')
+    ini_file = os.path.exists(ini_file)
+
+    #read basic computation infomation
+    if ini_file:
+        lmp2_jobs = RPA.get_jobs(path)
+        Ini = ReadIni(ini_path)
+        name, slab_or_molecule, group, lattice_parameter, number_of_atoms, fixed_atoms = Ini.get_basic_info()
+        nodes_rpa_b, nodes_rpa_s, molpro_key, molpro_path = Ini.get_rpa_info()
+    else:
+        print('Initilization file input.ini not found!')
+        print('Please check it in the work directory!')
+        print('Programm exit and Please reatart it from HF1 step.')
+        sys.exit()
 
     #catagorization
     bilayer = []
@@ -33,14 +50,25 @@ def rpa(path):
         Inp.generate_input()
 
     #copy files and submit the jobs
-    rpa_jobs = bilayer + singlelayer
-    for i in range(len(rpa_jobs)):
-        rpa_jobs[i].reset('method', 'rpa')
-    for job in rpa_jobs:
-        RPA.copy_submit_src(job)
-    #finished_jobs_rpa = RPA.submit(lmp2_jobs)
+    rpa_jobs = []
+    for job in bilayer:
+        new_path = job.path
+        new_path = new_path.replace('lmp2', 'rpa')
+        new_job = Job_path(new_path)
+        rpa_jobs.append(new_job)
+        Scr = RPA.Scr(job, nodes_rpa_b, molpro_key, molpro_path)
+        Scr.gen_scr()
+    for job in singlelayer:
+        new_path = job.path
+        new_path = new_path.replace('lmp2', 'rpa')
+        new_job = Job_path(new_path)
+        rpa_jobs.append(new_job)
+        Scr = RPA.Scr(job, nodes_rpa_s, molpro_key, molpro_path)
+        Scr.gen_scr()
+    finished_jobs_rpa = RPA.submit(lmp2_jobs)
 
     #read calculation results
-    #RPA.read_all_results(finished_jobs_rpa)
+    RPA.read_all_results(finished_jobs_rpa)
 
     print('LRPA calculation finished!!!')
+    record(path, 'LRPA calculation 2 finished!!!')

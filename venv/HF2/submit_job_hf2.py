@@ -23,7 +23,7 @@ def submit_hf2_job():
     return out_text
 
 
-def copy_submit_scr(job, nodes):
+def copy_submit_scr(job, nodes, crystal_path):
     ziel_path = job.path
     ziel_path = ziel_path.replace('hf1', 'hf2')
     scr_path = os.path.dirname(__file__)
@@ -31,9 +31,7 @@ def copy_submit_scr(job, nodes):
     scr_to = os.path.join(ziel_path, 'hf2')
     try:
         shutil.copy(scr_from, scr_to)
-        if nodes != '':
-            nodes = int(nodes)
-            update_nodes(ziel_path, nodes)
+        update_nodes(ziel_path, nodes, crystal_path)
         print('Submition file copied...')
     except Exception as e:
         print(e)
@@ -50,8 +48,8 @@ def copy_fort9(job):
     except Exception as e:
         print(e)
 
-def update_nodes(path, nodes):
-    scr = os.path.join(path, 'hf2')
+def update_nodes(path, nodes, crystal_path):
+    scr = os.path.join(path, 'geo_opt')
     with open(scr, 'r') as f:
         lines = f.readlines()
     nodes_line = lines[3]
@@ -65,15 +63,21 @@ def update_nodes(path, nodes):
                 nodes_line = line
                 loc = i
             i += 1
-    nodes_line = nodes_line.replace('12', str(nodes))
-    lines[loc] = nodes_line
-    loc2 = 0
+    loc2, loc_cry = 0, 0
     j = 0
     for line in lines:
         if line.startswith('mpirun -np'):
             loc2 = j
+        if line.startswith('crystal_path='):
+            loc_cry = j
         j += 1
-    lines[loc2] = lines[loc2].replace('12', str(nodes))
+    if nodes != '':
+        nodes_line = '#PBS -l nodes={}\n'.format(nodes)
+        lines[loc] = nodes_line
+        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/geo_opt.out\n'.format(nodes)
+    if crystal_path != '':
+        lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
+
     with open(scr, 'w') as f:
         f.writelines(lines)
 
@@ -147,7 +151,7 @@ def submit(jobs):
                 rec += 'job submitted...'
                 rec += '\n' + out
                 record(new_job.root_path, rec)
-				print(rec)
+                print(rec)
             else:
                 time.sleep(500)
                 j += 1

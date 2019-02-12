@@ -34,7 +34,7 @@ def geo_opt(path):
         else:
             geometry = Geometry(geometry = geometry)
         original_geometry = deepcopy(geometry)
-        bs_type, functional, nodes = Ini.get_geo_opt_info()
+        bs_type, functional, nodes, crystal_path = Ini.get_geo_opt_info()
 
     else:
         print('INPUT file does not exist!!!')
@@ -115,7 +115,7 @@ def geo_opt(path):
         jobs.append(job)
     #Copy files and Submit the calculation job above
     jobs_finished = []
-    new_jobs_finished = geometry_optimization.submit(new_jobs, nodes)
+    new_jobs_finished = geometry_optimization.submit(new_jobs, nodes, crystal_path)
     jobs_finished.append(new_jobs_finished)
 
     #Select the optimal distance of each x point

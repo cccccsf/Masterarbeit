@@ -27,6 +27,6 @@ def test_hf2():
 def test_suite():
     #test_Input()
     #test_Inp_Layer()
-    test_hf2()
+    #test_hf2()
 
 test_suite()

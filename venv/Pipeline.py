@@ -1,15 +1,8 @@
 #!/usr/bin/python3
 import os
 import sys
-import Initialization
 from datetime import datetime
-from copy import deepcopy
-from Crystal import Geometry
-from Common import mkdir
-from Common import Job_path
 from Common import record
-from Common import ReadIni
-from Common import look_for_in_list
 import geometry_optimization
 import HF1
 import Localization

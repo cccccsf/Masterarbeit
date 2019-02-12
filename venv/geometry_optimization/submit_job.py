@@ -29,7 +29,7 @@ def submit_geo_opt_job():
     return out_text
 
 
-def update_nodes(path, nodes):
+def update_nodes(path, nodes, crystal_path):
     scr = os.path.join(path, 'geo_opt')
     with open(scr, 'r') as f:
         lines = f.readlines()
@@ -44,15 +44,21 @@ def update_nodes(path, nodes):
                 nodes_line = line
                 loc = i
             i += 1
-    nodes_line = nodes_line.replace('12', str(nodes))
-    lines[loc] = nodes_line
-    loc2 = 0
+    loc2, loc_cry = 0, 0
     j = 0
     for line in lines:
         if line.startswith('mpirun -np'):
             loc2 = j
+        if line.startswith('crystal_path='):
+            loc_cry = j
         j += 1
-    lines[loc2] = lines[loc2].replace('12', str(nodes))
+    if nodes != '':
+        nodes_line = '#PBS -l nodes={}\n'.format(nodes)
+        lines[loc] = nodes_line
+        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/geo_opt.out\n'.format(nodes)
+    if crystal_path != '':
+        lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
+
     with open(scr, 'w') as f:
         f.writelines(lines)
 
@@ -74,7 +80,7 @@ def copy_fort9(job):
         print('fort.9 failed to copy...')
 
 
-def copy_submit_scr(job, nodes):
+def copy_submit_scr(job, nodes, crystal_path):
     ziel_path = job.path
     scr_path = os.path.dirname(os.path.realpath(__file__))
     if job.x == '0' and job.z == '0':
@@ -83,12 +89,7 @@ def copy_submit_scr(job, nodes):
         scr_from = os.path.join(scr_path, 'job_submit_nonini.bash')
     scr_to = os.path.join(ziel_path, 'geo_opt')
     shutil.copy(scr_from, scr_to)
-    if nodes != '':
-        try:
-            nodes = int(nodes)
-            update_nodes(ziel_path, nodes)
-        except Exception as e:
-            print(e)
+    update_nodes(ziel_path, nodes, crystal_path)
     print('Submition file copied...')
 
 
@@ -118,7 +119,7 @@ def if_cal_finish(job):
     return True
 
 
-def submit(jobs, nodes):
+def submit(jobs, nodes, crystal_path):
     job_numbers = len(jobs)
     max_paralell = 5
     count = 0
@@ -134,7 +135,7 @@ def submit(jobs, nodes):
     if loc < len(jobs):
         job_init = jobs.pop(loc)
         os.chdir(job_init.path)
-        copy_submit_scr(job, nodes)
+        copy_submit_scr(job, nodes, crystal_path)
         if not if_cal_finish(job_init):
             out = submit_geo_opt_job()
             submitted_jobs.append(job_init)
@@ -201,7 +202,7 @@ def submit(jobs, nodes):
                 if count <= max_paralell and i < len(jobs):
                     print(jobs[i].path)
                     os.chdir(jobs[i].path)
-                    copy_submit_scr(jobs[i], nodes)
+                    copy_submit_scr(jobs[i], nodes, crystal_path)
                     copy_fort9(jobs[i])
                     out = submit_geo_opt_job()
                     count += 1
@@ -254,7 +255,7 @@ def select_optimal_dist(job_geo_dict, diff, para):
         else:
             jobs_finished.append(job)
         jobs.append(job)
-    new_jobs_finished = geometry_optimization.submit(new_jobs, nodes)
+    new_jobs_finished = geometry_optimization.submit(new_jobs, nodes, crystal_path)
     jobs_finished += new_jobs_finished
     min_dist, min_job = geometry_optimization.read_and_select_lowest_e(jobs_finished)
     #print('MIN: ', min_dist, min_job)
@@ -290,7 +291,7 @@ def select_optimal_dist(job_geo_dict, diff, para):
             else:
                 jobs_finished.append(job)
             jobs.append(job)
-        new_jobs_finished = geometry_optimization.submit(new_jobs, nodes)
+        new_jobs_finished = geometry_optimization.submit(new_jobs, nodes, crystal_path)
         jobs_finished += new_jobs_finished
         min_dist, min_job = geometry_optimization.read_and_select_lowest_e(jobs_finished)
     return jobs, job_geo_dict, min_job, jobs_finished

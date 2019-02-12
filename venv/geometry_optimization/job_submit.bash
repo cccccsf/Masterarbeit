@@ -9,12 +9,13 @@ export MPIROOT=/opt/intel/XE2016.U3/compilers_and_libraries_2016.3.210/linux/mpi
 export PATH=${MPIROOT}/bin:${PATH}
 
 cd ${PBS_O_WORKDIR}
+crystal_path=~usvyat/Crystal14_new/bin/Linux-ifort-i64-t/std/
 currdir=/scratch/$USER/$$tmp
 mkdir -p $currdir
 cp INPUT $currdir
 cd $currdir
 
-mpirun -np 12 ~usvyat/Crystal14_new/bin/Linux-ifort-i64-t/std/Pcrystal >& ${PBS_O_WORKDIR}/geo_opt.out
+mpirun -np 12 $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/geo_opt.out
 
 cp fort.9 ${PBS_O_WORKDIR}/
 cd ${PBS_O_WORKDIR}
