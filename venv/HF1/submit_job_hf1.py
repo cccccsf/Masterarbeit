@@ -152,8 +152,8 @@ def submit(jobs):
     for job in init_jobs:
         if not if_cal_finish(job):
             os.chdir(job.path)
-            out = submit_hf1_job()
-            #out = '0000'
+            #out = submit_hf1_job()
+            out = '0000'
             count += 1
             submitted_jobs.append(job)
             rec = job.path
