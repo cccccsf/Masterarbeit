@@ -225,7 +225,8 @@ def test_write_geo_json():
 
 
 def test_read_lowest_e():
-    path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
+    #path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
+    path = r'/users/shch/project/Masterarbeit/Test/'
     walks = os.walk(path)
     jobs = []
     for root, dirs, files in walks:
@@ -243,5 +244,5 @@ def test_suite():
     #test_read_lowest_e()
 
 
-test_suite()
+#test_suite()
 

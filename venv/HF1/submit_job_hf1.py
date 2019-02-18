@@ -9,7 +9,7 @@ from Common import record
 
 
 def submit_hf1_job():
-    chmod = 'chmod u+x hf1.bash'
+    chmod = 'chmod u+x hf'
     subprocess.call(chmod, shell=True)
     try:
         out_bytes = subprocess.check_output(['qsub', 'hf'])
@@ -38,7 +38,7 @@ def copy_submit_scr(job, nodes, crystal_path):
 
 
 def update_nodes(path, nodes, crystal_path):
-    scr = os.path.join(path, 'geo_opt')
+    scr = os.path.join(path, 'hf')
     with open(scr, 'r') as f:
         lines = f.readlines()
     nodes_line = lines[3]
@@ -63,7 +63,7 @@ def update_nodes(path, nodes, crystal_path):
     if nodes != '':
         nodes_line = '#PBS -l nodes={}\n'.format(nodes)
         lines[loc] = nodes_line
-        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/geo_opt.out\n'.format(nodes)
+        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${{PBS_O_WORKDIR}}/geo_opt.out\n'.format(nodes)
     if crystal_path != '':
         lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
 
@@ -145,13 +145,15 @@ def submit(jobs):
     #find and submit the initial job
     init_jobs = []
     for job in jobs:
-        if job.x == '0' and job.z == '0':
+        if job.x == '0':
+            print(job.x, job.z, job.layertype)
             init_jobs.append(job)
             jobs.remove(job)
     for job in init_jobs:
         if not if_cal_finish(job):
             os.chdir(job.path)
-            out = submit_hf1_job()
+            #out = submit_hf1_job()
+            out = '0000'
             count += 1
             submitted_jobs.append(job)
             rec = job.path

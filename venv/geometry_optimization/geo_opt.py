@@ -71,10 +71,13 @@ def geo_opt(path):
     job = os.path.join(path, 'geo_opt')
     job = os.path.join(job, dirname)
     job = Job_path(job)
+    jobs_finished = []
     if not if_cal_finish(job):
         Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
         Geo_Inp.gen_input()
         new_jobs.append(job)
+    else:
+        jobs_finished.append(job)
     jobs.append(job)
     geometry_optimization.write_init_dist(geometry, path)
 
@@ -112,14 +115,15 @@ def geo_opt(path):
             Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
             Geo_Inp.gen_input()
             new_jobs.append(job)
+        else:
+            jobs_finished.append(job)
         jobs.append(job)
     #Copy files and Submit the calculation job above
-    jobs_finished = []
     new_jobs_finished = geometry_optimization.submit(new_jobs, nodes, crystal_path)
-    jobs_finished.append(new_jobs_finished)
+    jobs_finished += new_jobs_finished
 
     #Select the optimal distance of each x point
-    para = [name, slab_or_molecule, group, lattice_parameter, bs_type, functional, nodes]
+    para = [name, slab_or_molecule, group, lattice_parameter, bs_type, functional, nodes, crystal_path]
     #x_10
     x_10 = {job: geometry for job, geometry in job_geo_dict_dis.items() if job.x == '0.10'}
     jobs_10 = [job for job in job_geo_dict_dis.keys() if job.x == '0.10']
