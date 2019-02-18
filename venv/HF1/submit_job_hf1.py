@@ -125,7 +125,7 @@ def submit(jobs):
 
     def test_finished(jobs):
         nonlocal count
-        for job in jobs:
+        for job in jobs[:]:
             if if_cal_finish(job):
                 finished_jobs.append(job)
                 rec = job.path
@@ -133,27 +133,27 @@ def submit(jobs):
                 rec += 'calculation finished...'
                 print(rec)
                 record(job.root_path, rec)
-                jobs.remove(job)
                 count -= 1
+                jobs.remove(job)
 
     #test if there is some job which is already finished
-    for job in jobs:
+    for job in jobs[:]:
         if if_cal_finish(job):
             finished_jobs.append(job)
             jobs.remove(job)
 
     #find and submit the initial job
+    #print('number of jobs: ', len(jobs))
     init_jobs = []
-    for job in jobs:
-        if job.x == '0':
-            print(job.x, job.z, job.layertype)
+    for job in jobs[:]:
+        if job.x == '0' and job.z == '0':
             init_jobs.append(job)
             jobs.remove(job)
     for job in init_jobs:
         if not if_cal_finish(job):
             os.chdir(job.path)
-            #out = submit_hf1_job()
-            out = '0000'
+            out = submit_hf1_job()
+            #out = '0000'
             count += 1
             submitted_jobs.append(job)
             rec = job.path

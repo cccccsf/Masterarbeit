@@ -151,7 +151,7 @@ def submit(jobs):
         :return:
         """
         nonlocal count
-        for job in jobs:
+        for job in jobs[:]:
             if if_cal_finish(job):
                 finished_jobs.append(job)
                 rec = job.path
@@ -163,7 +163,7 @@ def submit(jobs):
                 count -= 1
 
     #test if there is some job which is already finished
-    for job in jobs:
+    for job in jobs[:]:
         if if_cal_finish(job):
             finished_jobs.append(job)
             jobs.remove(job)

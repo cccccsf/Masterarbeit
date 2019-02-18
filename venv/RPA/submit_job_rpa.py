@@ -99,7 +99,7 @@ def submit(jobs):
         :param submitted_jobs:
         :return:
         """
-        for job in jobs:
+        for job in jobs[:]:
             if if_cal_finish(job):
                 finished_jobs.append(job)
                 print(job)
@@ -108,7 +108,7 @@ def submit(jobs):
                 count -= 1
 
     #test if there is some job which is already finished
-    for job in jobs:
+    for job in jobs[:]:
         if if_cal_finish(job):
             finished_jobs.append(job)
             jobs.remove(job)

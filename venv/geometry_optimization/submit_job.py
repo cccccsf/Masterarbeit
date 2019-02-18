@@ -170,7 +170,7 @@ def submit(jobs, nodes, crystal_path):
             finished_jobs.append(job_init)
 
     #test if there is some job which is already finished
-    for job in jobs:
+    for job in jobs[:]:
         if if_cal_finish(job):
             #print('Job already finished: ', job)
             finished_jobs.append(job)
@@ -179,7 +179,7 @@ def submit(jobs, nodes, crystal_path):
 
     def test_finished(paths):
         nonlocal count    #debug: UnboundLocalError: local variable 'count' referenced before assignment
-        for path in paths:
+        for path in paths[:]:
             if if_cal_finish(path):
                 finished_jobs.append(path)
                 rec = path.path
