@@ -44,7 +44,7 @@ class ReadIni(object):
         self.molpro_path = ''
 
         self.read_ini_file()
-        self.test_parameters()
+        #self.test_parameters()
 
 
     def read_ini_file(self):

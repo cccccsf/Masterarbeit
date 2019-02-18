@@ -55,7 +55,8 @@ def update_nodes(path, nodes, crystal_path):
     if nodes != '':
         nodes_line = '#PBS -l nodes={}\n'.format(nodes)
         lines[loc] = nodes_line
-        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/geo_opt.out\n'.format(nodes)
+        print(loc2)
+        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${{PBS_O_WORKDIR}}/geo_opt.out\n'.format(nodes)
     if crystal_path != '':
         lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
 
@@ -227,7 +228,7 @@ def submit(jobs, nodes, crystal_path):
 
 
 def select_optimal_dist(job_geo_dict, diff, para):
-    name, slab_or_molecule, group, lattice_parameter, bs_type, functional, nodes = para
+    name, slab_or_molecule, group, lattice_parameter, bs_type, functional, nodes, crystal_path = para
     jobs = list(job_geo_dict.keys())
     init_job = jobs[0]
     init_dist = init_job.get_z_value()
