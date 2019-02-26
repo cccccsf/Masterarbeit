@@ -18,6 +18,8 @@ class Job_path(object):
         self.init_values()
         self.coord = (self.x, self.z)
 
+        self.status = ''
+
     def __str__(self):
         return self.method + ' (x: {}, z: {}) '.format(self.x, self.z) + self.layertype
 
@@ -112,6 +114,13 @@ class Job_path(object):
         old = self.__dict__[key]
         path = self.path.replace(old, value)
         self.__init__(path)
+
+    def set_status(self, stauts):
+        stauts_list = ['', 'prepared', 'submitted', 'calculated', 'finished', 'not converged', 'error']
+        if stauts.lower() in stauts_list:
+            self.status = stauts
+        else:
+            print('wrong job status')
 
 # path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\hf_2\x_-0.150\z_-0.106'
 # job = Job_path(path)

@@ -46,7 +46,7 @@ def read_result(job, energy_func, init_distance):
     x_z = namedtuple('x_z', ['x', 'z'])
     x_and_z = x_z(x, z)
     if job.method != 'lpm2':
-        energy = energy_func(path)
+        energy = energy_func(job)
         return x_and_z, energy
     else:
         Elmp2, Escs_lmp2 = energy_func(path)

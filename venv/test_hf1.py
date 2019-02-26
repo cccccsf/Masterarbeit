@@ -6,6 +6,7 @@ from HF1 import Input
 from HF1 import Layer_Inp
 from HF1 import read_all_results_hf1
 from HF1 import if_cal_finish
+import HF1
 
 def test_select_jobs():
     path = os.path.dirname(__file__)
@@ -43,12 +44,24 @@ def test_read_all_results():
                 jobs.append(job)
     read_all_results_hf1(jobs, init_dist=3.1)
 
+def test_too_many_cycles():
+    job = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test\hf1\x_0.35\z_0'
+    job2 = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test\hf1\x_0.35\z_0\underlayer'
+    job = Job_path(job)
+    e = HF1.read_results_hf1.get_energy(job.path)
+    print(e)
+    print('---'*20)
+    e1 = HF1.read_results_hf1.get_energy(job2)
+    print(e1)
+
+
 def test_suite():
     #test_select_jobs()
     #test_Input()
     #test_Layer_Inp()
-    test_read_all_results()
+    #test_read_all_results()
     #test_if_finished()
+    test_too_many_cycles()
 
 
 test_suite()

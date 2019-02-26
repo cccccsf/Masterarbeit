@@ -129,9 +129,10 @@ def submit(jobs):
         for job in jobs[:]:
             if if_cal_finish(job):
                 finished_jobs.append(job)
+                num = str(len(finished_jobs)) + '/' + str(job_num)
                 rec = job.path
                 rec += '\n'
-                rec += 'calculation finished...'
+                rec += num + 'calculation finished...'
                 print(rec)
                 record(job.root_path, rec)
                 count -= 1
@@ -207,7 +208,7 @@ def submit(jobs):
                 time.sleep(500)
                 j += 1
                 if j > 15:
-                    rec += 'noting changes...'
+                    rec = 'noting changes...'
                     record(submitted_jobs[0].root_path, rec)
                     j = 0
                 continue

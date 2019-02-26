@@ -50,28 +50,64 @@ def read_init_distance(path):
     return init_dist
 
 
-def get_energy(path):
+def get_energy(job):
+    path = job.path
     f = open(path + '/hf.out', 'r')
     lines = f.read()
     lines = ' '.join(lines.split()) + '#'
     f.close()
 
-    regex = 'SCF ENDED - CONVERGENCE ON ENERGY .* CYCLES'
+    #regex = 'SCF ENDED - CONVERGENCE ON ENERGY .* CYCLES'
+    regex = 'SCF ENDED .* CYCLES'
     try:
         energy_block = re.search(regex, lines).group(0)    #SCF ENDED - CONVERGENCE ON ENERGY E(AU) -2.7260361085525E+03 CYCLES
-        regex_2 = 'E\(AU\) .* '
-        energy_block = re.search(regex_2, energy_block).group(0)    #E(AU) -2.7260361085525E+03
-        regex_3 = ' .* '
-        energy_block = re.search(regex_3, energy_block).group(0)    # -2.7260361085525E+03
-        energy = energy_block[1:-1]    #str
+        status = if_converged(energy_block)
+        if status == True:
+            regex_2 = 'E\(AU\) .* '
+            energy_block = re.search(regex_2, energy_block).group(0)    #E(AU) -2.7260361085525E+03
+            regex_3 = ' .* '
+            energy_block = re.search(regex_3, energy_block).group(0)    # -2.7260361085525E+03
+            energy = energy_block[1:-1]    #str
+            job.set_status('finished')
+        else:
+            energy = 'Nah'
+            print('---'*15)
+            print(job)
+            print('Calculation not converged.')
+            print('Please check the output file and change some parameters to recalculate the job.')
+            job.set_status('not converged')
     except AttributeError as e:
         print('---'*15)
-        print(path)
+        print(job)
         print('Energy not found.')
         print('Please check the output file.')
         energy = 'Nah'
+        job.set_status('error')
 
     return energy
+
+
+def if_converged(energy_block):
+    regex = '- .*?E\('
+    try:
+        status = re.search(regex, energy_block).group(0)
+        status = status[2:-3]
+        if status == 'CONVERGENCE ON ENERGY':
+            return True
+        elif status == 'TOO MANY CYCLES':
+            return False
+        else:
+            print('---'*15)
+            print(path)
+            print('Status not found.')
+            print('Please check the output file.')
+            return False
+    except AttributeError as e:
+        print('---'*15)
+        print(path)
+        print('Status not found.')
+        print('Please check the output file.')
+
 
 
 def get_all_x_and_z(paths, init_distance):

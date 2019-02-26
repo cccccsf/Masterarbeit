@@ -85,5 +85,15 @@ def hf1(path):
     #read calculation results
     HF1.read_all_results_hf1(hf1_jobs_finished, init_dist)
 
+    # deal with not-converged jobs
+    jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
+    hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
+    while len(jobs_not_converged) > 0:
+        HF1.change_parameters(jobs_not_converged)
+        new_jobs_finished = HF1.submit(jobs_not_converged)
+        hf1_jobs_finished += hf1_jobs_finished_new
+        jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
+        hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
+
     print('Hartree Fock calculation 1 finished!!!')
     record(path, 'Hartree Fock calculation 1 finished!!!')
