@@ -211,7 +211,7 @@ def submit(jobs, nodes, crystal_path):
                     submitted_jobs.append(jobs[i])
                     rec = jobs[i].path + '\n'
                     rec += 'job submitted...'
-                    rec += '\n' + out
+                    rec += '\n' + out + '\n'
                     record(jobs[i].root_path, rec)
                     i += 1
                 else:

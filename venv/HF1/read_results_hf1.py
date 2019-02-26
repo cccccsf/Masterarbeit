@@ -57,12 +57,19 @@ def get_energy(path):
     f.close()
 
     regex = 'SCF ENDED - CONVERGENCE ON ENERGY .* CYCLES'
-    energy_block = re.search(regex, lines).group(0)    #SCF ENDED - CONVERGENCE ON ENERGY E(AU) -2.7260361085525E+03 CYCLES
-    regex_2 = 'E\(AU\) .* '
-    energy_block = re.search(regex_2, energy_block).group(0)    #E(AU) -2.7260361085525E+03
-    regex_3 = ' .* '
-    energy_block = re.search(regex_3, energy_block).group(0)    # -2.7260361085525E+03
-    energy = energy_block[1:-1]    #str
+    try:
+        energy_block = re.search(regex, lines).group(0)    #SCF ENDED - CONVERGENCE ON ENERGY E(AU) -2.7260361085525E+03 CYCLES
+        regex_2 = 'E\(AU\) .* '
+        energy_block = re.search(regex_2, energy_block).group(0)    #E(AU) -2.7260361085525E+03
+        regex_3 = ' .* '
+        energy_block = re.search(regex_3, energy_block).group(0)    # -2.7260361085525E+03
+        energy = energy_block[1:-1]    #str
+    except AttributeError as e:
+        print('---'*15)
+        print(path)
+        print('Energy not found.')
+        print('Please check the output file.')
+        energy = 'Nah'
 
     return energy
 

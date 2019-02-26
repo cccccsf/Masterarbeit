@@ -149,7 +149,7 @@ def submit(jobs):
                 submitted_jobs.append(new_job)
                 rec = new_job.path + '\n'
                 rec += 'job submitted...'
-                rec += '\n' + out
+                rec += '\n' + out +'\n'
                 record(new_job.root_path, rec)
                 print(rec)
             else:
