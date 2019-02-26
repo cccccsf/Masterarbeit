@@ -110,6 +110,7 @@ class Geometry(object):
         z = [float(i) for i in self.z]
         z_dict = dict(zip(z, self.no))
         z.sort()
+        print(z)
 
         #dlete the repeat atom with the similar z-coordinate
         i = 1
@@ -127,6 +128,7 @@ class Geometry(object):
                 distance = abs(z[i] - z[i-1])
                 z_fixed[0] = (z[i])
                 z_fixed[1] = (z[i-1])
+                #print(distance, z_fixed)
         self.layer_distance = distance
         self.z_fixed_no[0] = z_dict[z_fixed[0]]
         self.z_fixed_no[1] = z_dict[z_fixed[1]]

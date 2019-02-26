@@ -5,6 +5,7 @@ import subprocess
 import shutil
 import time
 from Common import record
+from Common import rename_file
 
 
 
@@ -152,6 +153,7 @@ def submit(jobs):
     for job in init_jobs:
         if not if_cal_finish(job):
             os.chdir(job.path)
+            rename_file(job.path, 'hf.out')
             out = submit_hf1_job()
             #out = '0000'
             count += 1
@@ -191,6 +193,8 @@ def submit(jobs):
                 new_job = jobs.pop()
                 print(new_job)
                 os.chdir(new_job.path)
+                rename_file(new_job.path, 'hf.out')
+                rename_file(new_job.path, 'fort.9')
                 copy_fort9(new_job)
                 out = submit_hf1_job()
                 count += 1

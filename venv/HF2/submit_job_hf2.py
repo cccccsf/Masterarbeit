@@ -5,6 +5,7 @@ import subprocess
 import shutil
 import time
 from Common import record
+from Common import rename_file
 
 
 def submit_hf2_job():
@@ -144,6 +145,7 @@ def submit(jobs):
             if count < max_paralell:
                 new_job = jobs.pop()
                 os.chdir(new_job.path)
+                rename_file(new_job.path, 'hf.out')
                 out = submit_hf2_job()
                 count += 1
                 submitted_jobs.append(new_job)

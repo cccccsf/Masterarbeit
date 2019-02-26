@@ -62,7 +62,7 @@ class ReadIni(object):
             self.lattice_parameter = self.read_lattice_parameter()
             self.number_atoms = self.cfg.getint('Basic_Info', 'number_of_atoms')
             self.geometry = self.read_geometry()
-            self.fixed_atoms = self.cfg.get('Basic_Info', 'fixed_atoms')
+            self.fixed_atoms = self.read_fixed_atoms()
         except Exception as e:
             print(e)
 
@@ -105,7 +105,7 @@ class ReadIni(object):
     def read_fixed_atoms(self):
         fixed_atoms = self.cfg.get('Basic_Info', 'fixed_atoms')
         fixed_atoms = fixed_atoms.split()
-        self.fixed_atoms = fixed_atoms
+        return fixed_atoms
 
     def get_initialization_info(self):
         return self.project_path, self.start, self.end
@@ -127,11 +127,13 @@ class ReadIni(object):
         self.crystal_path = self.cfg.get('Geo_Opt', 'crystal_path')
         return self.bs_geo_opt, self.functional, self.nodes_geo_opt, self.crystal_path
 
+
     def get_hf1_info(self):
         self.bs_hf1 = self.cfg.get('HF1', 'basis_set')
         self.bs_hf1 = self.if_none(self.bs_hf1)
         self.nodes_hf1 = self.cfg.get('HF1', 'nodes')
         return self.bs_hf1, self.nodes_hf1, self.crystal_path
+
 
     def get_hf2_info(self):
         self.bs_hf2 = self.cfg.get('HF2', 'basis_set')
@@ -139,14 +141,17 @@ class ReadIni(object):
         self.nodes_hf2 = self.cfg.get('HF1', 'nodes')
         return self.bs_hf2, self.nodes_hf2, self.crystal_path
 
+
     def get_loc_info(self):
         self.nodes_loc = self.cfg.get('Localization', 'nodes')
         return self.nodes_loc, self.crystal_path
+
 
     def get_lmp2_info(self):
         self.nodes_lmp2 = self.cfg.get('LMP2', 'nodes')
         self.cryscor_path = self.cfg.get('LMP2', 'cryscor_path')
         return self.nodes_lmp2, self.cryscor_path
+
 
     def get_rpa_info(self):
         self.nodes_rpa_b = self.cfg.get('RPA', 'bilayer_nodes')
@@ -155,15 +160,36 @@ class ReadIni(object):
         self.molpro_path = self.cfg.get('RPA', 'molpro_path')
         return self.nodes_rpa_b, self.nodes_rpa_s, self.molpro_key, self.molpro_path
 
+
     def get_cluster_info(self):
         size = self.cfg.get('Cluster', 'size')
         size = size.upper()
         center_atoms = self.cfg.get('Cluster', 'center_atoms')
-        if center_atoms == '' or center_atoms == None:
-            center_atoms = []
+        center_atoms = self.split_atoms(center_atoms)
+        upper_center_atoms = self.cfg.get('Cluster', 'upper_center_atoms')
+        under_center_atoms = self.cfg.get('Cluster', 'under_center_atoms')
+        upper_center_atoms = self.split_atoms(upper_center_atoms)
+        under_center_atoms = self.split_atoms(under_center_atoms)
+        center_atoms = self.process_center_atoms(center_atoms, upper_center_atoms, under_center_atoms)
+        distance_factor = self.cfg.get('Cluster', 'distance_factor')
+        vector1_factor = self.cfg.get('Cluster', 'vector1_factor')
+        vector2_factor = self.cfg.get('Cluster', 'vector2_factor')
+        vector3_factor = self.cfg.get('Cluster', 'vector3_factor')
+        factors = [distance_factor, vector1_factor, vector2_factor, vector3_factor]
+        return size, center_atoms, factors
+
+    def split_atoms(self, atoms):
+        if atoms == '' or atoms == None:
+            atoms = []
         else:
-            center_atoms = center_atoms.split()
-        return size, center_atoms
+            atoms = atoms.split()
+        return atoms
+
+    def process_center_atoms(self, atoms, upper_atoms, under_atoms):
+        if upper_atoms != [] and under_atoms != []:
+            atoms = [upper_atoms, under_atoms]
+        return atoms
+
 
     def test_parameters(self):
         if not test_variable.test_slab_or_molecule(self.system_type):

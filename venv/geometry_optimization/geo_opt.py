@@ -14,7 +14,6 @@ from geometry_optimization import if_cal_finish
 
 def geo_opt(path):
 
-    mkdir(path)
     rec = 'Geometry Optimization begins...'
     print(rec)
     record(path, rec)
@@ -64,6 +63,7 @@ def geo_opt(path):
             else:
                 print('Please enter the right number!!')
 
+    sys.exit()
     jobs = []
     new_jobs = []
     #generation of the first INPUT

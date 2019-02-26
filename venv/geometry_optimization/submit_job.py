@@ -9,6 +9,7 @@ import geometry_optimization
 from Common import record
 from Common import Job_path
 from Common import look_for_in_list
+from Common import rename_file
 
 
 def submit_geo_opt_job():
@@ -138,6 +139,7 @@ def submit(jobs, nodes, crystal_path):
         os.chdir(job_init.path)
         copy_submit_scr(job, nodes, crystal_path)
         if not if_cal_finish(job_init):
+            rename_file(job_init.path, 'geo_opt.out')
             out = submit_geo_opt_job()
             submitted_jobs.append(job_init)
             rec = job_init.path
@@ -205,6 +207,8 @@ def submit(jobs, nodes, crystal_path):
                     os.chdir(jobs[i].path)
                     copy_submit_scr(jobs[i], nodes, crystal_path)
                     copy_fort9(jobs[i])
+                    rename_file(jobs[i].path, 'geo_opt.out')
+                    rename_file(jobs[i].path, 'fort.9')
                     out = submit_geo_opt_job()
                     #out = '00000.rigi'
                     count += 1

@@ -9,6 +9,7 @@ import Localization
 import HF2
 import LMP2
 import RPA
+import CLUSTER
 
 
 def end_programm(path):
@@ -37,7 +38,9 @@ def pipeline(path, start, end):
         elif anchor == 4:
             LMP2.lmp2(path)
         elif anchor == 5:
-            rpa(path)
+            RPA.rpa(path)
+        elif anchor == 6:
+            CLUSTER.cluster(path)
         anchor += 1
     end_programm(path)
 

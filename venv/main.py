@@ -4,6 +4,8 @@ import shutil
 import Pipeline
 from Common import ReadIni
 from Common import record
+from Common import rename_file
+from Common import mkdir
 
 def menu():
 
@@ -23,7 +25,9 @@ def menu():
         end = end.lower()
         end = method[end]
 
+    mkdir(path)
     rec = 'Project begins...'
+    rename_file(path, 'record')
     record(path, rec, init = True)
     try:
         shutil.copy(ini_path+'/input.ini', path+'/input.ini')

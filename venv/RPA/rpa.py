@@ -15,7 +15,7 @@ def rpa(path):
     record(path, rec)
 
     init_dist = read_init_dis(path)
-    ini_path = os.path.dirname(__file__)
+    ini_path = os.path.dirname(os.path.relpath(__file__))
     ini_path = os.path.dirname(ini_path)
     ini_file = os.path.join(ini_path, 'input.ini')
     ini_file = os.path.exists(ini_file)
