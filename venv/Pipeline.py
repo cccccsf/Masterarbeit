@@ -27,6 +27,7 @@ def end_programm(path):
 def pipeline(path, start, end):
     anchor = start
     while anchor < end:
+        print(anchor, end)
         if anchor == 0:
             geometry_optimization.geo_opt(path)
         elif anchor == 1:

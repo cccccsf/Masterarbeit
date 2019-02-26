@@ -64,7 +64,7 @@ def update_nodes(path, nodes, crystal_path):
     if nodes != '':
         nodes_line = '#PBS -l nodes={}\n'.format(nodes)
         lines[loc] = nodes_line
-        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${{PBS_O_WORKDIR}}/geo_opt.out\n'.format(nodes)
+        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${{PBS_O_WORKDIR}}/hf.out\n'.format(nodes)
     if crystal_path != '':
         lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
 
@@ -139,6 +139,7 @@ def submit(jobs):
 
     #test if there is some job which is already finished
     for job in jobs[:]:
+        #print(job)
         if if_cal_finish(job):
             finished_jobs.append(job)
             jobs.remove(job)
@@ -150,7 +151,7 @@ def submit(jobs):
         if job.x == '0' and job.z == '0':
             init_jobs.append(job)
             jobs.remove(job)
-    for job in init_jobs:
+    for job in init_jobs[:]:
         if not if_cal_finish(job):
             os.chdir(job.path)
             rename_file(job.path, 'hf.out')
@@ -176,7 +177,6 @@ def submit(jobs):
             time.sleep(500)
             r += 1
             if r > 15:
-                rec = job_init.path
                 rec += '\n'
                 rec += 'initial calculation still not finished...'
                 record(submitted_jobs[0].root_path, rec)
@@ -189,7 +189,7 @@ def submit(jobs):
         if len(finished_jobs) == job_num and len(submitted_jobs) == 0:
             break
         else:
-            if count < max_paralell:
+            if count < max_paralell and len(jobs) != 0:
                 new_job = jobs.pop()
                 print(new_job)
                 os.chdir(new_job.path)
@@ -201,7 +201,7 @@ def submit(jobs):
                 submitted_jobs.append(new_job)
                 rec = new_job.path + '\n'
                 rec += 'job submitted...'
-                rec += '\n' + out
+                rec += '\n' + out + '\n'
                 record(new_job.root_path, rec)
             else:
                 time.sleep(500)

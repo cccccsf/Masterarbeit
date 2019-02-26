@@ -40,7 +40,9 @@ def hf1(path):
 
     jobs_HF1 = []
     new_jobs = []
+    hf1_jobs_finished = []
     #input for the whole system
+    #print('number Geo Opt', len(jobs_GeoOpt))
     for job in jobs_GeoOpt:
         path_GeoOpt = job.path
         #Bilayer
@@ -51,6 +53,8 @@ def hf1(path):
             Inp.gen_input()
             HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
+        else:
+            hf1_jobs_finished.append(new_job)
         jobs_HF1.append(new_job)
         #upperlayer
         path_upper = os.path.join(path_HF1, 'upperlayer')
@@ -60,6 +64,8 @@ def hf1(path):
             Inp.gen_input()
             HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
+        else:
+            hf1_jobs_finished.append(new_job)
         jobs_HF1.append(new_job)
         #underlayer
         path_under = os.path.join(path_HF1, 'underlayer')
@@ -69,13 +75,15 @@ def hf1(path):
             Inp.gen_input()
             HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
+        else:
+            hf1_jobs_finished.append(new_job)
         jobs_HF1.append(new_job)
-
     #Submit the calculation job
-    hf1_jobs_finished = HF1.submit(new_jobs)
+    hf1_jobs_finished_new = HF1.submit(new_jobs)
+    hf1_jobs_finished += hf1_jobs_finished_new
 
     #read calculation results
-    HF1.read_all_results(hf1_jobs_finished, init_dist=init_dist)
+    HF1.read_all_results_hf1(hf1_jobs_finished, init_dist)
 
     print('Hartree Fock calculation 1 finished!!!')
     record(path, 'Hartree Fock calculation 1 finished!!!')
