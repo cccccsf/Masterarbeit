@@ -113,8 +113,10 @@ def read_infomation(path):
 def test_SiO2():
 
     path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\cluster'
+    path = r'/users/shch/project/Masterarbeit/Test/cluster'
     CLUSTER.creat_json_file(path)
     job = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_1\z_1'
+    job = r'/users/shch/project/Masterarbeit/Test/geo_opt/x_1/z_1'
     dimen, lattice, geo = read_infomation(job)
     job = Job_path(job)
     #centre=[16, 16]
