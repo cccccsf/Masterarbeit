@@ -13,7 +13,7 @@ from Common import Point
 
 class Cluster(object):
 
-    def __init__(self, job, centre = [], name = '', fixed_atoms=None, size='', factors=[], zoom=1, aspect_ratio=0, basic_infos=[]):
+    def __init__(self, job, centre = [], name = '', fixed_atoms=None, size='', factors=[], zoom=1, aspect_ratio=0, basic_infos=[], deleted_atoms=[]):
 
         self.job = job
         self.name = name
@@ -34,6 +34,7 @@ class Cluster(object):
         self.factors = factors
         self.zoom = zoom
         self.aspect_ratio = aspect_ratio
+        self.deleted_atoms = deleted_atoms
         self.fac1, self.fac2 = self.get_aspect_ratio_factor()
         self.centre, self.UpperCenter, self.UnderCenter = self.get_centre()
         self.centre, self.UpperCenter, self.UnderCenter = self.get_center_ma()
@@ -125,7 +126,7 @@ class Cluster(object):
         :return:
         """
         if self.fixed_atoms != None:
-            fixed_z = [self.z[int(self.fixed_atoms[0])], self.z[int(self.fixed_atoms[1])]]
+            fixed_z = [self.z[int(self.fixed_atoms[0]-1)], self.z[int(self.fixed_atoms[1])-1]]
         else:
             fixed_z = self.z_fixed
         upperlayer, underlayer = [], []
@@ -374,13 +375,16 @@ class Cluster(object):
         return fac1, fac2
 
 
-
     def choose_atoms_from_distance(self):
         original_atoms = self.original_atoms
         upper_no = [atom[0] for atom in self.upperlayer]
         under_no = [atom[0] for atom in self.underlayer]
         original_upper = [atom for atom in original_atoms if atom.no in upper_no]
+        for atom in original_upper:
+            atom.layer = 1
         original_under = [atom for atom in original_atoms if atom.no in under_no]
+        for atom in original_under:
+            atom.layer = 2
         if self.check_factors():
             new_atoms = self.select_atoms_according_to_factors(original_upper, original_under)
         else:
@@ -452,16 +456,17 @@ class Cluster(object):
 
 
     def select_atoms_according_to_factors(self, original_upper, original_under):
-        fac, fac1, fac2, fac3 = self.factors
         new_atoms = []
         if self.dimensionality == 2:
-            ceil = int(math.ceil(max(fac1, fac2)))
+            ceil = int(math.ceil(max(max(self.factors[0]), max(self.factors[1]))))
             vec_att = (ceil, ceil)
             curr_upper = self.gen_all_atoms(original_upper, vec_att)
             curr_under = self.gen_all_atoms(original_under, vec_att)
+            fac, fac1, fac2 = self.factors[0]
             for atom in curr_upper:
                 if self.cal_distance(atom, self.UpperCenter) < self.l*fac and self.cal_vec_distance(atom, self.UpperCenter, self.lattice_vector[1]) < self.l2*fac2 and self.cal_vec_distance(atom, self.UpperCenter, self.lattice_vector[0]) < self.l1*fac1:
                     new_atoms.append(atom)
+            fac, fac1, fac2= self.factors[1]
             for atom in curr_under:
                 if self.cal_distance(atom, self.UnderCenter) < self.l*fac and self.cal_vec_distance(atom, self.UnderCenter, self.lattice_vector[1]) < self.l2*fac2 and self.cal_vec_distance(atom, self.UnderCenter, self.lattice_vector[0]) < self.l1*fac1:
                     new_atoms.append(atom)
@@ -470,9 +475,11 @@ class Cluster(object):
             vec_att = (ceil, ceil, ceil)
             curr_upper = self.gen_all_atoms(original_upper, vec_att)
             curr_under = self.gen_all_atoms(original_under, vec_att)
+            fac, fac1, fac2, fac3 = self.factors[0]
             for atom in curr_upper:
                 if self.cal_distance(atom, self.UpperCenter) < self.l*fac and self.cal_vec_distance(atom, self.UpperCenter, self.lattice_vector[1]) < self.l2*fac2 and self.cal_vec_distance(atom, self.UpperCenter, self.lattice_vector[0]) < self.l1*fac1 and self.cal_vector_between_two_atoms(atom, self.UpperCenter, self.lattice_vector[2]) < self.l3*fac3:
                     new_atoms.append(atom)
+            fac, fac1, fac2, fac3 = self.factors[1]
             for atom in curr_under:
                 if self.cal_distance(atom, self.UnderCenter) < self.l*fac and self.cal_vec_distance(atom, self.UnderCenter, self.lattice_vector[1]) < self.l2*fac2 and self.cal_vec_distance(atom, self.UnderCenter, self.lattice_vector[0]) < self.l1*fac1 and self.cal_vector_between_two_atoms(atom, self.UnderCenter, self.lattice_vector[2]) < self.l3*fac3:
                     new_atoms.append(atom)
@@ -482,13 +489,20 @@ class Cluster(object):
 
 
     def check_factors(self):
-        fac, fac1, fac2, fac3 = self.factors
         if self.dimensionality == 2:
-            if self.check_factor(fac) and self.check_factor(fac1) and self.check_factor(fac2):
-                return True
+            if len(self.factors) == 0:
+                return False
+            else:
+                fac, fac1, fac2 = self.factors[0]
+                if self.check_factor(fac) and self.check_factor(fac1) and self.check_factor(fac2):
+                    return True
         elif self.dimensionality == 3:
-            if self.check_factor(fac) and self.check_factor(fac1) and self.check_factor(fac2) and self.check_factor(fac3):
-                return True
+            if len(self.factors) == 0:
+                return False
+            else:
+                fac, fac1, fac2, fac3 = self.factors[0]
+                if self.check_factor(fac) and self.check_factor(fac1) and self.check_factor(fac2) and self.check_factor(fac3):
+                    return True
         return False
 
 
@@ -637,17 +651,38 @@ class Cluster(object):
         x1, y1, z1 = vec1
         nat2, vec2 = vec2
         x2, y2, z2 = vec2
-        a = x1/x2
-        b = y1/y2
-        c = z1/z2
+        try:
+            a = x1/x2
+        except ZeroDivisionError:
+            a = 0
+        try:
+            b = y1/y2
+        except ZeroDivisionError:
+            b = 0
+        try:
+            c = z1/z2
+        except ZeroDivisionError:
+            c = 0
         if abs(a-b) + abs(a-c) + abs(b-c) < 0.0001:
             return True
         else:
             return False
 
 
+    def delete_atoms(self, choosed_atoms):
+        if len(self.deleted_atoms) == 0:
+            return choosed_atoms
+        else:
+            deleted_atoms = [i-1 for i in self.deleted_atoms]
+            choosed_atoms = [i for j, i in enumerate(choosed_atoms) if j not in deleted_atoms]
+            choosed_atoms = self.cal_coor_no_of_all_atoms(choosed_atoms)
+            choosed_atoms = self.select_atoms_according_coordinate(choosed_atoms)
+            return choosed_atoms
+
+
     def get_cluster(self):
         self.choosed_atoms = self.choose_atoms_from_distance()
+        self.choosed_atoms = self.delete_atoms(self.choosed_atoms)
         self.final_cluster = self.add_H()
 
 
@@ -672,6 +707,42 @@ class Cluster(object):
             for atom in cluster:
                 ele = periodic_table_rev[int(atom.nat)]
                 f.write(str(ele).center(6) + ' ')
+                f.write('{:.12E}'.format(float(atom.x)).rjust(19) + ' ')
+                f.write('{:.12E}'.format(float(atom.y)).rjust(19) + ' ')
+                f.write('{:.12E}'.format(float(atom.z)).rjust(19))
+                f.write('\n')
+            print('Geometry file generated.')
+            print('number of atoms: ', len(cluster))
+            print('---'*15)
+
+
+    def add_layer_number(self, cluster):
+        for atom in cluster:
+            if atom.z >= max(self.z_fixed) - 0.1*self.layer_distance:
+                atom.layer = 1
+            else:
+                atom.layer = 2
+        return cluster
+
+
+    def write_xyz_with_layernumber(self, cluster=[]):
+        if self.final_cluster == []:
+            self.get_cluster()
+        if cluster == []:
+            cluster = self.final_cluster
+        cluster = self.add_layer_number(cluster)
+        file_name = '{}_Cluster_{}.xyz'.format(self.name, self.size)
+        mkdir(self.cluster_path)
+        file_path = os.path.join(self.cluster_path, file_name)
+        with open(file_path, 'w') as f:
+            f.write(str(len(cluster)) + '\n')
+            if self.size != '':
+                f.write('{}_Cluster_{}'.format(self.name, self.size) + '\n')
+            else:
+                f.write('{}_Cluster'.format(self.name) + '\n')
+            for atom in cluster:
+                ele = periodic_table_rev[int(atom.nat)]
+                f.write((str(ele)+str(atom.layer)).center(6) + ' ')
                 f.write('{:.12E}'.format(float(atom.x)).rjust(19) + ' ')
                 f.write('{:.12E}'.format(float(atom.y)).rjust(19) + ' ')
                 f.write('{:.12E}'.format(float(atom.z)).rjust(19))

@@ -171,11 +171,13 @@ class ReadIni(object):
         upper_center_atoms = self.split_atoms(upper_center_atoms)
         under_center_atoms = self.split_atoms(under_center_atoms)
         center_atoms = self.process_center_atoms(center_atoms, upper_center_atoms, under_center_atoms)
-        distance_factor = self.cfg.get('Cluster', 'distance_factor')
-        vector1_factor = self.cfg.get('Cluster', 'vector1_factor')
-        vector2_factor = self.cfg.get('Cluster', 'vector2_factor')
-        vector3_factor = self.cfg.get('Cluster', 'vector3_factor')
-        factors = [distance_factor, vector1_factor, vector2_factor, vector3_factor]
+        factors_upper = self.cfg.get('Cluster', 'upper_center_atoms')
+        factors_upper = self.split_factors(factors_upper)
+        factors_under = self.cfg.get('Cluster', 'under_center_atoms')
+        if factors_under != '':
+            factors_under = factors_upper
+        factors_under = self.split_factors(factors_under)
+        factors = [factors_upper, factors_under]
         return size, center_atoms, factors
 
     def split_atoms(self, atoms):
@@ -184,6 +186,14 @@ class ReadIni(object):
         else:
             atoms = atoms.split()
         return atoms
+
+    def split_factors(self, factors):
+        try:
+            factors = factors.split()
+            factors = [float(fac) for fac in factors]
+        except Exception as e:
+            print(e)
+        return factors
 
     def process_center_atoms(self, atoms, upper_atoms, under_atoms):
         if upper_atoms != [] and under_atoms != []:

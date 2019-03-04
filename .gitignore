@@ -18,4 +18,4 @@ venv/Test/
 Test/
 *.pyc
 *.cpython-36.pyc
-
+*/__pycache__/*

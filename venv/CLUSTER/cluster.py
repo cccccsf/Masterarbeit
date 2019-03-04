@@ -43,11 +43,11 @@ def cluster(path):
     cluster_path = os.path.join(path, 'cluster')
     mkdir(cluster_path)
     Cluster.creat_json_file(cluster_path)
-    for job in bilayer:
+    for job in bilayr:
         Clu = Cluster(job, centre=center_atoms, name=name, size=size, fixed_atoms=fixed_atoms, factors=factors)
         Clu.write_xyz()
 
-    print('LRPA calculation finished!!!')
+    print('LRPeA calculation finished!!!')
     record(path, 'LRPA calculation 2 finished!!!')
 
 

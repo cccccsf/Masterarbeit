@@ -7,7 +7,10 @@ from CLUSTER.atom import Atom
 
 
 def test_cut_cluster(job):
-    Clu = CLUSTER.Cluster(job, centre=[[3, 4], [7, 8]], name='BlackP', size='XL')
+    fac_upp = [1, 1, 0.7]
+    fac_und = [1, 1, 0.7]
+    factors = [fac_upp, fac_und]
+    Clu = CLUSTER.Cluster(job, centre=[[3, 4], [7, 8]], name='BlackP', factors=factors,size='XS')
     nat = Clu.nat[0]
     x = Clu.x[0]
     y = Clu.y[0]
@@ -22,7 +25,7 @@ def test_cut_cluster(job):
     # test_cal_coordniate_number(Clu)
     # test_cal_coor_all_atoms(Clu)
     # test_select_atoms_according_coor(Clu)
-    #Clu.write_xyz(Clu.final_cluster)
+    Clu.write_xyz_with_layernumber()
     # Clu.get_l
     # Clu.add_H()
 
@@ -83,14 +86,14 @@ def test_suite():
     #path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\cluster'
     CLUSTER.creat_json_file(path)
     # job = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_1\z_1'
-    # job = jobs[0]
+    job = jobs[0]
     # print(job)
     # # job = Job_path(job)
-    # test_cut_cluster(job)
-    for job in jobs:
-        test_cut_cluster(job)
+    test_cut_cluster(job)
+    # for job in jobs:
+    #     test_cut_cluster(job)
 
-#test_suite()
+test_suite()
 
 def read_infomation(path):
     file = os.path.join(path, 'inp')
@@ -113,19 +116,24 @@ def read_infomation(path):
 def test_SiO2():
 
     path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\cluster'
-    path = r'/users/shch/project/Masterarbeit/Test/cluster'
+    #path = r'/users/shch/project/Masterarbeit/Test/cluster'
     CLUSTER.creat_json_file(path)
     job = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_1\z_1'
-    job = r'/users/shch/project/Masterarbeit/Test/geo_opt/x_1/z_1'
+    #job = r'/users/shch/project/Masterarbeit/Test/geo_opt/x_1/z_1'
     dimen, lattice, geo = read_infomation(job)
     job = Job_path(job)
     #centre=[16, 16]
     centre = [2, 4]
+    fac_upp = [0.85, 1.1, 1.1]
+    fac_und = fac_upp
+    factors = [fac_upp, fac_und]
+    deleted_atoms = [54, 49]
+    #deleted_atoms = []
     #centre = [[2, 2], [13, 13]]
-    Clu = CLUSTER.Cluster(job, name='SiO2-H2O', centre=centre, basic_infos=[dimen, lattice, geo], factors=[0.9,1.5,1.5,''], size='XL')
+    Clu = CLUSTER.Cluster(job, name='SiO2-H2O', centre=centre, basic_infos=[dimen, lattice, geo], factors=factors, size='M', fixed_atoms=[10, 17], deleted_atoms=deleted_atoms)
     original_atoms = Clu.original_atoms
-
     cnt = 1
+    Clu.write_xyz()
     # for atom in original_atoms:
         # print(cnt, atom)
         # cnt += 1
@@ -138,10 +146,10 @@ def test_SiO2():
     # print(original_atoms[0])
     # print(original_atoms[0].coor_vec)
 
-    test_FactorCalculator(Clu)
+    #test_FactorCalculator(Clu)
 
 def test_FactorCalculator(Cluster):
     CLUSTER.FactorCalculator(Cluster)
 
 
-test_SiO2()
+#test_SiO2()
