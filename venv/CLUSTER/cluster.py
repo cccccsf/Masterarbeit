@@ -47,8 +47,8 @@ def cluster(path):
         Clu = Cluster(job, centre=center_atoms, name=name, size=size, fixed_atoms=fixed_atoms, factors=factors)
         Clu.write_xyz()
 
-    print('LRPeA calculation finished!!!')
-    record(path, 'LRPA calculation 2 finished!!!')
+    print('Clusters generated!!!')
+    record(path, 'Clusters generated!!!')
 
 
 

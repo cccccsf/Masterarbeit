@@ -5,12 +5,13 @@ import CLUSTER
 from CLUSTER.atom import Atom
 
 
+#test BlackP
 
 def test_cut_cluster(job):
-    fac_upp = [1, 1, 0.7]
-    fac_und = [1, 1, 0.7]
+    fac_upp = [1.2, 1.8, 1.3]
+    fac_und = [1.2, 1.8, 1.3]
     factors = [fac_upp, fac_und]
-    Clu = CLUSTER.Cluster(job, centre=[[3, 4], [7, 8]], name='BlackP', factors=factors,size='XS')
+    Clu = CLUSTER.Cluster(job, centre=[[3, 4], [7, 8]], name='BlackP', factors=factors,size='L')
     nat = Clu.nat[0]
     x = Clu.x[0]
     y = Clu.y[0]
@@ -18,7 +19,8 @@ def test_cut_cluster(job):
     atom = CLUSTER.Atom(nat, x, y, z)
     cent = Clu.centre
     test_cal_dis(atom, cent, Clu)
-    test_cal_vec_dis(atom, cent, Clu)
+
+    #test_cal_vec_dis(atom, cent, Clu)
     # test_choose_atom(Clu)
     # test_get_layer(Clu)
     # test_cal_atom_dis(Clu)
@@ -74,7 +76,7 @@ def test_cal_coor_all_atoms(Clu):
 
 
 
-def test_suite():
+def test_blackP():
     path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test\geo_opt'
     walks = os.walk(path)
     jobs = []
@@ -93,7 +95,7 @@ def test_suite():
     # for job in jobs:
     #     test_cut_cluster(job)
 
-test_suite()
+
 
 def read_infomation(path):
     file = os.path.join(path, 'inp')
@@ -112,6 +114,7 @@ def read_infomation(path):
     return dimen, lattice, geo
 
 
+#test SiO-H2O
 
 def test_SiO2():
 
@@ -151,5 +154,37 @@ def test_SiO2():
 def test_FactorCalculator(Cluster):
     CLUSTER.FactorCalculator(Cluster)
 
+# test MgO
 
-#test_SiO2()
+def test_MgO():
+    path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\cluster'
+    CLUSTER.creat_json_file(path)
+    job = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_1\z_2'
+    dimen, lattice, geo = read_infomation(job)
+    job = Job_path(job)
+    center_upp = [25, 25]
+    center_und = [9, 9]
+    center = [center_upp, center_und]
+    fixed_atoms = [13, 24]
+    fac_upp = [0.3, 0.5, 0.5]
+    fac_und = [0.4, 0.6, 0.6]
+    factors = [fac_upp, fac_und]
+    Clu = CLUSTER.Cluster(job, name='MgO', centre=center, basic_infos=[dimen, lattice, geo], factors=factors, fixed_atoms=fixed_atoms)
+    Clu.final_cluster = Clu.choose_atoms_from_distance()
+    Clu.write_xyz(Clu.choosed_atoms)
+    # original_atoms = Clu.original_atoms
+    # cnt = 1
+    # Clu.write_xyz()
+
+
+
+
+
+def test_suite():
+    #test_blackP()
+    #test_SiO2()
+    test_MgO()
+    pass
+
+test_suite()
+

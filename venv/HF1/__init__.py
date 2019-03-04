@@ -10,3 +10,4 @@ from HF1.read_results_hf1 import read_all_results
 from HF1.read_init_distance import read_init_dis
 from HF1.read_results_hf1 import read_all_results_hf1
 from HF1.change_parameters import change_parameters
+from HF1.delete_guessp import delete_guessp

@@ -21,3 +21,4 @@ ziliao/
 ../.idea/.workspace.xml
 ../.idea/workspace.xml
 *.xml
+*.cpython-36.pyc

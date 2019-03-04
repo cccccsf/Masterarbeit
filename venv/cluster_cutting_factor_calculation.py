@@ -10,16 +10,15 @@ from test_cluster import read_infomation
 def factor_calculation():
 
     # parameters input
-    path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_1\z_1'
-    name = 'SiO2-H2O'
-    center = [2, 4]
-    atom = (-8.963974190, -5.145932334, -4.090258797)
-    atom2 = (0.127722861, 5.352278396, -4.090258797)
-    atom3 = (-0.8963974190, -5.145932334, -4.090258797)
-    atom4 = (1.599471044, -7.886938139, -4.226003836)
-    atom5 = (-7.49226007, 2.6112570791, -4.226003836)
-    atom6 = (1.599471044, -7.886938139, -4.226003836)
-    atoms = [atom, atom2, atom3, atom4, atom5, atom6]
+    path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_1\z_2'
+    name = 'MgO'
+    center_upp = [25, 25]
+    center_und = [9, 9]
+    center = [center_upp, center_und]
+    atom = (-2.99725, 0, 16.835625996)
+    atom2 = (-1.498625, 5.352278396, 16.891833116)
+    atom3 = (-2.99725, -2.99725, 19.963182233)
+    atoms = [atom, atom2, atom3]
     #if needed
     dimen = 2
     lattice_parameter = []

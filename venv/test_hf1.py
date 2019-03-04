@@ -54,6 +54,12 @@ def test_too_many_cycles():
     e1 = HF1.read_results_hf1.get_energy(job2)
     print(e1)
 
+def test_delete_guessp():
+    job = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test\hf1\x_0.35\z_0'
+    job2 = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test\hf1\x_0.35\z_0\underlayer'
+    job = Job_path(job)
+    HF1.delete_guessp(job)
+
 
 def test_suite():
     #test_select_jobs()
@@ -61,7 +67,9 @@ def test_suite():
     #test_Layer_Inp()
     #test_read_all_results()
     #test_if_finished()
-    test_too_many_cycles()
+    #test_too_many_cycles()
+    #test_delete_guessp()
+    pass
 
 
 test_suite()

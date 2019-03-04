@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import math
 import os
+import sys
 from Common import Job_path
 from Common import mkdir
 from CLUSTER.read_info import read_and_write_infos
@@ -273,6 +274,7 @@ class Cluster(object):
         coor = atom.coor
         coor_vec = atom.coor_vec
         new_atom = Atom(nat, new_x, new_y, new_z, no=no, type=type, coor=coor, coor_vec=coor_vec)
+        new_atom.layer = atom.layer
         return new_atom
 
 
@@ -287,6 +289,7 @@ class Cluster(object):
         coor = atom.coor
         coor_vec = atom.coor_vec
         new_atom = Atom(nat, new_x, new_y, new_z, no=no, type=type, coor=coor, coor_vec=coor_vec)
+        new_atom.layer = atom.layer
         return new_atom
 
 
@@ -376,7 +379,7 @@ class Cluster(object):
 
 
     def choose_atoms_from_distance(self):
-        original_atoms = self.original_atoms
+        original_atoms = self.original_atoms[:]
         upper_no = [atom[0] for atom in self.upperlayer]
         under_no = [atom[0] for atom in self.underlayer]
         original_upper = [atom for atom in original_atoms if atom.no in upper_no]
@@ -386,7 +389,7 @@ class Cluster(object):
         for atom in original_under:
             atom.layer = 2
         if self.check_factors():
-            new_atoms = self.select_atoms_according_to_factors(original_upper, original_under)
+            choosed_atoms = self.select_atoms_according_to_factors(original_upper, original_under)
         else:
             new_atoms, new_upper, new_under = [], [], []
             if self.dimensionality == 2:
@@ -448,9 +451,8 @@ class Cluster(object):
                             new_atoms.append(atom)
             else:
                 pass
-        choosed_atoms = new_atoms + original_atoms
-        choosed_atoms = self.cal_coor_no_of_all_atoms(choosed_atoms)
-        choosed_atoms = self.select_atoms_according_coordinate(choosed_atoms)
+        if original_atoms[0] not in choosed_atoms:
+            choosed_atoms = new_atoms + original_atoms[:]
         # print('number of selected atoms: ', len(choosed_atoms))
         return choosed_atoms
 
@@ -461,9 +463,14 @@ class Cluster(object):
             ceil = int(math.ceil(max(max(self.factors[0]), max(self.factors[1]))))
             vec_att = (ceil, ceil)
             curr_upper = self.gen_all_atoms(original_upper, vec_att)
+            curr_upper = curr_upper + original_upper[:]
             curr_under = self.gen_all_atoms(original_under, vec_att)
+            curr_under += original_under[:]
             fac, fac1, fac2 = self.factors[0]
             for atom in curr_upper:
+                # print(self.cal_distance(atom, self.UpperCenter), self.l*fac)
+                # print(self.cal_vec_distance(atom, self.UpperCenter, self.lattice_vector[1]), self.l2)
+                # print(self.cal_vec_distance(atom, self.UpperCenter, self.lattice_vector[0]), self.l1)
                 if self.cal_distance(atom, self.UpperCenter) < self.l*fac and self.cal_vec_distance(atom, self.UpperCenter, self.lattice_vector[1]) < self.l2*fac2 and self.cal_vec_distance(atom, self.UpperCenter, self.lattice_vector[0]) < self.l1*fac1:
                     new_atoms.append(atom)
             fac, fac1, fac2= self.factors[1]
@@ -483,7 +490,6 @@ class Cluster(object):
             for atom in curr_under:
                 if self.cal_distance(atom, self.UnderCenter) < self.l*fac and self.cal_vec_distance(atom, self.UnderCenter, self.lattice_vector[1]) < self.l2*fac2 and self.cal_vec_distance(atom, self.UnderCenter, self.lattice_vector[0]) < self.l1*fac1 and self.cal_vector_between_two_atoms(atom, self.UnderCenter, self.lattice_vector[2]) < self.l3*fac3:
                     new_atoms.append(atom)
-
         return new_atoms
 
 
@@ -535,14 +541,17 @@ class Cluster(object):
             coor_vec = []
             for new_atom in all_atoms:
                 if new_atom != self.original_atoms[i]:
-                    cov_rad = (read_cov_rad(self.original_atoms[i].nat, unit='a') + read_cov_rad(new_atom.nat, unit='a')) * 1.2
+                    cov_rad = (read_cov_rad(self.original_atoms[i].nat, unit='a') + read_cov_rad(new_atom.nat, unit='a')) * 1.1
                     distance = self.cal_dis_two_atoms(self.original_atoms[i], new_atom)
                     if distance <= cov_rad:
+                        #print(self.original_atoms[i], new_atom.nat, distance, cov_rad)
                         vec = self.cal_vector_between_two_atoms(self.original_atoms[i], new_atom)
                         coor_vec.append(vec)
                         coor +=1
             self.original_atoms[i].coor = coor
+            #print(coor)
             self.original_atoms[i].coor_vec = coor_vec
+            #print(coor_vec)
         atoms_coor_dict, atoms_coor_vec_dict = {}, {}
         for atom in self.original_atoms:
             atoms_coor_dict[atom.no] = atom.coor
@@ -558,12 +567,15 @@ class Cluster(object):
                 if i != j:
                     cor_rad = read_cov_rad(atoms[i].nat, unit='a') + read_cov_rad(atoms[j].nat, unit='a')
                     dis = self.cal_dis_two_atoms(atoms[i], atoms[j])
-                    if dis <= cor_rad*1.2:
+                    if dis <= cor_rad*1.1 and dis > 0:
+                        # print(atoms[i], atoms[j], cor_rad*1.2, dis)
                         vec = self.cal_vector_between_two_atoms(atoms[i], atoms[j])
                         coor_vec.append(vec)
                         coor +=1
             atoms[i].coor = coor
             atoms[i].coor_vec = coor_vec
+        # for i in self.original_atoms:
+        #     print(i.coor)
         return atoms
 
 
@@ -647,22 +659,26 @@ class Cluster(object):
 
     @staticmethod
     def if_parallel(vec1, vec2):
+        #print('1:', vec1, '2:', vec2)
         nat1, vec1 = vec1
         x1, y1, z1 = vec1
         nat2, vec2 = vec2
         x2, y2, z2 = vec2
-        try:
-            a = x1/x2
-        except ZeroDivisionError:
-            a = 0
-        try:
-            b = y1/y2
-        except ZeroDivisionError:
-            b = 0
-        try:
-            c = z1/z2
-        except ZeroDivisionError:
-            c = 0
+        a = x1/x2
+        b = y1/y2
+        c = z1/z2
+        # try:
+        #     a = x1/x2
+        # except ZeroDivisionError:
+        #     a = 0
+        # try:
+        #     b = y1/y2
+        # except ZeroDivisionError:
+        #     b = 0
+        # try:
+        #     c = z1/z2
+        # except ZeroDivisionError:
+        #     c = 0
         if abs(a-b) + abs(a-c) + abs(b-c) < 0.0001:
             return True
         else:
@@ -682,6 +698,8 @@ class Cluster(object):
 
     def get_cluster(self):
         self.choosed_atoms = self.choose_atoms_from_distance()
+        self.choosed_atoms = self.cal_coor_no_of_all_atoms(self.choosed_atoms)
+        self.choosed_atoms = self.select_atoms_according_coordinate(self.choosed_atoms)
         self.choosed_atoms = self.delete_atoms(self.choosed_atoms)
         self.final_cluster = self.add_H()
 

@@ -88,12 +88,20 @@ def hf1(path):
     # deal with not-converged jobs
     jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
     hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
-    while len(jobs_not_converged) > 0:
-        HF1.change_parameters(jobs_not_converged)
-        new_jobs_finished = HF1.submit(jobs_not_converged)
-        hf1_jobs_finished += hf1_jobs_finished_new
-        jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
-        hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
+    # try to not use GUESSP
+    for job in jobs_not_converged:
+        HF1.delete_guessp(job)
+    new_jobs_finished = HF1.submit(jobs_not_converged)
+    hf1_jobs_finished += hf1_jobs_finished_new
+    jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
+    hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
+    # # if still not converged, try to change some parameters
+    # while len(jobs_not_converged) > 0:
+    #     HF1.change_parameters(jobs_not_converged)
+    #     new_jobs_finished = HF1.submit(jobs_not_converged)
+    #     hf1_jobs_finished += hf1_jobs_finished_new
+    #     jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
+    #     hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
 
     print('Hartree Fock calculation 1 finished!!!')
     record(path, 'Hartree Fock calculation 1 finished!!!')
