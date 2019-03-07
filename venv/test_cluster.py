@@ -10,8 +10,8 @@ from CLUSTER.atom import Atom
 def test_cut_cluster(job):
     fac_upp = [1.2, 1.8, 1.3]
     fac_und = [1.2, 1.8, 1.3]
-    factors = [fac_upp, fac_und]
-    Clu = CLUSTER.Cluster(job, centre=[[3, 4], [7, 8]], name='BlackP', factors=factors,size='L')
+    factors = [[1, 1, 0.7], [1, 1.5, 0.7]]
+    Clu = CLUSTER.Cluster(job, centre=[[3, 4], [7, 8]], name='BlackP', factors=factors,size='S')
     nat = Clu.nat[0]
     x = Clu.x[0]
     y = Clu.y[0]
@@ -78,22 +78,23 @@ def test_cal_coor_all_atoms(Clu):
 
 def test_blackP():
     path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test\geo_opt'
+    path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\job\geo_opt'
     walks = os.walk(path)
     jobs = []
     for root, dirs, files in walks:
-        if 'geo_opt.out' in files:
+        if 'hf.out' in files:
             job = Job_path(root)
             jobs.append(job)
-    path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test\cluster'
+    path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\job\cluster'
     #path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\cluster'
     CLUSTER.creat_json_file(path)
     # job = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_1\z_1'
-    job = jobs[0]
-    # print(job)
-    # # job = Job_path(job)
-    test_cut_cluster(job)
-    # for job in jobs:
-    #     test_cut_cluster(job)
+    # job = jobs[0]
+    # # print(job)
+    # # # job = Job_path(job)
+    # test_cut_cluster(job)
+    for job in jobs:
+        test_cut_cluster(job)
 
 
 
@@ -181,9 +182,9 @@ def test_MgO():
 
 
 def test_suite():
-    #test_blackP()
+    test_blackP()
     #test_SiO2()
-    test_MgO()
+    #test_MgO()
     pass
 
 test_suite()
