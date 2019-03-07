@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 import re
+import sys
 import subprocess
 import shutil
 import time
@@ -19,8 +20,6 @@ def submit_hf2_job():
         print(code)
     out_text = out_bytes.decode('utf-8')
     out_text = out_text.strip('\n')
-    print('job submitted...')
-    print(out_text)
     return out_text
 
 
@@ -50,7 +49,7 @@ def copy_fort9(job):
         print(e)
 
 def update_nodes(path, nodes, crystal_path):
-    scr = os.path.join(path, 'geo_opt')
+    scr = os.path.join(path, 'hf2')
     with open(scr, 'r') as f:
         lines = f.readlines()
     nodes_line = lines[3]
@@ -75,10 +74,9 @@ def update_nodes(path, nodes, crystal_path):
     if nodes != '':
         nodes_line = '#PBS -l nodes={}\n'.format(nodes)
         lines[loc] = nodes_line
-        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/geo_opt.out\n'.format(nodes)
+        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${{PBS_O_WORKDIR}}/geo_opt.out\n'.format(nodes)
     if crystal_path != '':
         lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
-
     with open(scr, 'w') as f:
         f.writelines(lines)
 
@@ -90,7 +88,7 @@ def if_cal_finish(job):
     :return: Bool Ture of False
     """
     path = job.path
-    os.chdir(path.path)
+    os.chdir(path)
     if not os.path.exists('hf.out'):
         return False
     else:
@@ -111,7 +109,7 @@ def if_cal_finish(job):
 
 def submit(jobs):
     job_num = len(jobs)
-    max_paralell = 6
+    max_paralell = 2
     count = 0
     submitted_jobs = []
     finished_jobs = []
@@ -121,9 +119,11 @@ def submit(jobs):
         for job in jobs[:]:
             if if_cal_finish(job):
                 finished_jobs.append(job)
+                num = (len(finished_jobs)) + '/' + str(jobs_num)
                 rec = job.path
                 rec += '\n'
-                rec += 'calculation finished...'
+                rec += num
+                rec += ' calculation finished...'
                 print(rec)
                 record(job.root_path, rec)
                 jobs.remove(job)
@@ -142,7 +142,7 @@ def submit(jobs):
         if len(finished_jobs) == job_num and len(submitted_jobs) == 0:
             break
         else:
-            if count < max_paralell:
+            if count < max_paralell and len(jobs) != 0:
                 new_job = jobs.pop()
                 os.chdir(new_job.path)
                 rename_file(new_job.path, 'hf.out')
@@ -164,4 +164,3 @@ def submit(jobs):
                 continue
 
     return finished_jobs
-

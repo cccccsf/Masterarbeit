@@ -18,8 +18,8 @@ def submit_lmp2_job():
         print(code)
     out_text = out_bytes.decode('utf-8')
     out_text = out_text.strip('\n')
-    print('job submitted...')
-    print(out_text)
+    #print('job submitted...')
+    #print(out_text)
     return out_text
 
 
@@ -154,9 +154,11 @@ def submit(jobs):
         for job in jobs[:]:
             if if_cal_finish(job):
                 finished_jobs.append(job)
+                num = str(len(finished_jobs)) + '/' + str(jobs_num)
                 rec = job.path
                 rec += '\n'
-                rec += 'calculation finished...'
+                rec += num
+                rec += ' calculation finished...'
                 print(rec)
                 record(job.root_path, rec)
                 jobs.remove(job)
@@ -175,7 +177,7 @@ def submit(jobs):
         if len(finished_jobs) == job_num and len(submitted_jobs) == 0:
             break
         else:
-            if count <= max_paralell:       #check the number of jobs which is running now
+            if count <= max_paralell and len(jobs) != 0:       #check the number of jobs which is running now
                 new_job = jobs.pop()
                 os.chdir(new_job.path)
                 out = submit_hf2_job()

@@ -1,19 +1,21 @@
 #!/usr/bin/python3
+import os
 import sys
 import Localization
 from Common import record
 from Common import ReadIni
+from Common import Job_path
+from Common import mkdir
 
 
 def localization(path):
 
-    rec = 'Geometry Optimization begins...'
+    rec = 'Localization begins...'
     print(rec)
     record(path, rec)
 
 
     hf1_jobs = Localization.get_jobs(path)
-
     ini_path = os.path.dirname(__file__)
     ini_path = os.path.dirname(ini_path)
     ini_file = os.path.join(ini_path, 'input.ini')
@@ -34,13 +36,19 @@ def localization(path):
 
     #copy input file of localiztion
     loc_jobs = []
+    new_loc_jobs = []
     if len(hf1_jobs) != 0:
         try:
             for job in hf1_jobs:
-                if not Localization.if_loc_finish(job):
-                    Localization.copy_inp_file(job)
-                    Localization.copy_loc_scr(job, nodes, crystal_path)
-                    loc_jobs.append(job)
+                new_job = job.path.replace('hf1', 'loc')
+                new_job = Job_path(new_job)
+                new_job.path = job.path
+                loc_jobs.append(new_job)
+                if not Localization.if_loc_finish(new_job):
+                    #mkdir(new_job.path)
+                    Localization.copy_inp_file(new_job)
+                    Localization.copy_loc_scr(new_job, nodes, crystal_path)
+                    new_loc_jobs.append(new_job)
         except Exception as e:
             print(e)
     else:
@@ -50,9 +58,9 @@ def localization(path):
             sys.exit(1)
         except:
             print('Program Exits.')
-
+    
     #submit all jobs
-    loc_finished_job = Localization.submit(loc_jobs)
+    loc_finished_job = Localization.submit(new_loc_jobs)
 
-    print('Hartree Fock calculation 1 finished!!!')
-    record(path, 'Hartree Fock calculation 1 finished!!!')
+    print('Localization finished!!!')
+    record(path, 'Localization finished!!!')

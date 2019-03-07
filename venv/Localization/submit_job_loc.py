@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+import re
 import subprocess
 import shutil
 import time
@@ -16,8 +17,8 @@ def submit_loc_job():
         print(code)
     out_text = out_bytes.decode('utf-8')
     out_text = out_text.strip('\n')
-    print('job submitted...')
-    print(out_text)
+    #print('job submitted...')
+    #print(out_text)
     return out_text
 
 
@@ -38,7 +39,7 @@ def copy_loc_scr(job, nodes, crystal_path):
 
 
 def update_nodes(path, nodes, crystal_path):
-    scr = os.path.join(path, 'geo_opt')
+    scr = os.path.join(path, 'loc')
     with open(scr, 'r') as f:
         lines = f.readlines()
     nodes_line = lines[3]
@@ -111,7 +112,7 @@ def test_all_loc_finished(job_dirs):
 def submit(jobs):
 
     jobs_len = len(jobs)
-    max_paralell = 12
+    max_paralell = 8
     count = 0
     submitted_jobs = []
     finished_jobs = []
@@ -121,9 +122,11 @@ def submit(jobs):
         for job in jobs[:]:
             if if_loc_finish(job):
                 finished_jobs.append(job)
+                num = str(len(finished_jobs)) + '/' + str(jobs_len)
                 rec = job.path
                 rec += '\n'
-                rec += 'Localization finished...'
+                rec += num
+                rec += ' localization finished...'
                 print(rec)
                 record(job.root_path, rec)
                 jobs.remove(job)
@@ -142,9 +145,9 @@ def submit(jobs):
         if len(finished_jobs) == jobs_len and len(submitted_jobs) == 0:
             break
         else:
-            if count <= max_paralell:
+            if count <= max_paralell and len(jobs) != 0:
                 new_job = jobs.pop()
-                os.chdir(new_job)
+                os.chdir(new_job.path)
                 out = submit_loc_job()
                 count += 1
                 submitted_jobs.append(new_job)

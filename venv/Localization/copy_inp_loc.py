@@ -13,7 +13,7 @@ def get_jobs(path):
         if ('hf.out' in files) and ('fort.9' in files):
             new_path = root
             new_job = Job_path(new_path)
-            if if_cal_finish(job):
+            if if_cal_finish(new_job):
                 jobs.append(new_job)
     return jobs
 
@@ -22,7 +22,7 @@ def copy_inp_file(job):
 
     ziel_path = job.path
     inp_path = os.path.dirname(__file__)
-    inp_from = os.path.join(scr_path, 'input.loc')
+    inp_from = os.path.join(inp_path, 'input.loc')
     inp_to = os.path.join(ziel_path, 'input.loc')
     shutil.copy(inp_from, inp_to)
     print(ziel_path)

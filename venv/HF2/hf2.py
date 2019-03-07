@@ -42,7 +42,7 @@ def hf2(path):
             bilayer.append(job)
         elif job.layertype == 'underlayer' or job.layertype == 'upperlayer':
             singlelayer.append(job)
-
+    
     #generation of all input files
     for job in bilayer:
         Inp = HF2.Input(job, name, slab_or_molecule, group, bs_type=bs_type, layertype = 'bilayer', fixed_atoms = fixed_atoms)
@@ -54,7 +54,7 @@ def hf2(path):
         Inp.gen_input()
         HF2.copy_submit_scr(job, nodes, crystal_path)
         HF2.copy_fort9(job)
-
+    
     #submit the jobs
     hf2_jobs = []
     for job in bilayer:
@@ -74,4 +74,4 @@ def hf2(path):
         HF2.read_all_results_hf2(hf2_jobs_finished, init_dist=init_dist)
 
     print('Hartree Fock calculation 2 finished!!!')
-    record(path, 'Hartree Fock calculation 2 finished!!!')
+    recod(path, 'Hartree Fock calculation 2 finished!!!')

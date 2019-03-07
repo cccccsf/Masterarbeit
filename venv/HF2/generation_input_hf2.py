@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 import re
+import sys
 import json
 from copy import deepcopy
 from Crystal import Guesdual
@@ -40,7 +41,7 @@ class Input(object):
         self.fixed_atoms = fixed_atoms
         self.geometry = self.get_geometry()         #class geometry
         self.lattice_parameter = self.get_lattice_parameter()
-
+        
         self.bs = []                #class Basis_set
         self.bs_type = 'default'
 
