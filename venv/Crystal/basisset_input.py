@@ -214,10 +214,10 @@ class Basis_set(object):
         cc_f = [shell for shell in bs_cc if shell [0][0] == 'F']
         aug_d = [shell for shell in bs_aug if shell[0][0] == 'D']
         aug_f = [shell for shell in bs_aug if shell[0][0] == 'F']
-        bs_combine = ahl_s + ahl_p + cc_d
-        bs_combine.append(aug_d[-1])
-        bs_combine = bs_combine + cc_f
-        bs_combine.append(aug_f[-1])
+        bs_combine = ahl_s + ahl_p + cc_d + cc_f + aug_d[-1:] + aug_f[-1:]
+        # bs_combine.append(aug_d[-1])
+        # bs_combine = bs_combine + cc_f
+        # bs_combine.append(aug_f[-1])
         bs_combine = choose_bs.transfer_crystal_formatted_bs_input([bs_combine],[element])[0]
         return bs_combine
 
@@ -288,6 +288,8 @@ class Basis_set(object):
 
 # bs = Basis_set.read_bs_geo_opt_default_metal(20)
 # bs = Basis_set.read_bs_default('HF2', 15, 0)
-# print(bs0)
+# print(len(bs))
+# print(bs)
+
 
 

@@ -110,7 +110,6 @@ class Geometry(object):
         z = [float(i) for i in self.z]
         z_dict = dict(zip(z, self.no))
         z.sort()
-        print(z)
 
         #dlete the repeat atom with the similar z-coordinate
         i = 1

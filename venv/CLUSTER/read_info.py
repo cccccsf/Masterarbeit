@@ -10,6 +10,7 @@ def read_block(job):
 
     path = job.path
     out_file = os.path.join(path, 'geo_opt.out')
+    out_file = os.path.join(path, 'hf.out')
     size = os.path.getsize(out_file)
     s = -int(size/10)
     with open(out_file, 'rb') as f:
