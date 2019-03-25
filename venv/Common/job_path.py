@@ -18,6 +18,7 @@ class Job_path(object):
         self.init_values()
         self.coord = (self.x, self.z)
 
+        self.parameter = {}
         self.status = ''
 
     def __str__(self):

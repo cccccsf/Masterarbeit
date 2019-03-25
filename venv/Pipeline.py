@@ -10,6 +10,7 @@ import HF2
 import LMP2
 import RPA
 import CLUSTER
+import Correction
 
 
 def end_programm(path):
@@ -42,6 +43,8 @@ def pipeline(path, start, end):
             RPA.rpa(path)
         elif anchor == 6:
             CLUSTER.cluster(path)
+        elif anchor == 7:
+            Correction.correction(path)
         anchor += 1
     end_programm(path)
 

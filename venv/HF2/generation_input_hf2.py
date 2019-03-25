@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 import re
+import sys
 import json
 from copy import deepcopy
 from Crystal import Guesdual
@@ -126,11 +127,17 @@ class Input(object):
             f.write('END' + '\n')
 
     def write_bs(self):
-        self.bs = Basis_set(self.geometry.elements, 'HF2', self.bs_type)
+        if len(self.bs) == 0:
+            self.generate_bs()
         self.bs.write_bs(self.input_path)
         with open(self.input_path, 'a') as f:
             f.write('99' + ' ' + '0' + '\n')
             f.write('END' + '\n')
+
+
+    def generate_bs(self):
+        self.bs = Basis_set(self.geometry.elements, 'HF2', self.bs_type)
+
 
 
     def guesdual(self):

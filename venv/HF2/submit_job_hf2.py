@@ -96,6 +96,7 @@ def if_cal_finish(job):
     else:
         file = open('hf.out', 'r')
         lines = file.read().replace('\n', ':')
+        file.close()
         lines = ' '.join(lines.split()) + '#'
         regex = 'TOTAL CPU TIME'
         line = re.search(regex, lines)
@@ -121,9 +122,10 @@ def submit(jobs):
         for job in jobs[:]:
             if if_cal_finish(job):
                 finished_jobs.append(job)
+                num = str(len(finished_jobs)) + '/' + str(job_num)
                 rec = job.path
                 rec += '\n'
-                rec += 'calculation finished...'
+                rec +=  num + 'calculation finished...'
                 print(rec)
                 record(job.root_path, rec)
                 jobs.remove(job)

@@ -14,7 +14,7 @@ def get_optimized_geometry(path):
     lines = ' '.join(lines.split()) + '#'
     f.close()
 
-    #search geometry infomation
+    # search geometry infomation
     regex = 'FINAL OPTIMIZED GEOMETRY.*GEOMETRY OUTPUT FILE'
     geo_block = re.search(regex, lines).group(0)
     regex_2 = 'LATTICE PARAMETERS.*'
@@ -47,9 +47,9 @@ def get_optimized_geometry(path):
     for l in lattice_block:
         if l == '*******************************************************************************':
             sep.append(i)
-        i +=1
+        i += 1
 
-    lattice_parameter = lattice_block[sep[0]-1]
+    lattice_parameter = lattice_block[sep[0] - 1]
     lattice_parameter = lattice_parameter.split()
 
     geometry = []
@@ -120,7 +120,6 @@ def write_latt_json(job, latt):
         json.dump(data, f, indent=4)
 
 
-
 def creatxls_dis(path):
     csv_path = os.path.join(path, 'geo_opt.csv')
     headers = ['displacement', 'distance(A)', 'E(au)']
@@ -137,7 +136,7 @@ def data_saving(i, path, disp, dis, energy):
             f_csv = csv.writer(f)
             f_csv.writerow(new_line)
         count = i
-        print('%d data has been written '%count)
+        print('%d data has been written ' % count)
     except Exception as e:
         print(e)
 
@@ -236,13 +235,11 @@ def test_read_lowest_e():
     read_and_select_lowest_e(jobs)
 
 
-
 def test_suite():
-    #test_data_saving()
+    # test_data_saving()
     test_read_all_results()
-    #test_write_geo_json()
-    #test_read_lowest_e()
+    # test_write_geo_json()
+    # test_read_lowest_e()
 
 
-#test_suite()
-
+# test_suite()

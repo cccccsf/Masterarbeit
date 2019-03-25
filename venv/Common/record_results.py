@@ -19,7 +19,12 @@ def get_init_distance(job):
 
 def creatcsv(path, cal_type):
     csv_path = os.path.join(path, '{}.csv'.format(cal_type))
-    headers = ['displacement', 'distance(A)', 'E(au)', 'Eupperlayer(au)', 'Eunderlayer(au)']
+    headers = [
+        'displacement',
+        'distance(A)',
+        'E(au)',
+        'Eupperlayer(au)',
+        'Eunderlayer(au)']
     with open(csv_path, 'w', newline='') as f:
         f_csv = csv.writer(f)
         f_csv.writerow(headers)
@@ -53,17 +58,17 @@ def read_result(job, energy_func, init_distance):
         return x_and_z, Elmp2, Escs_lmp2
 
 
-def read_all_results(jobs, cal_type, energy_func, init_distance = None):
+def read_all_results(jobs, cal_type, energy_func, init_distance=None):
     readed_jobs = []
 
-    #get the initial distance of the system
-    if init_distance == None:
+    # get the initial distance of the system
+    if init_distance is None:
         try:
             init_distance = get_init_distance(jobs[0])
         except Exception as e:
             print(e)
             init_distance = None
-        if init_distance == None:
+        if init_distance is None:
             while True:
                 try:
                     print('Please enter the initial layer distance of the system:')
@@ -72,7 +77,8 @@ def read_all_results(jobs, cal_type, energy_func, init_distance = None):
                     break
                 except Exception as e:
                     print(e)
-                    print('Please enter the right number of the initial layer distance!!!')
+                    print(
+                        'Please enter the right number of the initial layer distance!!!')
                     continue
 
     path = jobs[0].root_path
@@ -90,7 +96,6 @@ def read_all_results(jobs, cal_type, energy_func, init_distance = None):
             underlayer[x_and_z] = energy
         elif layertype == 'upperlayer':
             upperlayer[x_and_z] = energy
-
 
     lines = []
     for x_and_z, energy in bilayer.items():
@@ -112,6 +117,3 @@ def read_all_results(jobs, cal_type, energy_func, init_distance = None):
     with open(csv_path, 'a', newline='') as f:
         f_csv = csv.writer(f)
         f_csv.writerows(lines)
-
-
-

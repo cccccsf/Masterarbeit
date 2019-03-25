@@ -40,10 +40,10 @@ class ReadIni(object):
 
         self.nodes_rpa_b = 1
         self.nodes_rpa_s = 28
-        self.molpro_key = ''
-        self.molpro_path = ''
 
         self.read_ini_file()
+
+        self.molpro_key, self.molpro_path = self.read_molpro_info()
         #self.test_parameters()
 
 
@@ -201,6 +201,30 @@ class ReadIni(object):
         return atoms
 
 
+    def read_molpro_info(self):
+        molpro_key = self.cfg.get('Initilization', 'molpro_KEY')
+        molpro_path = self.cfg.get('Initilization', 'molpro_path')
+        return molpro_key, molpro_path
+
+    def read_correction_info(self):
+
+        method_error_basis_set = self.cfg.get('Correction', 'method_error_basis_set')
+        bs_error_basis_set = self.cfg.get('Correction', 'bs_error_basis_set')
+
+        options = self.cfg.options('Correction')
+        nodes = [node for node in options if node.endswith('nodes')]
+        nodes_dict = {}
+        for node in nodes:
+            nodes_dict[node.rsplit('_', 1)[0]] = self.cfg.get('Correction', node)
+
+        memory = [m for m in options if m.endswith('memory')]
+        memory_dict = {}
+        for m in memory:
+            memory_dict[m.rsplit('_', 1)[0]] = self.cfg.get('Correction', m)
+
+        return self.molpro_path, self.molpro_key, nodes_dict, memory_dict
+
+
     def test_parameters(self):
         if not test_variable.test_slab_or_molecule(self.system_type):
             print('''
@@ -271,7 +295,8 @@ def test_read_ini():
     path = os.path.dirname(__file__)
     path = os.path.dirname(path)
     Ini = ReadIni(path)
-    Ini.read_fixed_atoms()
+    #Ini.read_fixed_atoms()
+    Ini.read_correction_info()
 
 
-#test_read_ini()
+test_read_ini()

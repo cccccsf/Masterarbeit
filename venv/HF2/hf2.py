@@ -20,7 +20,7 @@ def hf2(path):
     ini_file = os.path.join(ini_path, 'input.ini')
     ini_file = os.path.exists(ini_file)
 
-    #read basic computation infomation
+    # read basic computation infomation
     if ini_file:
         jobs_HF1 = HF2.get_jobs(path)
         Ini = ReadIni(ini_path)
@@ -34,7 +34,7 @@ def hf2(path):
         print('Programm exit and Please reatart it from HF1 step.')
         sys.exit()
 
-    #catagorization
+    # catagorization
     bilayer = []
     singlelayer = []
     for job in jobs_HF1:
@@ -43,19 +43,33 @@ def hf2(path):
         elif job.layertype == 'underlayer' or job.layertype == 'upperlayer':
             singlelayer.append(job)
 
-    #generation of all input files
+    # generation of all input files
     for job in bilayer:
-        Inp = HF2.Input(job, name, slab_or_molecule, group, bs_type=bs_type, layertype = 'bilayer', fixed_atoms = fixed_atoms)
+        Inp = HF2.Input(
+            job,
+            name,
+            slab_or_molecule,
+            group,
+            bs_type=bs_type,
+            layertype='bilayer',
+            fixed_atoms=fixed_atoms)
         Inp.gen_input()
         HF2.copy_submit_scr(job, nodes, crystal_path)
         HF2.copy_fort9(job)
     for job in singlelayer:
-        Inp = HF2.Layer_Inp(job, name, slab_or_molecule, group, bs_type=bs_type, layertype = job.layertype, fixed_atoms = fixed_atoms)
+        Inp = HF2.Layer_Inp(
+            job,
+            name,
+            slab_or_molecule,
+            group,
+            bs_type=bs_type,
+            layertype=job.layertype,
+            fixed_atoms=fixed_atoms)
         Inp.gen_input()
         HF2.copy_submit_scr(job, nodes, crystal_path)
         HF2.copy_fort9(job)
 
-    #submit the jobs
+    # submit the jobs
     hf2_jobs = []
     for job in bilayer:
         new_path = job.path
@@ -69,7 +83,7 @@ def hf2(path):
         hf2_jobs.append(new_job)
     hf2_jobs_finished = HF2.submit(hf2_jobs)
 
-    #read calculation results
+    # read calculation results
     if hf2_jobs_finished != []:
         HF2.read_all_results_hf2(hf2_jobs_finished, init_dist=init_dist)
 
