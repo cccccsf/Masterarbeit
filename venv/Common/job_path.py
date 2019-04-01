@@ -44,6 +44,14 @@ class Job_path(object):
         else:
             return 1
 
+    def __eq__(self, other):
+        if self.path == other.path and self.layertype == other.layertype and self.method == other.method:
+            return True
+        return False
+
+    def __hash__(self):
+        return hash(id(self))
+
     def init_values(self):
         z = os.path.split(self.path)[-1]
         path = os.path.split(self.path)[0]

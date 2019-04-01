@@ -68,7 +68,7 @@ def rpa(path):
     finished_jobs_rpa = RPA.submit(lmp2_jobs)
 
     #read calculation results
-    RPA.read_all_results(finished_jobs_rpa)
+    RPA.read_and_record_all_results(finished_jobs_rpa)
 
     print('LRPA calculation finished!!!')
     record(path, 'LRPA calculation 2 finished!!!')

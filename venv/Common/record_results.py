@@ -2,8 +2,11 @@
 import os
 import re
 import csv
+import json
 from collections import namedtuple
 from Common import Job_path
+from Common import rename_file
+
 
 
 def get_init_distance(job):
@@ -28,6 +31,13 @@ def creatcsv(path, cal_type):
     with open(csv_path, 'w', newline='') as f:
         f_csv = csv.writer(f)
         f_csv.writerow(headers)
+
+def creat_json_file(path, cal_type):
+    json_file = os.path.join(path, cal_type)
+    json_file = os.path.join(json_file, '{}.json'.format(cal_type))
+    data = {}
+    with open(json_file, 'w') as f:
+        json.dump(data, f, indent=4)
 
 
 def data_saving(path, line, cal_type):
@@ -83,6 +93,7 @@ def read_all_results(jobs, cal_type, energy_func, init_distance=None):
 
     path = jobs[0].root_path
     creatcsv(path, cal_type)
+    creat_json_file(path, cal_type)
 
     bilayer = {}
     upperlayer = {}
@@ -96,6 +107,10 @@ def read_all_results(jobs, cal_type, energy_func, init_distance=None):
             underlayer[x_and_z] = energy
         elif layertype == 'upperlayer':
             upperlayer[x_and_z] = energy
+        # record to json file
+        json_file = os.path.join(path, cal_type)
+        json_file = os.path.join(json_file, '{}.json'.format(cal_type))
+        record_to_json(jobs[i], json_file, energy, layertype, init_distance)
 
     lines = []
     for x_and_z, energy in bilayer.items():
@@ -114,6 +129,49 @@ def read_all_results(jobs, cal_type, energy_func, init_distance=None):
         lines.append(line)
 
     csv_path = os.path.join(path, '{}.csv'.format(cal_type))
+    rename_file(path, '{}.csv'.format(cal_type))
     with open(csv_path, 'a', newline='') as f:
         f_csv = csv.writer(f)
         f_csv.writerows(lines)
+
+
+
+
+def record_to_json(job, json_file, energy, layertype='bilayer', init_distance=3.1):
+    path = job.path
+    coord = '{}'.format(job.coord)
+    x = job.x
+    if is_number(x):
+        x = float(x)
+    z = job.z
+    if is_number(z):
+        z = float(z) + init_distance
+    with open(json_file, 'r') as f:
+        data = json.load(f)
+    if coord not in data:
+        data[coord] = {}
+    data[coord][layertype] = {
+        'energy': energy,
+        'x': x,
+        'z': z,
+        'path': path
+    }
+    with open(json_file, 'w') as f:
+        json.dump(data, f, indent=4)
+
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass
+
+    try:
+        import unicodedata
+        unicodedata.numeric(s)
+        return True
+    except (TypeError, ValueError):
+        pass
+
+    return False

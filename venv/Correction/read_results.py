@@ -3,7 +3,7 @@ import os
 import re
 import csv
 import json
-from Common import read_all_results
+import json
 
 
 def is_number(s):

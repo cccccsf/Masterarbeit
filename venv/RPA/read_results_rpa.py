@@ -6,7 +6,8 @@ from Common import read_all_results
 
 
 def get_energy(path):
-
+    if type(path) == Job_path:
+        path = path.path
     path = os.path.join(path, 'rpa.out')
     with open(path, 'rb') as f:
         f.seek(-20000, 2)

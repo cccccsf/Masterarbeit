@@ -133,6 +133,9 @@ def correction(path):
     if len(jobs_finished) != 0:
         Correction.read_all_results(jobs_finished, init_distance=init_dist)
 
+    print('Correction calculation finished!!!')
+    record(path, 'Correction calculation finished!!!')
+
 
 def get_missions(memorys, nodes):
     missions_nodes = {key for key in nodes.keys()}

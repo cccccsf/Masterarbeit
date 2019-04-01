@@ -2,9 +2,12 @@
 import os
 import re
 from Common import read_all_results
+from Common import Job_path
 
 
 def get_energy(path):
+    if type(path) == Job_path:
+        path = path.path
     f = open(path + '/hf.out', 'r')
     lines = f.read()
     #lines = ' '.join(lines.split()) + '#'
