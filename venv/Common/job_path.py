@@ -22,10 +22,10 @@ class Job_path(object):
         self.status = ''
 
     def __str__(self):
-        return self.method + ' (x: {}, z: {}) '.format(self.x, self.z) + self.layertype
+        return self.method + '(x:{}, z:{})'.format(self.x, self.z) + self.layertype
 
     def __repr__(self):
-        return self.method + ' (x: {}, z: {}) '.format(self.x, self.z) + self.layertype
+        return self.method + '(x:{}, z:{})'.format(self.x, self.z) + self.layertype
 
 
     def __setattr__(self, key, value):

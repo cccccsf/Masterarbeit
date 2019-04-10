@@ -171,10 +171,10 @@ def record_to_json_each_data(Res, init_distance, json_file):
     coor = '{}'.format(job.coord)
     x = job.x
     if is_number(x):
-        x = float(x) + init_distance
+        x = float(x)
     z = job.z
     if is_number(z):
-        z = float(z)
+        z = float(z) + init_distance
     with open(json_file, 'r') as f:
         data = json.load(f)
     if coor not in data:
@@ -219,10 +219,11 @@ def write_csv_each_data(Res, csv_file, init_distace):
     unit = Res.unit
     basis_set = Res.bs
     coor = '{}'.format(job.coord)
-    x = job.x
+    x, z = job.x, job.z
     if is_number(x):
-        x = float(x) + init_distace
-    z = job.z
+        x = float(x)
+    if is_number(z):
+        z = float(z) + init_distace
     try:
         new_line = [
             str(x),

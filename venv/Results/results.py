@@ -66,6 +66,8 @@ def results(path):
                 avdtz.set_extrapolation_energy(avdz, avtz, [2, 3])
                 avdtz.bs = 'av(d/t)z'
                 extrap_method_error['avdtz'][coord] = avdtz
+            # else:
+            #     print(coord)
         if 'avtz' and 'avqz' in method_error_dict:
             if coord in method_error_dict['avtz'] and method_error_dict['avqz']:
                 avtz = method_error_dict['avtz'][coord]
@@ -74,6 +76,8 @@ def results(path):
                 avtqz.set_extrapolation_energy(avtz, avqz, [3, 4])
                 avtqz.bs = 'av(t/q)z'
                 extrap_method_error['avtqz'][coord] = avtqz
+            # else:
+            #     print(coord)
         # basis set correction
         # iext1
         if 'avdz' and 'avtz' in iext1_rpa_dict:
