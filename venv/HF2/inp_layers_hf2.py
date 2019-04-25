@@ -32,7 +32,6 @@ class Layer_Inp(Input):
             f.write('99' + ' ' + '0' + '\n')
             for unit in self.ghost:
                 f.write(str(unit) + '\n')
-            f.write('END' + '\n')
 
 
 

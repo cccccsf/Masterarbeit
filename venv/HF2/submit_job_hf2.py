@@ -74,7 +74,7 @@ def update_nodes(path, nodes, crystal_path):
     if nodes != '':
         nodes_line = '#PBS -l nodes={}\n'.format(nodes)
         lines[loc] = nodes_line
-        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${{PBS_O_WORKDIR}}/geo_opt.out\n'.format(nodes)
+        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${{PBS_O_WORKDIR}}/hf2.out\n'.format(nodes)
     if crystal_path != '':
         lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
     with open(scr, 'w') as f:
