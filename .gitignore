@@ -20,3 +20,4 @@ Test/
 *.cpython-36.pyc
 */__pycache__/*
 */__pycache__/
+venv/Lib/*
