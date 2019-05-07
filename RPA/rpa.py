@@ -10,7 +10,7 @@ from Common import Job_path
 
 def rpa(path):
 
-    rec = 'Second Hartree Fock Calculation begins...'
+    rec = 'LRPA Calculation begins...'
     print(rec)
     record(path, rec)
 

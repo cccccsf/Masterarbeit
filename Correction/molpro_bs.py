@@ -3,7 +3,7 @@ import os
 import re
 import HF2
 from Common import ReadIni
-from Common import Job_path
+from Common import Job
 from Data import periodic_table_rev
 
 class Molpro_Bs(object):

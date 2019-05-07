@@ -4,7 +4,7 @@ import sys
 import HF2
 from Common import record
 from Common import ReadIni
-from Common import Job_path
+from Common import Job
 from HF1 import read_init_dis
 
 
@@ -74,12 +74,12 @@ def hf2(path):
     for job in bilayer:
         new_path = job.path
         new_path = new_path.replace('hf1', 'hf2')
-        new_job = Job_path(new_path)
+        new_job = Job(new_path)
         hf2_jobs.append(new_job)
     for job in singlelayer:
         new_path = job.path
         new_path = new_path.replace('hf1', 'hf2')
-        new_job = Job_path(new_path)
+        new_job = Job(new_path)
         hf2_jobs.append(new_job)
     hf2_jobs_finished = HF2.submit(hf2_jobs)
 

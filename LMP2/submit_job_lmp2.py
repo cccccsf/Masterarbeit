@@ -54,7 +54,7 @@ def copy_submit_src(job, nodes, cryscor_path):
     ziel_path = job.path
     scr_path = os.path.dirname(__file__)
     scr_from = os.path.join(scr_path, 'job_submit_lmp2.bash')
-    scr_to = os.path.join(ziel_path, 'hf2')
+    scr_to = os.path.join(ziel_path, 'lmp2')
     try:
         shutil.copy(scr_from, scr_to)
         update_scr(job, nodes, cryscor_path)

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import os
-from Common import Job_path
+from Common import Job
 from HF1 import Input
 from copy import deepcopy
 

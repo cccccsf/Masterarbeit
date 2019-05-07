@@ -4,7 +4,7 @@ import re
 import csv
 import json
 from collections import namedtuple
-from Common import Job_path
+from Common import Job
 from Common import rename_file
 
 

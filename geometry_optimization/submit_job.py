@@ -7,7 +7,7 @@ import time
 import datetime
 import geometry_optimization
 from Common import record
-from Common import Job_path
+from Common import Job
 from Common import look_for_in_list
 from Common import rename_file
 
@@ -249,7 +249,7 @@ def select_optimal_dist(job_geo_dict, diff, para):
         new_z_dirname = 'z_{0:.3f}'.format(new_dist)
         old_z_dirmane = init_job.z_dirname
         new_path = init_job.path.replace(old_z_dirmane, new_z_dirname)
-        new_job = Job_path(new_path)
+        new_job = Job(new_path)
         new_geo_dict[new_job] = geometry
         job_geo_dict[new_job] = geometry
     new_jobs = []
@@ -285,7 +285,7 @@ def select_optimal_dist(job_geo_dict, diff, para):
             new_z_dirname = 'z_{0:.3f}'.format(new_dist)
             old_z_dirmane = min_job.z_dirname
             new_path = min_job.path.replace(old_z_dirmane, new_z_dirname)
-            new_job = Job_path(new_path)
+            new_job = Job(new_path)
             new_geo_dict[new_job] = geometry
             job_geo_dict[new_job] = geometry
         new_jobs = []

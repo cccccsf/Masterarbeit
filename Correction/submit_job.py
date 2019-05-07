@@ -98,7 +98,7 @@ def submit(jobs):
                     new_job = jobs_dict[node].pop()
                     os.chdir(new_job.path)
                     rename_file(new_job.path, '{}.out'.format(new_job.method))
-                    out = submit_job(job)
+                    out = submit_job(new_job)
                     count += 1
                     count_dict[node] += 1
                     submitted_jobs.append(new_job)

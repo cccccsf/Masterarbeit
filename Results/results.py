@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os
 from copy import deepcopy
-from Common import Job_path
+from Common import Job
 from Common import record
 import Correction
 from Correction import if_cal_finish
@@ -128,15 +128,15 @@ def results(path):
         if job.coord not in hf2_coords:
             job_path = job.path
             new_job_path = job_path.replace('cluster', 'hf2')
-            new_job = Job_path(new_job_path)
+            new_job = Job(new_job_path)
             hf2_jobs.append(new_job)
             hf2_coords.add(new_job.coord)
     for job in hf2_jobs[:]:
         job_path = job.path
         under_path = os.path.join(job_path, 'underlayer')
         upper_path = os.path.join(job_path, 'upperlayer')
-        under_job = Job_path(under_path)
-        upper_job = Job_path(upper_path)
+        under_job = Job(under_path)
+        upper_job = Job(upper_path)
         hf2_jobs.append(under_job)
         hf2_jobs.append(upper_job)
     if not os.path.exists(hf2_json_file) and len(hf2_jobs) != 0:
@@ -162,7 +162,7 @@ def results(path):
     for job in hf2_jobs:
         job_path = job.path
         new_job_path = job_path.replace('hf2', 'rpa')
-        new_job = Job_path(new_job_path)
+        new_job = Job(new_job_path)
         rpa_jobs.append(new_job)
     rpa_json_file = os.path.join(path, 'rpa')
     rpa_json_file = os.path.join(rpa_json_file, 'rpa.json')
@@ -294,11 +294,11 @@ def get_jobs(path):
         if len(files) > 0:
             for file in files:
                 if os.path.splitext(file)[-1] == '.out':
-                    new_job = Job_path(root)
+                    new_job = Job(root)
                     new_job.method = os.path.splitext(file)[0]
                     if if_cal_finish(new_job) and new_job not in jobs:
                         jobs.add(new_job)
-                        root_jobs.add(Job_path(root))
+                        root_jobs.add(Job(root))
     jobs = list(jobs)
     root_jobs = list(root_jobs)
     return jobs, root_jobs

@@ -4,7 +4,7 @@ import sys
 from copy import deepcopy
 from Crystal import Geometry
 from Common import mkdir
-from Common import Job_path
+from Common import Job
 from Common import record
 from Common import ReadIni
 import HF1
@@ -47,7 +47,7 @@ def hf1(path):
         path_GeoOpt = job.path
         #Bilayer
         path_HF1 = path_GeoOpt.replace('geo_opt', 'hf1')
-        new_job = Job_path(path_HF1)
+        new_job = Job(path_HF1)
         if not HF1.if_cal_finish(new_job):
             Inp = HF1.Input(job, name, slab_or_molecule, group, bs_type, layertype = 'bilayer', fiexed_atoms=fixed_atoms)
             Inp.gen_input()
@@ -58,7 +58,7 @@ def hf1(path):
         jobs_HF1.append(new_job)
         #upperlayer
         path_upper = os.path.join(path_HF1, 'upperlayer')
-        new_job = Job_path(path_upper)
+        new_job = Job(path_upper)
         if not HF1.if_cal_finish(new_job):
             Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype = 'upperlayer', fiexed_atoms=fixed_atoms)
             Inp.gen_input()
@@ -69,7 +69,7 @@ def hf1(path):
         jobs_HF1.append(new_job)
         #underlayer
         path_under = os.path.join(path_HF1, 'underlayer')
-        new_job = Job_path(path_under)
+        new_job = Job(path_under)
         if not HF1.if_cal_finish(new_job):
             Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype = 'underlayer', fiexed_atoms=fixed_atoms)
             Inp.gen_input()

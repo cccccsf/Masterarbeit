@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import os
-from Common import Job_path
+from Common import Job
 from Common import look_for_in_list
 from geometry_optimization import read_and_select_lowest_e
 
@@ -13,7 +13,7 @@ def select_jobs(path):
     for root, dirs, files in walks:
         if 'geo_opt.out' in files:
             jobs.append(root)
-    jobs = [Job_path(job) for job in jobs]
+    jobs = [Job(job) for job in jobs]
 
 
     # catagorization jobs according to x

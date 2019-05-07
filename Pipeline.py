@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import os
 import sys
 from datetime import datetime
 from Common import record
@@ -11,6 +10,7 @@ import LMP2
 import RPA
 import CLUSTER
 import Correction
+import Results
 
 
 def end_programm(path):
@@ -18,9 +18,9 @@ def end_programm(path):
     now = now.strftime("%b %d %Y %H:%M:%S")
     try:
         sys.exit(1)
-    except:
+    except Exception:
         rec = now + '\n'
-        rec += 'Programm End...'
+        rec += 'Program End...'
         print(rec)
         record(path, rec)
 
@@ -28,7 +28,7 @@ def end_programm(path):
 def pipeline(path, start, end):
     anchor = start
     while anchor < end:
-        #print(anchor, end)
+        # print(anchor, end)
         if anchor == 0:
             geometry_optimization.geo_opt(path)
         elif anchor == 1:
@@ -45,6 +45,8 @@ def pipeline(path, start, end):
             CLUSTER.cluster(path)
         elif anchor == 7:
             Correction.correction(path)
+        elif anchor == 8:
+            Results.results(path)
         anchor += 1
     end_programm(path)
 

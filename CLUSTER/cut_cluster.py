@@ -2,7 +2,7 @@
 import math
 import os
 import sys
-from Common import Job_path
+from Common import Job
 from Common import mkdir
 from CLUSTER.read_info import read_and_write_infos
 from CLUSTER.atom import Atom
@@ -60,7 +60,7 @@ class Cluster(object):
     def get_new_job(self):
         old_path = self.job.path
         new_path = old_path.replace('geo_opt', 'cluster')
-        new_job = Job_path(new_path)
+        new_job = Job(new_path)
         return new_job, new_path
 
     def read_Center(self):

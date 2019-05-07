@@ -3,7 +3,7 @@ import os
 import CLUSTER
 from CLUSTER import Cluster
 from CLUSTER import FactorCalculator
-from Common import Job_path
+from Common import Job
 from test_cluster import read_infomation
 
 
@@ -28,7 +28,7 @@ def factor_calculation():
 
 
     #calculation part
-    job = Job_path(path)
+    job = Job(path)
     json_path = os.path.join(job.root_path, 'cluster')
     if not os.path.exists(os.path.join(json_path, 'geometry.json')):
         CLUSTER.creat_json_file(json_path)

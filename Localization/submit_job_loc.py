@@ -68,10 +68,10 @@ def update_nodes(path, nodes, crystal_path):
     with open(scr, 'w') as f:
         f.writelines(lines)
 
-def copy_all_files(job_dirs):
+def copy_all_files(job_dirs, nodes, crystal_path):
     try:
         for job_dir in job_dirs:
-            copy_loc_scr(job_dir)
+            copy_loc_scr(job_dir, nodes, crystal_path)
     except Exception as e:
         print(e)
 

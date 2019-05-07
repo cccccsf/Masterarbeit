@@ -4,7 +4,7 @@ import re
 import sys
 from copy import deepcopy
 from Common import mkdir
-from Common import Job_path
+from Common import Job
 from HF2.submit_job_hf2 import if_cal_finish
 
 def get_jobs(path):
@@ -14,7 +14,7 @@ def get_jobs(path):
     for root, dirs, files in walks:
         if 'hf.out' in files:
             new_path = root
-            new_job = Job_path(new_path)
+            new_job = Job(new_path)
             if if_cal_finish(new_job):
                 jobs.append(root)
     return jobs

@@ -1,14 +1,18 @@
 #!/usr/bin/python3
 import os
-from Common import Job_path
+import sys
+from Common import Job
 from Common import mkdir
+from Common import record
 from HF1 import read_init_dis
 from RPA.submit_job_rpa import if_cal_finish
 from CLUSTER import Cluster
+import RPA
+
 
 def cluster(path):
 
-    rec = 'Cluster Cutting begins...'
+    rec = 'Cluster Cutting begins.'
     print(rec)
     record(path, rec)
 
@@ -58,7 +62,7 @@ def get_jobs(path):
     jobs = []
     for root, dirs, files in walks:
         if 'rpa.out' in files:
-            new_job = Job_path(root)
+            new_job = Job(root)
             if if_cal_finish(new_job):
                 jobs.append(new_job)
     return jobs

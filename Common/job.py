@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 import os
 
-class Job_path(object):
+
+class Job(object):
 
     def __init__(self, path, init_dist = 0):
         self.path = path

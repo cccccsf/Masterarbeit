@@ -5,7 +5,7 @@ import re
 import json
 import sys
 from Common.file_processing import mkdir
-from Common import Job_path
+from Common import Job
 from Crystal import Geometry
 from Crystal import choose_shrink
 from Crystal import Basis_set
@@ -92,7 +92,7 @@ class Input(object):
         path_hf1 = path_GeoOpt.replace('geo_opt', 'hf1')
         if self.layertype != 'bilayer':
             path_hf1 = os.path.join(path_hf1, self.layertype)
-        job_hf1 = Job_path(path_hf1)
+        job_hf1 = Job(path_hf1)
         return job_hf1
 
 

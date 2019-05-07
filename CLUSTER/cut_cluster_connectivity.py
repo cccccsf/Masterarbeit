@@ -2,7 +2,7 @@
 import math
 import os
 from CLUSTER import Cluster
-from Common import Job_path
+from Common import Job
 from Common import mkdir
 from CLUSTER.read_info import read_and_write_infos
 from CLUSTER.atom import Atom

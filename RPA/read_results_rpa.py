@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 import os
 import re
-from Common import Job_path
+from Common import Job
 from Common import read_all_results
 
 
 def get_energy(path):
-    if type(path) == Job_path:
+    if type(path) == Job:
         path = path.path
     path = os.path.join(path, 'rpa.out')
     with open(path, 'rb') as f:

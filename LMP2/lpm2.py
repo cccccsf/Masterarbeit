@@ -22,7 +22,6 @@ def lmp2(path):
     #read basic computation infomation
     if ini_file:
         hf2_jobs = LMP2.get_jobs(path)
-
         Ini = ReadIni(ini_path)
         nodes, cryscor_path = Ini.get_lmp2_info()
         if nodes == '' or nodes == 'default':

@@ -4,7 +4,7 @@ import re
 import time
 import csv
 import json
-from Common import Job_path
+from Common import Job
 
 
 def get_optimized_geometry(path):
@@ -191,7 +191,7 @@ def read_and_select_lowest_e(jobs):
 def test_data_saving():
     path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
     energy = get_optimized_energy(path)
-    job = Job_path(path)
+    job = Job(path)
     path = job.root_path
     creatxls_dis(path)
     read_and_record_result(2, job, 3.1)
@@ -203,7 +203,7 @@ def test_read_all_results():
     jobs = []
     for root, dirs, files in walks:
         if 'geo_opt.out' in files:
-            job = Job_path(root)
+            job = Job(root)
             jobs.append(job)
     read_all_results(jobs, 3.1)
 
@@ -214,7 +214,7 @@ def test_write_geo_json():
     jobs = []
     for root, dirs, files in walks:
         if 'geo_opt.out' in files:
-            job = Job_path(root)
+            job = Job(root)
             jobs.append(job)
     for job in jobs:
         path = job.path
@@ -230,7 +230,7 @@ def test_read_lowest_e():
     jobs = []
     for root, dirs, files in walks:
         if 'geo_opt.out' in files:
-            job = Job_path(root)
+            job = Job(root)
             jobs.append(job)
     read_and_select_lowest_e(jobs)
 

@@ -5,7 +5,7 @@ import sys
 from copy import deepcopy
 from Common import record
 from Common import ReadIni
-from Common import Job_path
+from Common import Job
 import Correction
 from HF1 import read_init_dis
 
@@ -179,7 +179,7 @@ def get_jobs(path):
                 if os.path.splitext(
                         file)[-1] == '.xyz' and root not in path_set:
                     path_set.add(root)
-                    new_job = Job_path(root)
+                    new_job = Job(root)
                     jobs.append(new_job)
     return jobs
 

@@ -5,7 +5,7 @@ import Initialization
 from copy import deepcopy
 from Crystal import Geometry
 from Common import mkdir
-from Common import Job_path
+from Common import Job
 from Common import record
 from Common import ReadIni
 from Common import look_for_in_list
@@ -73,7 +73,7 @@ def geo_opt(path):
     dirname = 'x_0/z_0'
     job = os.path.join(path, 'geo_opt')
     job = os.path.join(job, dirname)
-    job = Job_path(job)
+    job = Job(job)
     jobs_finished = []
     if not if_cal_finish(job):
         Geo_Inp = geometry_optimization.Geo_Opt_Input(

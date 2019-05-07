@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import os
-import re
 import subprocess
 import shutil
 import time
@@ -99,6 +98,7 @@ def submit(jobs):
         :param submitted_jobs:
         :return:
         """
+        nonlocal count
         for job in jobs[:]:
             if if_cal_finish(job):
                 finished_jobs.append(job)

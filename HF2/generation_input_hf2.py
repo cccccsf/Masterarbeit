@@ -9,7 +9,7 @@ from Crystal import Basis_set
 from Crystal import Geometry
 from Crystal import choose_shrink
 from Common.file_processing import mkdir
-from Common.job_path import Job_path
+from Common.job import Job
 from HF1 import if_cal_finish
 
 
@@ -21,7 +21,7 @@ def get_jobs(path):
     for root, dirs, files in walks:
         if ('hf.out' in files) and ('fort.9' in files):
             new_path = root
-            new_job = Job_path(new_path)
+            new_job = Job(new_path)
             if if_cal_finish(new_job):
                 jobs.append(new_job)
     return jobs
