@@ -49,6 +49,7 @@ def copy_fort9(job):
     except Exception as e:
         print(e)
 
+
 def update_nodes(path, nodes, crystal_path):
     scr = os.path.join(path, 'geo_opt')
     with open(scr, 'r') as f:
@@ -107,7 +108,6 @@ def if_cal_finish(job):
                 return False
             else:
                 return True
-    return True
 
 
 def submit(jobs):
@@ -125,7 +125,7 @@ def submit(jobs):
                 num = str(len(finished_jobs)) + '/' + str(job_num)
                 rec = job.path
                 rec += '\n'
-                rec +=  num + 'calculation finished...'
+                rec += num + 'calculation finished...'
                 print(rec)
                 record(job.root_path, rec)
                 jobs.remove(job)

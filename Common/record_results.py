@@ -1,12 +1,9 @@
 #!/usr/bin/python3
 import os
-import re
 import csv
 import json
 from collections import namedtuple
-from Common import Job
 from Common import rename_file
-
 
 
 def get_init_distance(job):
@@ -31,6 +28,7 @@ def creatcsv(path, cal_type):
     with open(csv_path, 'w', newline='') as f:
         f_csv = csv.writer(f)
         f_csv.writerow(headers)
+
 
 def creat_json_file(path, cal_type):
     json_file = os.path.join(path, cal_type)
@@ -133,8 +131,6 @@ def read_all_results(jobs, cal_type, energy_func, init_distance=None):
     with open(csv_path, 'a', newline='') as f:
         f_csv = csv.writer(f)
         f_csv.writerows(lines)
-
-
 
 
 def record_to_json(job, json_file, energy, layertype='bilayer', init_distance=3.1):

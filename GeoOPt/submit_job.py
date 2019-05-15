@@ -1,33 +1,14 @@
 #!/usr/bin/python3
 import os
 import re
-import subprocess
 import shutil
 import time
-import datetime
-import geometry_optimization
+import GeoOPt
 from Common import record
 from Common import Job
 from Common import look_for_in_list
 from Common import rename_file
-
-
-def submit_geo_opt_job():
-    chmod = 'chmod u+x geo_opt'
-    command = 'qsub geo_opt'
-    subprocess.call(chmod, shell=True)
-    try:
-        #out_bytes = b'\xe4\xb8\xad\xe6\x96\x87'
-        out_bytes = subprocess.check_output(['qsub', 'geo_opt'])
-    except subprocess.CalledProcessError as e:
-        out_bytes = e.output
-        code = e.returncode
-        print(code)
-    out_text = out_bytes.decode('utf-8')
-    out_text = out_text.strip('\n')
-    print('job submitted...')
-    print(out_text)
-    return out_text
+from Common import submit_job
 
 
 def update_nodes(path, nodes, crystal_path):
@@ -42,7 +23,6 @@ def update_nodes(path, nodes, crystal_path):
         i = 0
         for line in lines:
             if line.startswith('#PBS -l nodes'):
-                nodes_line = line
                 loc = i
             i += 1
     loc2, loc_cry = 0, 0
@@ -56,14 +36,12 @@ def update_nodes(path, nodes, crystal_path):
     if nodes != '':
         nodes_line = '#PBS -l nodes={}\n'.format(nodes)
         lines[loc] = nodes_line
-        print(loc2)
         lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${{PBS_O_WORKDIR}}/geo_opt.out\n'.format(nodes)
     if crystal_path != '':
         lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
 
     with open(scr, 'w') as f:
         f.writelines(lines)
-
 
 
 def copy_fort9(job):
@@ -98,8 +76,8 @@ def copy_submit_scr(job, nodes, crystal_path):
 def if_cal_finish(job):
     """
     check the calculation is finished or not through the output file
-    :param path: string
-    :return: Bool Ture of False
+    :param job: Common.Job
+    :return: Bool True of False
     """
     path = job.path
     out_file = os.path.join(path, 'geo_opt.out')
@@ -111,14 +89,13 @@ def if_cal_finish(job):
         lines = ' '.join(lines.split()) + '#'
         regex = 'TOTAL CPU TIME'
         line = re.search(regex, lines)
-        if line == None:
+        if line is None:
             return False
         else:
             if line.group(0) != 'TOTAL CPU TIME':
                 return False
             else:
                 return True
-    return True
 
 
 def submit(jobs, nodes, crystal_path):
@@ -128,7 +105,7 @@ def submit(jobs, nodes, crystal_path):
     submitted_jobs = []
     finished_jobs = []
 
-    #find and submit the initial job
+    # find and submit the initial job
     loc = 0
     for job in jobs:
         if job.x == '0' and job.z == '0':
@@ -137,10 +114,10 @@ def submit(jobs, nodes, crystal_path):
     if loc < len(jobs):
         job_init = jobs.pop(loc)
         os.chdir(job_init.path)
-        copy_submit_scr(job, nodes, crystal_path)
         if not if_cal_finish(job_init):
+            copy_submit_scr(job_init, nodes, crystal_path)
             rename_file(job_init.path, 'geo_opt.out')
-            out = submit_geo_opt_job()
+            out = submit_job(job_init, 'geo_opt')
             submitted_jobs.append(job_init)
             rec = job_init.path
             print(rec)
@@ -150,43 +127,46 @@ def submit(jobs, nodes, crystal_path):
             record(job_init.root_path, rec)
             r = 0
             while True:
-               if if_cal_finish(job_init):
-                   rec = job_init.path
-                   rec += '\n'
-                   rec += 'calculation finished...'
-                   record(job_init.root_path, rec)
-                   submitted_jobs.remove(job_init)
-                   finished_jobs.append(job_init)
-                   break
-               else:
-                   time.sleep(500)
-                   r += 1
-                   if r > 15:
-                       rec = job_init.path
-                       rec += '\n'
-                       rec += 'initial calculation still not finished...'
-                       record(job_init.root_path, rec)
-                       r = 0
-                   continue
+                if if_cal_finish(job_init):
+                    rec = job_init.path
+                    rec += '\n'
+                    rec += 'calculation finished...'
+                    record(job_init.root_path, rec)
+                    submitted_jobs.remove(job_init)
+                    finished_jobs.append(job_init)
+                    break
+                else:
+                    time.sleep(500)
+                    r += 1
+                    # test function
+                    test_init_job(job_init, r)
+                    if r > 15:
+                        rec = job_init.path
+                        rec += '\n'
+                        rec += 'initial calculation still not finished...'
+                        record(job_init.root_path, rec)
+                        r = 0
+                    continue
         else:
             finished_jobs.append(job_init)
 
-    #test if there is some job which is already finished
+    # test if there is some job which is already finished
     for job in jobs[:]:
         if if_cal_finish(job):
-            #print('Job already finished: ', job)
+            # print('Job already finished: ', job)
             finished_jobs.append(job)
             jobs.remove(job)
 
-
     def test_finished(paths):
-        nonlocal count    #debug: UnboundLocalError: local variable 'count' referenced before assignment
+        nonlocal count    # debug: UnboundLocalError: local variable 'count' referenced before assignment
         for path in paths[:]:
             if if_cal_finish(path):
                 finished_jobs.append(path)
+                num = str(len(finished_jobs)) + '/' + str(job_numbers)
                 rec = path.path
                 rec += '\n'
-                rec += 'calculation finished...'
+                rec += num + '   calculation finished.\n'
+                rec += '---'*25
                 print(rec)
                 record(path.root_path, rec)
                 paths.remove(path)
@@ -209,26 +189,64 @@ def submit(jobs, nodes, crystal_path):
                     copy_fort9(jobs[i])
                     rename_file(jobs[i].path, 'geo_opt.out')
                     rename_file(jobs[i].path, 'fort.9')
-                    out = submit_geo_opt_job()
-                    #out = '00000.rigi'
+                    out = submit_job(jobs[i], 'geo_opt')
                     count += 1
                     submitted_jobs.append(jobs[i])
                     rec = jobs[i].path + '\n'
-                    rec += 'job submitted...'
+                    rec += 'job submitted.'
                     rec += '\n' + out + '\n'
+                    rec += '---'*25
                     record(jobs[i].root_path, rec)
                     i += 1
                 else:
                     time.sleep(500)
                     j += 1
+                    j = test_calculation(j, submitted_jobs)     # test function
                     if j > 20:
-                        rec = 'noting changes...'
-                        #print(rec)
+                        rec = 'noting changes.'
+                        rec += '---'*25
+                        # print(rec)
                         record(submitted_jobs[0].root_path, rec)
                         j = 0
                     continue
     
         return finished_jobs
+
+
+def test_calculation(j, submitted_jobs):
+    # path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\BlackP\geo-opt'
+    # walks = os.walk(path)
+    # jobs = []
+    # for root, dirs, files in walks:
+    #     if 'hf.out' in files:
+    #         job = Job(root)
+    #         print(root)
+    #         jobs.append(job)
+    # print(jobs)
+    if j == 1:
+        out_file = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\BlackP\geo-opt\x_a_2.5\d_int_3.10\hf.out'
+        fort9_file = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\BlackP\geo-opt\x_a_2.5\d_int_3.10\fort.9'
+        for job in submitted_jobs:
+            ziel_out = os.path.join(job.path, 'geo_opt.out')
+            ziel_fort9 = os.path.join(job.path, 'fort.9')
+            shutil.copy(out_file, ziel_out)
+            shutil.copy(fort9_file, ziel_fort9)
+        j = 0
+        return j
+    else:
+        return j
+
+
+def test_init_job(job_init, r):
+    # ----------------------------------------- test ---------------------------------------------------
+    if r == 1:
+        out_file = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\BlackP\geo-opt\x_a_2.5\d_int_3.10\hf.out'
+        fort9_file = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\BlackP\geo-opt\x_a_2.5\d_int_3.10\fort.9'
+        ziel_out = os.path.join(job_init.path, 'geo_opt.out')
+        ziel_fort9 = os.path.join(job_init.path, 'fort.9')
+        shutil.copy(out_file, ziel_out)
+        shutil.copy(fort9_file, ziel_fort9)
+    # ----------------------------------------- test ---------------------------------------------------
 
 
 def select_optimal_dist(job_geo_dict, diff, para):
@@ -237,11 +255,11 @@ def select_optimal_dist(job_geo_dict, diff, para):
     init_job = jobs[0]
     init_dist = init_job.get_z_value()
     if diff == 0:
-        New_Geo = geometry_optimization.Select_Opt_Dis(job_geo_dict[init_job], init_job)
+        New_Geo = GeoOPt.Select_Opt_Dis(job_geo_dict[init_job], init_job)
     elif diff >=1:
-        New_Geo = geometry_optimization.Select_Opt_Dis(job_geo_dict[init_job], init_job, direct=2)
+        New_Geo = GeoOPt.Select_Opt_Dis(job_geo_dict[init_job], init_job, direct=2)
     elif diff <= -1:
-        New_Geo = geometry_optimization.Select_Opt_Dis(job_geo_dict[init_job], init_job, direct=-2)
+        New_Geo = GeoOPt.Select_Opt_Dis(job_geo_dict[init_job], init_job, direct=-2)
     new_geo = New_Geo.get_geo_series()
     new_geo_dict = {}
     for distance, geometry in new_geo.items():
@@ -256,28 +274,28 @@ def select_optimal_dist(job_geo_dict, diff, para):
     jobs_finished = []
     for job, geometry in new_geo_dict.items():
         if not if_cal_finish(job):
-            Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
+            Geo_Inp = GeoOPt.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
             Geo_Inp.gen_input()
             new_jobs.append(job)
         else:
             jobs_finished.append(job)
         jobs.append(job)
-    new_jobs_finished = geometry_optimization.submit(new_jobs, nodes, crystal_path)
+    new_jobs_finished = GeoOPt.submit(new_jobs, nodes, crystal_path)
     jobs_finished += new_jobs_finished
-    min_dist, min_job = geometry_optimization.read_and_select_lowest_e(jobs_finished)
-    #print('MIN: ', min_dist, min_job)
+    min_dist, min_job = GeoOPt.read_and_select_lowest_e(jobs_finished)
+    # print('MIN: ', min_dist, min_job)
     while True:
         jobs = sorted(jobs, key=lambda job: float(job.z))
         point = look_for_in_list(jobs, min_job)
         if (len(jobs) - point) == 1:
-            New_Geo = geometry_optimization.Select_Opt_Dis(job_geo_dict[min_job], min_job, direct=2)
+            New_Geo = GeoOPt.Select_Opt_Dis(job_geo_dict[min_job], min_job, direct=2)
         if (len(jobs) - point) == 2:
-            New_Geo = geometry_optimization.Select_Opt_Dis(job_geo_dict[min_job], min_job, direct=3)
+            New_Geo = GeoOPt.Select_Opt_Dis(job_geo_dict[min_job], min_job, direct=3)
         if (len(jobs) - point) >= 3:
             if len(jobs) >= 4 and point != 0:
                 break
             else:
-                New_Geo = geometry_optimization.Select_Opt_Dis(job_geo_dict[min_job], min_job, direct=-2)
+                New_Geo = GeoOPt.Select_Opt_Dis(job_geo_dict[min_job], min_job, direct=-2)
         new_geo = New_Geo.get_geo_series()
         new_geo_dict = {}
         for distance, geometry in new_geo.items():
@@ -292,16 +310,20 @@ def select_optimal_dist(job_geo_dict, diff, para):
         for job, geometry in new_geo_dict.items():
             if not if_cal_finish(job):
                 print(job)
-                Geo_Inp = geometry_optimization.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
+                Geo_Inp = GeoOPt.Geo_Opt_Input(job, name, slab_or_molecule, group, lattice_parameter, geometry, bs_type, functional)
                 Geo_Inp.gen_input()
                 new_jobs.append(job)
             else:
                 jobs_finished.append(job)
             jobs.append(job)
-        new_jobs_finished = geometry_optimization.submit(new_jobs, nodes, crystal_path)
+        new_jobs_finished = GeoOPt.submit(new_jobs, nodes, crystal_path)
         jobs_finished += new_jobs_finished
-        min_dist, min_job = geometry_optimization.read_and_select_lowest_e(jobs_finished)
+        min_dist, min_job = GeoOPt.read_and_select_lowest_e(jobs_finished)
     return jobs, job_geo_dict, min_job, jobs_finished
 
 # path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test\geo_opt\x_0\z_0'
 # update_nodes(path, nodes=14)
+
+
+if __name__ == '__main__':
+    test_calculation(1, [])

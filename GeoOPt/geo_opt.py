@@ -1,16 +1,14 @@
 #!/usr/bin/python3
 import os
-import sys
-import Initialization
 from copy import deepcopy
 from Crystal import Geometry
-from Common import mkdir
 from Common import Job
 from Common import record
 from Common import ReadIni
 from Common import look_for_in_list
-import geometry_optimization
-from geometry_optimization import if_cal_finish
+from Common import record_data_json
+import GeoOPt
+from GeoOPt import if_cal_finish
 
 
 def geo_opt(path):
@@ -18,54 +16,26 @@ def geo_opt(path):
     rec = 'Geometry Optimization begins...'
     print(rec)
     record(path, rec)
-    geometry_optimization.creat_geo_lat_json(path)
-
-    ini_path = os.path.dirname(__file__)
-    ini_path = os.path.dirname(ini_path)
-    file = os.path.join(ini_path, 'input.ini')
-    file = os.path.exists(file)
+    GeoOPt.creat_geo_lat_json(path)     # might be deleted
 
     # read infos from input.ini file
-    if file:
-        Ini = ReadIni(ini_path)
-        name, slab_or_molecule, group, lattice_parameter, number_of_atoms, fixed_atoms = Ini.get_basic_info()
-        geometry = Ini.get_geometry()
-        if isinstance(fixed_atoms, list) and len(fixed_atoms) == 2:
-            geometry = Geometry(geometry=geometry, fixed_atoms=fixed_atoms)
-        else:
-            geometry = Geometry(geometry=geometry)
-        original_geometry = deepcopy(geometry)
-        bs_type, functional, nodes, crystal_path = Ini.get_geo_opt_info()
-
+    Ini = ReadIni()
+    name, slab_or_molecule, group, lattice_parameter, number_atoms, geometry, fixed_atoms = Ini.get_basic_info()
+    record_data_json(path, 'project_name', name)
+    record_data_json(path, 'system_type', slab_or_molecule)
+    record_data_json(path, 'lattice_parameter', lattice_parameter)
+    record_data_json(path, 'geometry', geometry)
+    record_data_json(path, 'fixed_atoms', fixed_atoms)
+    if isinstance(fixed_atoms, list) and len(fixed_atoms) == 2:
+        geometry = Geometry(geometry=geometry, fixed_atoms=fixed_atoms)
     else:
-        print('INPUT file does not exist!!!')
-        print('''Do you want to start initialization or exit?
-                 Please enter 1 to start initialization programm and enter 0 to exit the programm''')
-        while True:
-            init_or_exit = input()
-            if init_or_exit == 1 or 0:
-                if init_or_exit == 1:
-                    # geometry init
-                    Geo_Init = Initialization.Geo_Init()
-                    name, slab_or_molecule, group, lattice_parameter, number_of_atoms, geometry_info = Geo_Init.initialization()
-                    # basis set init
-                    Bs_Init = Initialization.Bs_Init(geometry_info)
-                    if_bs_change, ele_to_bs_type, elements = Bs_Init.initialization()
-                    # calculation input
-                    Cal_Init = Initialization.Cal_Init()
-                    functional = Cal_Init.functional_init()
-                elif init_or_exit == 0:
-                    try:
-                        sys.exit(1)
-                    except BaseException:
-                        print('Program Exits.')
-                    finally:
-                        print(
-                            '---------------------------------------------------------------------------------------')
-                break
-            else:
-                print('Please enter the right number!!')
-
+        geometry = Geometry(geometry=geometry)
+    original_geometry = deepcopy(geometry)
+    bs_type, functional, nodes, crystal_path = Ini.get_geo_opt()
+    record_data_json(path, 'basis_set', bs_type, section='geo_opt')
+    record_data_json(path, 'functional', functional, section='geo_opt')
+    record_data_json(path, 'nodes', nodes, section='geo_opt')
+    test_ini_read(group, lattice_parameter, number_atoms, slab_or_molecule)
 
     jobs = []
     new_jobs = []
@@ -76,7 +46,7 @@ def geo_opt(path):
     job = Job(job)
     jobs_finished = []
     if not if_cal_finish(job):
-        Geo_Inp = geometry_optimization.Geo_Opt_Input(
+        Geo_Inp = GeoOPt.Geo_Opt_Input(
             job,
             name,
             slab_or_molecule,
@@ -90,11 +60,11 @@ def geo_opt(path):
     else:
         jobs_finished.append(job)
     jobs.append(job)
-    geometry_optimization.write_init_dist(geometry, path)
+    GeoOPt.write_init_dist(geometry, path)
 
     job_geo_dict = {}
     # Generation of the job with different layer distance
-    diff_distances = geometry_optimization.Range_of_Distances(geometry, job)
+    diff_distances = GeoOPt.Range_of_Distances(geometry, job)
     geo_with_diff_distance = diff_distances.get_geo_series()
     init_distance = diff_distances.init_distance
 
@@ -106,7 +76,7 @@ def geo_opt(path):
 
     # Generation of the job with different displacement, produce ((0.1, 0),
     # (0.25, 0), (0.35, 0), (0.5, 0))
-    range_of_displacement = geometry_optimization.Range_of_Displacement(
+    range_of_displacement = GeoOPt.Range_of_Displacement(
         original_geometry, job)
     geo_with_diff_displacement = range_of_displacement.get_geo_series()
     job_geo_dict_dis = {}
@@ -121,8 +91,8 @@ def geo_opt(path):
     # generation all INPUT files besides the first one above
     for job, geometry in job_geo_dict.items():
         if not if_cal_finish(job):
-            #print('JOB not finished yet: ', job)
-            Geo_Inp = geometry_optimization.Geo_Opt_Input(
+            # print('JOB not finished yet: ', job)
+            Geo_Inp = GeoOPt.Geo_Opt_Input(
                 job,
                 name,
                 slab_or_molecule,
@@ -137,7 +107,7 @@ def geo_opt(path):
             jobs_finished.append(job)
         jobs.append(job)
     # Copy files and Submit the calculation job above
-    new_jobs_finished = geometry_optimization.submit(
+    new_jobs_finished = GeoOPt.submit(
         new_jobs, nodes, crystal_path)
     jobs_finished += new_jobs_finished
 
@@ -156,7 +126,7 @@ def geo_opt(path):
             if job.x == '0.10'}
     jobs_10 = [job for job in job_geo_dict_dis.keys() if job.x == '0.10']
     init_job_10 = jobs_10[0]
-    jobs_10, x_10, min_job_10, jobs_10_finished = geometry_optimization.select_optimal_dist(
+    jobs_10, x_10, min_job_10, jobs_10_finished = GeoOPt.select_optimal_dist(
         x_10, 0, para)
     jobs += jobs_10
     # x_25
@@ -167,7 +137,7 @@ def geo_opt(path):
     pos_min_10 = look_for_in_list(jobs_10, min_job_10)
     pos_init_10 = look_for_in_list(jobs_10, init_job_10)
     diff = pos_min_10 - pos_init_10
-    jobs_25, x_25, min_job_25, jobs_25_finished = geometry_optimization.select_optimal_dist(
+    jobs_25, x_25, min_job_25, jobs_25_finished = GeoOPt.select_optimal_dist(
         x_25, diff, para)
     jobs += jobs_25
     # x_35
@@ -177,7 +147,7 @@ def geo_opt(path):
     pos_min_25 = look_for_in_list(jobs_25, min_job_25)
     pos_init_25 = look_for_in_list(jobs_25, init_job_25)
     diff = pos_min_25 - pos_init_25
-    jobs_35, x_35, min_job_35, jobs_35_finished = geometry_optimization.select_optimal_dist(
+    jobs_35, x_35, min_job_35, jobs_35_finished = GeoOPt.select_optimal_dist(
         x_35, diff, para)
     jobs += jobs_35
     # x_50
@@ -187,7 +157,7 @@ def geo_opt(path):
     pos_min_35 = look_for_in_list(jobs_35, min_job_35)
     pos_init_35 = look_for_in_list(jobs_35, init_job_35)
     diff = pos_min_35 - pos_init_35
-    jobs_50, x_50, min_job_50, jobs_50_finished = geometry_optimization.select_optimal_dist(
+    jobs_50, x_50, min_job_50, jobs_50_finished = GeoOPt.select_optimal_dist(
         x_50, diff, para)
     jobs += jobs_50
 
@@ -196,7 +166,16 @@ def geo_opt(path):
     jobs_finished += jobs_25_finished
     jobs_finished += jobs_35_finished
     jobs_finished += jobs_50_finished
-    geometry_optimization.read_all_results(jobs_finished, init_distance)
+    GeoOPt.read_all_results(jobs_finished, init_distance)
 
-    print('Geometry optimization finished!!!')
-    record(path, 'Geometry optimization finished!!!')
+    rec = 'Geometry optimization finished!\n'
+    rec += '***'*25
+    print(rec)
+    record(path, rec)
+
+
+def test_ini_read(group_type, lattice_parameter, number_atoms, system_type):
+    assert system_type == 'SLAB'
+    assert group_type == 1
+    assert number_atoms == 8
+    assert lattice_parameter == [[3.27, 4.36], [90.0]]

@@ -26,7 +26,7 @@ def get_layer_distance(path):
     for geo in geometry:
         geometry_split.append(geo.split())
     z = []
-    for geo in geometry_split：
+    for geo in geometry_split:
         z.append(geo[-1])
 
     #get the layer distance by calculating the largest distance between atoms

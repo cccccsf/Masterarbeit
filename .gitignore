@@ -21,3 +21,4 @@ Test/
 */__pycache__/*
 */__pycache__/
 venv/Lib/*
+test_may/

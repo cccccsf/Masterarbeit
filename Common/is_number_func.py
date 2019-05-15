@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+
 def is_number(s):
     try:
         float(s)

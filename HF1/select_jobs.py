@@ -2,7 +2,7 @@
 import os
 from Common import Job
 from Common import look_for_in_list
-from geometry_optimization import read_and_select_lowest_e
+from GeoOPt import read_and_select_lowest_e
 
 
 def select_jobs(path):

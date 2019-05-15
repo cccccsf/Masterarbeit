@@ -5,7 +5,7 @@ import RPA
 from HF1 import read_init_dis
 from Common import record
 from Common import ReadIni
-from Common import Job_path
+from Common import Job
 
 
 def rpa(path):
@@ -54,14 +54,14 @@ def rpa(path):
     for job in bilayer:
         new_path = job.path
         new_path = new_path.replace('lmp2', 'rpa')
-        new_job = Job_path(new_path)
+        new_job = Job(new_path)
         rpa_jobs.append(new_job)
         Scr = RPA.Scr(job, nodes_rpa_b, molpro_key, molpro_path)
         Scr.gen_scr()
     for job in singlelayer:
         new_path = job.path
         new_path = new_path.replace('lmp2', 'rpa')
-        new_job = Job_path(new_path)
+        new_job = Job(new_path)
         rpa_jobs.append(new_job)
         Scr = RPA.Scr(job, nodes_rpa_s, molpro_key, molpro_path)
         Scr.gen_scr()
