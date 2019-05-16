@@ -10,7 +10,7 @@ from LMP2.submit_job_lmp2 import if_cal_finish
 
 
 def get_jobs(path):
-    path = os.path.join(path, 'hf_2')
+    path = os.path.join(path, 'lmp2')
     walks = os.walk(path)
     jobs = []
     for root, dirs, files in walks:

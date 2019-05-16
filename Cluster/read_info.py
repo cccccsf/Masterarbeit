@@ -3,7 +3,7 @@ import os
 import re
 import sys
 import json
-from CLUSTER.read_from_crystal_input import read_CrystalInput
+from Cluster.read_from_crystal_input import read_CrystalInput
 
 
 def read_block(job):

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import math
-from CLUSTER import Atom
+from Cluster import Atom
 
 
 

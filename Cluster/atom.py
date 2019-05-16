@@ -15,6 +15,7 @@ class Atom(object):
         self.coor_vec = coor_vec
         self.coor_vec_free = []
         self.layer = 1
+        self.unit_cell = True
 
     def __repr__(self):
         return self.nat.center(10) + ' ' + '{:.12E}'.format(float(self.x)).rjust(19) + ' ' + '{:.12E}'.format(float(self.y)).rjust(19) + ' ' + '{:.12E}'.format(float(self.z)).rjust(19)
