@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import os
 import sys
 import Localization
 from Common import record
@@ -8,32 +7,19 @@ from Common import ReadIni
 
 def localization(path):
 
-    rec = 'Localization begins...'
+    rec = 'Localization begins.\n'
+    rec += '---'*25
     print(rec)
     record(path, rec)
 
-
+    # read infos from input.ini file
+    Ini = ReadIni()
+    nodes, crystal_path = Ini.get_loc()
+    if nodes == '' or nodes == 'default':
+        nodes = 1
     hf1_jobs = Localization.get_jobs(path)
 
-    ini_path = os.path.dirname(__file__)
-    ini_path = os.path.dirname(ini_path)
-    ini_file = os.path.join(ini_path, 'input.ini')
-    ini_file = os.path.exists(ini_file)
-
-    #read info
-    if ini_file:
-        Ini = ReadIni(ini_path)
-        nodes, crystal_path = Ini.get_loc_info()
-        if nodes == '' or nodes == 'default':
-            nodes = 1
-
-    else:
-        print('Initilization file input.ini not found!')
-        print('Please check it in the work directory!')
-        print('Programm exit and Please reatart it from HF1 step.')
-        sys.exit()
-
-    #copy input file of localiztion
+    # copy input file of localization
     loc_jobs = []
     if len(hf1_jobs) != 0:
         try:
@@ -46,14 +32,14 @@ def localization(path):
             print(e)
     else:
         print('There is no appropriate Hartree Fock calculation results!!! ')
-        print('Programm will exit and correct the error and restart from localization step!!!')
-        try:
-            sys.exit(1)
-        except:
-            print('Program Exits.')
+        print('Program will exit and correct the error and restart from localization step!!!')
+        sys.exit(1)
 
-    #submit all jobs
-    loc_finished_job = Localization.submit(loc_jobs)
+    # submit all jobs
+    if len(loc_jobs) > 0:
+        loc_finished_job = Localization.submit(loc_jobs)
 
-    print('Localization finished!!!')
-    record(path, 'Localization finished!!!')
+    rec = 'Localization finished!\n'
+    rec += '***'*25
+    print(rec)
+    record(path, rec)

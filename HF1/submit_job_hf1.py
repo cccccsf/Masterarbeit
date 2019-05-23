@@ -191,7 +191,6 @@ def submit(jobs):
         else:
             if count < max_paralell and len(jobs) != 0:
                 new_job = jobs.pop()
-                print(new_job)
                 os.chdir(new_job.path)
                 rename_file(new_job.path, 'hf.out')
                 rename_file(new_job.path, 'fort.9')
@@ -204,11 +203,12 @@ def submit(jobs):
                 rec += '\n' + out + '\n'
                 rec += '---'*25
                 record(new_job.root_path, rec)
+                print(rec)
             else:
-                time.sleep(10)
-                # time.sleep(500)
+                # time.sleep(10)
+                time.sleep(500)
                 j += 1
-                test_calculation(j, jobs, submitted_jobs, finished_jobs)
+                test_calculation(j, jobs, submitted_jobs, finished_jobs)    # test function
                 if j > 15:
                     rec = 'noting changes.\n'
                     rec += '---'*25
@@ -228,8 +228,8 @@ def test_calculation(j, init_jobs, submitted_jobs, finished_jobs):
         jobs = []
         for root, dirs, files in walks:
             if 'hf.out' in files:
-                job = Job(root)
                 if 'BS2' not in root:
+                    job = Job(root)
                     jobs.append(job)
         out_jobs = {}
         for job in jobs:
