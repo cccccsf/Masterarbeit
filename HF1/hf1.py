@@ -17,6 +17,7 @@ def hf1(path):
     record(path, rec)
 
     # read info from input.ini file
+    init_dist = HF1.read_init_dis(path)
     Ini = ReadIni()
     name, slab_or_molecule, group, lattice_parameter, number_of_atoms, geometry, fixed_atoms = Ini.get_basic_info()
     bs_type, nodes, crystal_path = Ini.get_hf1()
@@ -37,7 +38,7 @@ def hf1(path):
         path_HF1 = path_GeoOpt.replace('geo_opt', 'hf1')
         new_job = Job(path_HF1)
         if not HF1.if_cal_finish(new_job):
-            Inp = HF1.Input(job, name, slab_or_molecule, group, bs_type, layertype = 'bilayer', fiexed_atoms=fixed_atoms)
+            Inp = HF1.Input(job, name, slab_or_molecule, group, bs_type, layertype='bilayer', fiexed_atoms=fixed_atoms)
             Inp.gen_input()
             HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
@@ -66,6 +67,7 @@ def hf1(path):
         else:
             hf1_jobs_finished.append(new_job)
         jobs_HF1.append(new_job)
+
     # Submit the calculation job
     hf1_jobs_finished_new = HF1.submit(new_jobs)
     hf1_jobs_finished += hf1_jobs_finished_new
@@ -91,5 +93,7 @@ def hf1(path):
     #     jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
     #     hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
 
-    print('Hartree Fock calculation 1 finished!!!')
-    record(path, 'Hartree Fock calculation 1 finished!!!')
+    rec = 'HF1 finished!\n'
+    rec += '***'*25
+    print(rec)
+    record(path, rec)

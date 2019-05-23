@@ -123,7 +123,8 @@ def submit(jobs, nodes, crystal_path):
             print(rec)
             rec += '\n'
             rec += 'job submitted...'
-            rec += '\n' + out
+            rec += '\n' + out + '\n'
+            rec += '---'*25
             record(job_init.root_path, rec)
             r = 0
             while True:
@@ -203,7 +204,7 @@ def submit(jobs, nodes, crystal_path):
                     j += 1
                     j = test_calculation(j, submitted_jobs)     # test function
                     if j > 20:
-                        rec = 'noting changes.'
+                        rec = 'noting changes.\n'
                         rec += '---'*25
                         # print(rec)
                         record(submitted_jobs[0].root_path, rec)
@@ -287,6 +288,8 @@ def select_optimal_dist(job_geo_dict, diff, para):
     while True:
         jobs = sorted(jobs, key=lambda job: float(job.z))
         point = look_for_in_list(jobs, min_job)
+        # print(jobs)
+        # print(point)
         if (len(jobs) - point) == 1:
             New_Geo = GeoOPt.Select_Opt_Dis(job_geo_dict[min_job], min_job, direct=2)
         if (len(jobs) - point) == 2:

@@ -154,6 +154,8 @@ def data_saving(i, path, disp, dis, energy):
 
 
 def read_and_record_result(j, job, init_distance):
+    # if job.x == '0.10':
+    #     print(job)
     path = job.path
     lattice_parameter, geometry = get_optimized_geometry(path)
     energy, unit = get_optimized_energy(path)
@@ -232,6 +234,8 @@ if __name__ == '__main__':
                 job = Job(root)
                 jobs.append(job)
         for job in jobs:
+            # if job.x == '0.10':
+            #     print(job)
             path = job.path
             lattice_para, geometry = get_optimized_geometry(path)
             write_geometry_json(job, geometry)

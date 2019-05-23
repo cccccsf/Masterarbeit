@@ -40,7 +40,7 @@ def rename_file(path, file_name):
     record_file = os.path.join(path, file_name)
     if os.path.exists(record_file):
         ctime = get_FileCreatTime(record_file)
-        new_name = ctime + '_' + 'record'
+        new_name = ctime + '_' + file_name
         new_name = os.path.join(path, new_name)
         try:
             os.rename(record_file, new_name)
