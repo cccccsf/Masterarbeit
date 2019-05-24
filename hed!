@@ -1,0 +1,79 @@
+* [31m3078f06[m -[33m (HEAD -> test, origin/test)[m debug HF2 [32m(6 minutes ago) [1;34m<csf>[m
+* [31mfd5db44[m -[33m[m debug Loc [32m(20 hours ago) [1;34m<csf>[m
+* [31m28e99ba[m -[33m[m debug HF1 [32m(22 hours ago) [1;34m<csf>[m
+* [31ma10978b[m -[33m[m debug Cluster [32m(8 days ago) [1;34m<csf>[m
+* [31m5211ba4[m -[33m[m debug GeoOpt [32m(9 days ago) [1;34m<csf>[m
+* [31mca72cb3[m -[33m (origin/master, master)[m some debugging [32m(2 weeks ago) [1;34m<csf>[m
+* [31m6b9fb1b[m -[33m[m some debugging [32m(2 weeks ago) [1;34m<csf>[m
+* [31m9837390[m -[33m[m v0.02 [32m(4 weeks ago) [1;34m<csf>[m
+* [31m2505c21[m -[33m[m v0.01 [32m(6 weeks ago) [1;34m<csf>[m
+* [31m5e35a5c[m -[33m[m finish data computation [32m(8 weeks ago) [1;34m<csf>[m
+* [31m49c5358[m -[33m[m add Correction part [32m(9 weeks ago) [1;34m<csf>[m
+* [31m6cfe17a[m -[33m[m debug of HF2 bs [32m(3 months ago) [1;34m<csf>[m
+* [31m1cdb776[m -[33m[m 1st edition cluster cutting [32m(3 months ago) [1;34m<csf>[m
+* [31m9ff86df[m -[33m[m ready to test Loc [32m(3 months ago) [1;34m<csf>[m
+* [31md2fc0c2[m -[33m[m add function calculate factor [32m(3 months ago) [1;34m<shch>[m
+* [31m597b653[m -[33m[m deal with the situation TOO MANY CYCLES [32m(3 months ago) [1;34m<csf>[m
+*   [31mcbc85b3[m -[33m[m merge with HF1 test 1 [32m(3 months ago) [1;34m<csf>[m
+[32m|[m[33m\[m  
+[32m|[m * [31m211a4e5[m -[33m[m HF1 1st test finish [32m(3 months ago) [1;34m<shch>[m
+[32m|[m * [31m0ea003b[m -[33m[m ... [32m(3 months ago) [1;34m<csf>[m
+* [33m|[m [31m2d8c41f[m -[33m[m add function cutting cluster [32m(3 months ago) [1;34m<csf>[m
+[33m|[m[33m/[m  
+* [31md6892b4[m -[33m[m ready to test HF1 [32m(3 months ago) [1;34m<csf>[m
+*   [31m3fa5151[m -[33m[m complete Geo Opt test [32m(3 months ago) [1;34m<csf>[m
+[34m|[m[35m\[m  
+[34m|[m * [31m68a38b7[m -[33m[m complet Geo Opt test [32m(3 months ago) [1;34m<shch>[m
+[34m|[m[34m/[m  
+*   [31m5b26a9e[m -[33m (origin/test_hf1, test_hf1)[m merge with finished Geo Opt test [32m(3 months ago) [1;34m<csf>[m
+[36m|[m[1;31m\[m  
+[36m|[m * [31m19c8dbd[m -[33m[m finish the geo opt test [32m(3 months ago) [1;34m<shch>[m
+* [1;31m|[m   [31me87f2d9[m -[33m[m cluster part 1 [32m(3 months ago) [1;34m<csf>[m
+[1;32m|[m[1;33m\[m [1;31m\[m  
+[1;32m|[m * [1;31m|[m [31m0b395eb[m -[33m (rpa)[m cluster first part [32m(3 months ago) [1;34m<csf>[m
+[1;32m|[m * [1;31m|[m [31m3deb08c[m -[33m[m finish 6 part [32m(4 months ago) [1;34m<csf>[m
+[1;32m|[m [1;31m|[m[1;31m/[m  
+[1;32m|[m * [31md2952dd[m -[33m[m ready to test [32m(4 months ago) [1;34m<csf>[m
+[1;32m|[m[1;32m/[m  
+* [31m7487052[m -[33m[m modify LMP2 [32m(4 months ago) [1;34m<csf>[m
+* [31me1dd7a3[m -[33m[m recompose the Loc and HF2 part [32m(4 months ago) [1;34m<csf>[m
+*   [31m121bd80[m -[33m[m merege with rewriteing HF1 part [32m(4 months ago) [1;34m<csf>[m
+[1;34m|[m[1;35m\[m  
+[1;34m|[m * [31m83948a8[m -[33m (hf1)[m rewrite HF1 part [32m(4 months ago) [1;34m<csf>[m
+* [1;35m|[m   [31me31e7ff[m -[33m[m Geo Opt test [32m(4 months ago) [1;34m<csf>[m
+[1;35m|[m[31m\[m [1;35m\[m  
+[1;35m|[m [31m|[m[1;35m/[m  
+[1;35m|[m[1;35m/[m[31m|[m   
+[1;35m|[m * [31mc568ace[m -[33m[m correct some bugs [32m(4 months ago) [1;34m<csf>[m
+[1;35m|[m * [31m282def1[m -[33m[m debugging... [32m(4 months ago) [1;34m<shch>[m
+[1;35m|[m[1;35m/[m  
+* [31m90654c2[m -[33m[m ready for test GeoOpt part2 [32m(4 months ago) [1;34m<csf>[m
+* [31m748edfd[m -[33m[m add function: select optimal point of z for each x for Geo Opt [32m(4 months ago) [1;34m<csf>[m
+*   [31m04f8d12[m -[33m[m test and submit job of diff z at x=0 [32m(4 months ago) [1;34m<csf>[m
+[32m|[m[33m\[m  
+[32m|[m * [31m73804f6[m -[33m[m add line in job submit scr [32m(4 months ago) [1;34m<csf>[m
+[32m|[m * [31m5e7260a[m -[33m[m a little change for test [32m(4 months ago) [1;34m<shch>[m
+[32m|[m[32m/[m  
+* [31m1100e3a[m -[33m[m prepare to run geo opt with diff distances [32m(4 months ago) [1;34m<csf>[m
+* [31mbd25f34[m -[33m[m use .ini file to set initialization parameter and store the optimized geometry and lattice parameter in .json file [32m(4 months ago) [1;34m<csf>[m
+* [31m026e265[m -[33m[m correct some error before submit the first test job [32m(4 months ago) [1;34m<shch>[m
+* [31mb3f688b[m -[33m[m change the Test path [32m(4 months ago) [1;34m<csf>[m
+* [31m1fc8a5b[m -[33m[m rewrite results-reading of Geo Opt with csv modlue instead of xlwt, xlrd and xlutils [32m(4 months ago) [1;34m<csf>[m
+* [31m549c717[m -[33m[m change node [32m(4 months ago) [1;34m<csf>[m
+*   [31mb6d678e[m -[33m[m merge rewrite Geo Opt [32m(4 months ago) [1;34m<csf>[m
+[34m|[m[35m\[m  
+[34m|[m * [31m6c35441[m -[33m[m rewrite Geo Opt with class and add record function [32m(4 months ago) [1;34m<csf>[m
+[34m|[m[34m/[m  
+* [31m7c7c9bb[m -[33m[m add LRPA part [32m(4 months ago) [1;34m<csf>[m
+* [31m115eeaa[m -[33m[m add LMP2 read_results part and complet LMP2 framework [32m(4 months ago) [1;34m<csf>[m
+* [31me2b3e27[m -[33m[m add LMP2 INPUT and job_submit part [32m(4 months ago) [1;34m<csf>[m
+* [31m465f5dd[m -[33m[m ignore something [32m(5 months ago) [1;34m<csf>[m
+* [31m2c28182[m -[33m[m ignore .workspace [32m(5 months ago) [1;34m<csf>[m
+* [31mba3a34d[m -[33m[m ignore .workspace.xml 2 [32m(5 months ago) [1;34m<csf>[m
+* [31meb07100[m -[33m[m ignore workspace.xml [32m(5 months ago) [1;34m<csf>[m
+* [31md8344c3[m -[33m[m add HF2 results-reading and finish HF2 part [32m(5 months ago) [1;34m<csf>[m
+* [31m268c3d9[m -[33m[m use class Job-path in HF2 submit [32m(5 months ago) [1;34m<csf>[m
+* [31m81d685c[m -[33m[m add Input-read class and use it in HF2 [32m(5 months ago) [1;34m<csf>[m
+* [31mb198e1a[m -[33m[m rewrite HF2 Input part with Class Geometry, BasisSet and Guesdual [32m(5 months ago) [1;34m<csf>[m
+* [31m56731a4[m -[33m[m creat geometry class and basisset class [32m(5 months ago) [1;34m<csf>[m
+* [31mf289f24[m -[33m[m version before Xmas [32m(5 months ago) [1;34m<csf>[m

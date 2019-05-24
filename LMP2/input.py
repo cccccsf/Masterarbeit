@@ -7,17 +7,19 @@ from Common import mkdir
 from Common import Job
 from HF2.submit_job_hf2 import if_cal_finish
 
+
 def get_jobs(path):
     path = os.path.join(path, 'hf2')
     walks = os.walk(path)
     jobs = []
     for root, dirs, files in walks:
-        if 'hf.out' in files:
+        if 'hf2.out' in files:
             new_path = root
             new_job = Job(new_path)
             if if_cal_finish(new_job):
-                jobs.append(root)
+                jobs.append(new_job)
     return jobs
+
 
 def test_get_jobs(path):
     # path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test'
@@ -27,7 +29,7 @@ def test_get_jobs(path):
     # assert(jobs == expected)
 
 
-class Lmp2_Input(object):
+class Lmp2Input(object):
 
     def __init__(self, job):
         self.job = job
@@ -74,7 +76,6 @@ class Lmp2_Input(object):
                 f.write(i + ' ')
             f.write('\n')
 
-
     def write_part2(self):
         with open(self.input_path, 'a') as f:
             f.write('ENVPAIR' + '\n')
@@ -93,7 +94,6 @@ class Lmp2_Input(object):
                 f.write(i + ' ')
             f.write('\n')
 
-
     def write_part3(self):
         with open(self.input_path, 'a') as f:
             f.write('DOMPUL' + '\n')
@@ -109,7 +109,6 @@ class Lmp2_Input(object):
             f.write('PRINTMEM' + '\n')
             f.write('END' + '\n')
 
-
     def read_ghost(self):
         hf2_inp = os.path.join(self.job.path, 'upperlayer')
         hf2_inp = os.path.join(hf2_inp, 'INPUT')
@@ -124,10 +123,9 @@ class Lmp2_Input(object):
             print('Ghosts infomation can not be found.')
             print('Please exit the programm and check the INPUT file of HF2')
             sys.exit()          
-        ghost = ghost.split('\n')   #['GHOSTS', '4', '1 2 3 4 ', 'END']
+        ghost = ghost.split('\n')   # ['GHOSTS', '4', '1 2 3 4 ', 'END']
         ghost[2] = ghost[2].strip().split(' ')
         self.ghost = ghost
-
 
     def write_input(self):
         self.read_ghost()
@@ -138,11 +136,10 @@ class Lmp2_Input(object):
         self.write_part3()
 
 
-class Lmp2_Input_Layer(Lmp2_Input):
+class Lmp2InputLayer(Lmp2Input):
 
     def __init__(self, job):
-        super(Lmp2_Input_Layer, self).__init__(job)
-
+        super(Lmp2InputLayer, self).__init__(job)
 
     def write_part1(self):
         mkdir(self.lmp2_path)
@@ -196,7 +193,7 @@ class Lmp2_Input_Layer(Lmp2_Input):
             print('Ghosts infomation can not be found.')
             print('Please exit the programm and check the INPUT file of HF2')
             sys.exit()
-        ghost = ghost.split('\n')   #['GHOSTS', '4', '1 2 3 4 ', 'END']
+        ghost = ghost.split('\n')   # ['GHOSTS', '4', '1 2 3 4 ', 'END']
         ghost[2] = ghost[2].strip().split(' ')
         self.ghost = ghost
         

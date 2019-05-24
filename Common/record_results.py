@@ -33,9 +33,7 @@ def creatcsv(path, cal_type):
             f_csv.writerow(headers)
 
 
-def creat_json_file(path, cal_type):
-    json_file = os.path.join(path, cal_type)
-    json_file = os.path.join(json_file, '{}.json'.format(cal_type))
+def creat_json_file(json_file):
     if not os.path.exists(json_file):
         data = {}
         with open(json_file, 'w') as f:
@@ -93,9 +91,12 @@ def read_all_results(jobs, cal_type, energy_func, init_distance=None):
                     continue
 
     path = jobs[0].root_path
-    creat_json_file(path, cal_type)
-    json_file = os.path.join(path, cal_type)
+    if cal_type != 'scs_lmp2':
+        json_file = os.path.join(path, cal_type)
+    else:
+        json_file = os.path.join(path, 'lmp2')
     json_file = os.path.join(json_file, '{}.json'.format(cal_type))
+    creat_json_file(json_file)
 
     bilayer = {}
     upperlayer = {}

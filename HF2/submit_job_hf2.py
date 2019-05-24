@@ -18,7 +18,7 @@ def copy_submit_scr(job, nodes, crystal_path):
     try:
         shutil.copy(scr_from, scr_to)
         update_nodes(ziel_path, nodes, crystal_path)
-        print('Submition file copied...')
+        print('Submition file copied.')
     except Exception as e:
         print(e)
 
@@ -30,7 +30,7 @@ def copy_fort9(job):
     fort_to = os.path.join(ziel_path, 'fort.20')
     try:
         shutil.copy(fort_from, fort_to)
-        print('fort.9 copied...')
+        print('fort.9 copied.')
     except Exception as e:
         print(e)
 
