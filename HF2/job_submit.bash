@@ -16,7 +16,7 @@ cp INPUT $currdir
 cp fort.20 $currdir
 cd $currdir
 
-mpirun -np 12 $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/hf.out
+mpirun -np 12 $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/hf2.out
 
 cp fort.9 ${PBS_O_WORKDIR}/
 cp fort.78 ${PBS_O_WORKDIR}/

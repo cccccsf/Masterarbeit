@@ -7,3 +7,4 @@ from HF2.submit_job_hf2 import copy_submit_scr
 from HF2.submit_job_hf2 import copy_fort9
 from HF2.submit_job_hf2 import submit
 from HF2.read_results_hf2 import read_all_results_hf2
+from HF2.submit_job_hf2 import if_cal_finish
