@@ -3,6 +3,9 @@ import os
 import subprocess
 import shutil
 import time
+from Common import record
+from Common import submit_job
+from Common import rename_file
 
 
 def copy_submit_src(job):
@@ -19,6 +22,7 @@ def copy_submit_src(job):
         print(e)
         print('scr copy failed...')
 
+
 def submit_rpa_job():
     chmod = 'chmod u+x rpa'
     subprocess.call(chmod, shell=True)
@@ -33,35 +37,6 @@ def submit_rpa_job():
     print('job submitted...')
     print(out_text)
     return out_text
-
-
-def update_scr(job, nodes, molpro_key, molpro_path):
-    scr = os.path.join(path, 'geo_opt')
-
-    i = 0
-    loc_nodes, loc_scratch,
-    for line in lines:
-        if line.startswith('#PBS -l nodes'):
-            nodes_line = line
-            loc = i
-        i += 1
-    loc2, loc_cry = 0, 0
-    j = 0
-    for line in lines:
-        if line.startswith('mpirun -np'):
-            loc2 = j
-        if line.startswith('crystal_path='):
-            loc_cry = j
-        j += 1
-    if nodes != '':
-        nodes_line = '#PBS -l nodes={}\n'.format(nodes)
-        lines[loc] = nodes_line
-        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/geo_opt.out\n'.format(nodes)
-    if crystal_path != '':
-        lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
-
-    with open(scr, 'w') as f:
-        f.writelines(lines)
 
 
 def if_cal_finish(job):
@@ -81,64 +56,149 @@ def if_cal_finish(job):
         if last == ' Molpro calculation terminated':
             return True
         else:
+            # print(last)
             return False
 
 
 def submit(jobs):
     job_num = len(jobs)
-    max_paralell = 5
     count = 0
     submitted_jobs = []
     finished_jobs = []
+    max_calculations_dict = {'1': 2, '6': 1, '12': 5, '28': 3}
 
     def test_finished(jobs):
         """
         test jobs which have benn submittdt is finished or not
         if a job finished, add it to list finished_jobs, and delete it from list submitted_jobs
-        :param submitted_jobs:
+        :param jobs:
         :return:
         """
         nonlocal count
+        nonlocal count_dict
         for job in jobs[:]:
             if if_cal_finish(job):
                 finished_jobs.append(job)
-                print(job)
-                print('calculation finished..')
+                num = str(len(finished_jobs)) + '/' + str(job_num)
+                rec = str(job)
+                rec += '\n'
+                rec += num + '  calculation finished.\n'
+                rec += '---'*25
+                print(rec)
+                record(job.root_path, rec)
                 jobs.remove(job)
                 count -= 1
+                count_dict[job.parameter['nodes']] -= 1
 
-    #test if there is some job which is already finished
+    # test if there is some job which is already finished
     for job in jobs[:]:
         if if_cal_finish(job):
             finished_jobs.append(job)
             jobs.remove(job)
 
-    #submit and detect all jobs
+    # categorize jobs according to the nodes number
+    jobs_dict = {}
+    count_dict = {}
+    nodes_list = []
+    for job in jobs:
+        node = job.parameter['nodes']
+        if node not in nodes_list:
+            nodes_list.append(node)
+            jobs_dict[node] = [job]
+            count_dict[node] = 0
+        else:
+            jobs_dict[node].append(job)
+
+    # submit and detect all jobs
     j = 0
     while True:
+        print(1)
         test_finished(submitted_jobs)
         if len(finished_jobs) == job_num and len(submitted_jobs) == 0:
             break
         else:
-            if count < max_paralell:
-                new_job = jobs.pop()
-                os.chdir(new_job.path)
-                out = submit_rpa_job()
-                count += 1
-                submitted_jobs.append(new_job)
-                rec = new_job.path + '\n'
-                rec += 'job submitted...'
-                rec += '\n' + out
-                record(new_job.root_path, rec)
-                print(rec)
-            else:
-                time.sleep(500)
-                j += 1
-                if j > 15:
-                    rec += 'noting changes...'
-                    record(submitted_jobs[0].root_path, rec)
-                    j = 0
-                continue
+            print(2)
+            # test_calculation(j, jobs, finished_jobs)
+            for node in nodes_list:
+                print(node)
+                if count_dict[node] < max_calculations_dict[node] and len(jobs_dict[node]) > 0:
+                    print(3)
+                    new_job = jobs_dict[node].pop()
+                    os.chdir(new_job.path)
+                    rename_file(new_job.path, 'rpa.out')
+                    out = submit_job(new_job, 'rpa')
+                    count += 1
+                    count_dict[node] += 1
+                    submitted_jobs.append(new_job)
+                    rec = str(new_job) + '\n'
+                    rec += 'job submitted.'
+                    rec += '\n' + out + '\n'
+                    rec += '---'*25
+                    record(new_job.root_path, rec)
+                    print(rec)
+                else:
+                    print(3.1)
+                    time.sleep(0.01)
+                    # time.sleep(500)
+                    j += 1
+                    if j > 15:
+                        rec = 'noting changes.\n'
+                        rec += '---'*25
+                        record(submitted_jobs[0].root_path, rec)
+                        j = 0
+                    continue
 
     return finished_jobs
+
+
+def test_calculation(j, init_jobs, finished_jobs):
+    # ----------------------------------------- test ---------------------------------------------------
+    if j >= 2:
+        from Common import Job
+        # categorization of out jobs
+        path = r'F:\BlackP\RPA'
+        walks = os.walk(path)
+        jobs = []
+        for root, dirs, files in walks:
+            if 'rpa.out' in files:
+                jobs.append(Job(root))
+        out_jobs = {}
+        for job in jobs:
+            if job.layertype not in out_jobs:
+                out_jobs[job.layertype] = {}
+            if job.x not in out_jobs[job.layertype]:
+                out_jobs[job.layertype][job.x] = [job]
+            else:
+                out_jobs[job.layertype][job.x].append(job)
+        for layertype, jobs_dict in out_jobs.items():
+            for key, value in jobs_dict.items():
+                sorted(value, key=lambda job: float(job.z))
+
+        # categorization of running jobs
+        all_jobs = init_jobs + finished_jobs
+        runing_jobs_dict = {}
+        for job in all_jobs:
+            if job.layertype not in runing_jobs_dict:
+                runing_jobs_dict[job.layertype] = {}
+            if job.x not in runing_jobs_dict[job.layertype]:
+                runing_jobs_dict[job.layertype][job.x] = [job]
+            else:
+                runing_jobs_dict[job.layertype][job.x].append(job)
+
+        # find corresponding jobs
+        for layertype, jobs_dict in runing_jobs_dict.items():
+            for x, job_list in jobs_dict.items():
+                corr_list = out_jobs[layertype]['%.1f' % (float(x)*10+2.5)]
+                job_list = sorted(job_list, key=lambda job: float(job.z))
+                for i in range(len(job_list)):
+                    out_from = corr_list[i].path
+                    out_from = os.path.join(out_from, 'rpa.out')
+                    out_to = job_list[i].path
+                    out_to = os.path.join(out_to, 'rpa.out')
+                    shutil.copy(out_from, out_to)
+    # ----------------------------------------- test ---------------------------------------------------
+
+
+if __name__ == '__main__':
+    test_calculation(3,1,1)
 

@@ -6,3 +6,4 @@ from RPA.submit_job_rpa import copy_submit_src
 from RPA.submit_job_rpa import submit
 from RPA.read_results_rpa import read_and_record_all_results
 from RPA.scr_submit import Scr
+from RPA.submit_job_rpa import if_cal_finish

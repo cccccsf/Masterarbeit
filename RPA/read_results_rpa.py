@@ -14,7 +14,7 @@ def get_energy(path):
         lines = f.read().decode('utf-8')
     regex = 'LRPA correlation energy.*?\n'
     energy = re.search(regex, lines, re.M|re.S)
-    if energy != None:
+    if energy is not None:
         energy = energy.group(0)
     else:
         print(path)
@@ -23,10 +23,10 @@ def get_energy(path):
     energy = energy.strip()
     energy = energy.split()
     energy = energy[-1]
+    unit = 'hartree'    # here need more info
 
-    return energy
+    return energy, unit
 
 
-
-def read_and_record_all_results(jobs):
-    read_all_results(jobs, 'rpa', energy_func=get_energy)
+def read_and_record_all_results(jobs, init_distance=None):
+    read_all_results(jobs, 'rpa', energy_func=get_energy, init_distance=init_distance)
