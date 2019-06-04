@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 import os
-import shutil
-
 
 
 class Script(object):
@@ -15,7 +13,6 @@ class Script(object):
         self.nodes = job.parameter['node']
         self.molpro_key = molpro_key
         self.molpro_path = molpro_path
-
 
     def write_beginning(self):
         with open(self.scr_file, 'w') as f:
@@ -52,7 +49,6 @@ class Script(object):
         molpro_path = '{}:{}'.format(bin_path, lib_path)
         return molpro_path
 
-
     def write_run_step(self):
         inp_file = self.job_type + '.inp'
         with open(self.scr_file, 'a') as f:
@@ -63,7 +59,6 @@ class Script(object):
             f.write('molpro -n {} {} -d $currdir -I $currdir -W $currdir\n'.format(self.nodes, inp_file))
             f.write('\n')
             f.write('rm -r $currdir\n')
-
 
     def write_scr(self):
         self.write_beginning()

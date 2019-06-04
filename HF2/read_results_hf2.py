@@ -7,7 +7,7 @@ from Common import Job
 def get_energy(path):
     if isinstance(path, Job):
         path = path.path
-    f = open(path + '/hf.out', 'r')
+    f = open(path + '/hf2.out', 'r')
     lines = f.read()
     # lines = ' '.join(lines.split()) + '#'
     f.close()
@@ -17,13 +17,26 @@ def get_energy(path):
     # 1.00E+00
     energy_block = re.search(regex, lines).group(0)
     regex_2 = r'ETOT\(AU\) .*? '
-    energy_block = re.search(regex_2, energy_block).group(
-        0)  # ETOT(AU) -2.726040216969E+03
+    energy_block = re.search(regex_2, energy_block).group(0)  # ETOT(AU) -2.726040216969E+03
+    unit = search_unit(energy_block)
     energy_block = energy_block.strip()
     energy_block = energy_block.split(' ')
     energy = energy_block[-1]  # str
 
-    return energy
+    return energy, unit
+
+
+def search_unit(energy_block):
+    reg = r'\(.*?\)'
+    unit_block = re.search(reg, energy_block)
+    if unit_block is not None:
+        unit_block = unit_block.group(0)
+        unit = unit_block[1:-1]
+        if unit == 'AU':
+            unit = 'hartree'
+    else:
+        unit = 'default'
+    return unit
 
 
 def test_get_energy():

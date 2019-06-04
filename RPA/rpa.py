@@ -1,38 +1,25 @@
 #!/usr/bin/python3
-import os
-import sys
 import RPA
 from HF1 import read_init_dis
 from Common import record
 from Common import ReadIni
-from Common import Job_path
+from Common import Job
 
 
 def rpa(path):
 
-    rec = 'LRPA Calculation begins...'
+    rec = 'LRPA begins.\n'
+    rec += '---'*25
     print(rec)
     record(path, rec)
 
+    # read basic computation information
     init_dist = read_init_dis(path)
-    ini_path = os.path.dirname(os.path.relpath(__file__))
-    ini_path = os.path.dirname(ini_path)
-    ini_file = os.path.join(ini_path, 'input.ini')
-    ini_file = os.path.exists(ini_file)
+    lmp2_jobs = RPA.get_jobs(path)
+    Ini = ReadIni()
+    nodes_rpa_b, memory_b, nodes_rpa_s, memory_s, molpro_path, molpro_key = Ini.get_rpa()
 
-    #read basic computation infomation
-    if ini_file:
-        lmp2_jobs = RPA.get_jobs(path)
-        Ini = ReadIni(ini_path)
-        name, slab_or_molecule, group, lattice_parameter, number_of_atoms, fixed_atoms = Ini.get_basic_info()
-        nodes_rpa_b, nodes_rpa_s, molpro_key, molpro_path = Ini.get_rpa_info()
-    else:
-        print('Initilization file input.ini not found!')
-        print('Please check it in the work directory!')
-        print('Programm exit and Please reatart it from HF1 step.')
-        sys.exit()
-
-    #catagorization
+    # categorization
     bilayer = []
     singlelayer = []
     for job in lmp2_jobs:
@@ -41,34 +28,47 @@ def rpa(path):
         elif job.layertype == 'underlayer' or job.layertype == 'upperlayer':
             singlelayer.append(job)
 
-    #generation of all input files
-    for job in bilayer:
-        Inp = RPA.RPA_Input(job, '12000')
-        Inp.generate_input()
-    for job in singlelayer:
-        Inp = RPA.RPA_Input(job, '2900')
-        Inp.generate_input()
-
-    #copy files and submit the jobs
+    # generate inp file and scr file
     rpa_jobs = []
+    rpa_jobs_finished = []
     for job in bilayer:
         new_path = job.path
         new_path = new_path.replace('lmp2', 'rpa')
-        new_job = Job_path(new_path)
-        rpa_jobs.append(new_job)
-        Scr = RPA.Scr(job, nodes_rpa_b, molpro_key, molpro_path)
-        Scr.gen_scr()
+        new_job = Job(new_path)
+        new_job.parameter['nodes'] = nodes_rpa_b
+        if not RPA.if_cal_finish(new_job):
+            Inp = RPA.RPA_Input(job, memory_b)
+            Inp.generate_input()
+            rpa_jobs.append(new_job)
+            Scr = RPA.Scr(new_job, nodes_rpa_b, molpro_key, molpro_path)
+            Scr.gen_scr()
+        else:
+            new_job.status = 'finished'
+            rpa_jobs_finished.append(new_job)
     for job in singlelayer:
         new_path = job.path
         new_path = new_path.replace('lmp2', 'rpa')
-        new_job = Job_path(new_path)
-        rpa_jobs.append(new_job)
-        Scr = RPA.Scr(job, nodes_rpa_s, molpro_key, molpro_path)
-        Scr.gen_scr()
-    finished_jobs_rpa = RPA.submit(lmp2_jobs)
+        new_job = Job(new_path)
+        new_job.parameter['nodes'] = nodes_rpa_s
+        if not RPA.if_cal_finish(new_job):
+            Inp = RPA.RPA_Input(job, memory_s)
+            Inp.generate_input()
+            Scr = RPA.Scr(new_job, nodes_rpa_s, molpro_key, molpro_path)
+            Scr.gen_scr()
+            rpa_jobs.append(new_job)
+        else:
+            new_job.status = 'finished'
+            rpa_jobs_finished.append(new_job)
 
-    #read calculation results
-    RPA.read_and_record_all_results(finished_jobs_rpa)
+    # submit the jobs
+    if len(rpa_jobs) > 0:
+        new_finished_jobs = RPA.submit(rpa_jobs)
+        rpa_jobs_finished += new_finished_jobs
+    # read calculation results
+    if len(rpa_jobs_finished) > 0:
+        RPA.read_and_record_all_results(rpa_jobs_finished, init_dist)
 
-    print('LRPA calculation finished!!!')
-    record(path, 'LRPA calculation 2 finished!!!')
+    rec = 'LRPA finished!\n'
+    rec += '***'*25
+    print(rec)
+    record(path, rec)

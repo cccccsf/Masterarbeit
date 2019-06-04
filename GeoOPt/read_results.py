@@ -9,10 +9,10 @@ from Common import Job
 
 def get_optimized_geometry(path):
 
-    f = open(path + '/geo_opt.out', 'r')
-    lines = f.read().replace('\n', ':')
+    out_file = os.path.join(path, 'geo_opt.out')
+    with open(out_file, 'r') as f:
+        lines = f.read().replace('\n', ':')
     lines = ' '.join(lines.split()) + '#'
-    f.close()
 
     # search geometry infomation
     regex = 'FINAL OPTIMIZED GEOMETRY.*GEOMETRY OUTPUT FILE'
@@ -70,18 +70,30 @@ def get_optimized_geometry(path):
 
 
 def get_optimized_energy(path):
-    f = open(path + '/geo_opt.out', 'r')
-    lines = f.read()
+    out_file = os.path.join(path, 'geo_opt.out')
+    with open(out_file, 'r') as f:
+        lines = f.read()
     lines = ' '.join(lines.split()) + '#'
-    f.close()
-
     regex = 'OPT END.* POINTS'
     energy_block = re.search(regex, lines).group(0)
+    unit = search_unit(energy_block)
     regex_2 = ': .* '
     energy_block = re.search(regex_2, energy_block).group(0)
     energy = energy_block[2:-1]
+    return energy, unit
 
-    return energy
+
+def search_unit(energy_block):
+    reg = '\(.*?\)'
+    unit_block = re.search(reg, energy_block)
+    if unit_block is not None:
+        unit_block = unit_block.group(0)
+        unit = unit_block[1:-1]
+        if unit == 'AU':
+            unit = 'hartree'
+    else:
+        unit = 'default'
+    return unit
 
 
 def write_geometry_json(job, geometry):
@@ -136,15 +148,17 @@ def data_saving(i, path, disp, dis, energy):
             f_csv = csv.writer(f)
             f_csv.writerow(new_line)
         count = i
-        print('%d data has been written ' % count)
+        # print('%d data has been written ' % count)
     except Exception as e:
         print(e)
 
 
 def read_and_record_result(j, job, init_distance):
+    # if job.x == '0.10':
+    #     print(job)
     path = job.path
     lattice_parameter, geometry = get_optimized_geometry(path)
-    energy = get_optimized_energy(path)
+    energy, unit = get_optimized_energy(path)
     write_geometry_json(job, geometry)
     write_latt_json(job, lattice_parameter)
     distance = job.z
@@ -171,7 +185,8 @@ def read_and_select_lowest_e(jobs):
     e_list = []
     for job in jobs:
         try:
-            energy = float(get_optimized_energy(job.path))
+            energy, unit = get_optimized_energy(job.path)
+            energy = float(energy)
             e_list.append(energy)
         except Exception as e:
             print(e)
@@ -188,58 +203,62 @@ def read_and_select_lowest_e(jobs):
     return None, None
 
 
-def test_data_saving():
-    path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
-    energy = get_optimized_energy(path)
-    job = Job(path)
-    path = job.root_path
-    creatxls_dis(path)
-    read_and_record_result(2, job, 3.1)
+if __name__ == '__main__':
+
+    def test_data_saving():
+        path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
+        energy = get_optimized_energy(path)
+        job = Job(path)
+        path = job.root_path
+        creatxls_dis(path)
+        read_and_record_result(2, job, 3.1)
 
 
-def test_read_all_results():
-    path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test'
-    walks = os.walk(path)
-    jobs = []
-    for root, dirs, files in walks:
-        if 'geo_opt.out' in files:
-            job = Job(root)
-            jobs.append(job)
-    read_all_results(jobs, 3.1)
+    def test_read_all_results():
+        path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test'
+        walks = os.walk(path)
+        jobs = []
+        for root, dirs, files in walks:
+            if 'geo_opt.out' in files:
+                job = Job(root)
+                jobs.append(job)
+        read_all_results(jobs, 3.1)
 
 
-def test_write_geo_json():
-    path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test'
-    walks = os.walk(path)
-    jobs = []
-    for root, dirs, files in walks:
-        if 'geo_opt.out' in files:
-            job = Job(root)
-            jobs.append(job)
-    for job in jobs:
-        path = job.path
-        lattice_para, geometry = get_optimized_geometry(path)
-        write_geometry_json(job, geometry)
-        write_latt_json(job, lattice_para)
+    def test_write_geo_json():
+        path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\Test'
+        walks = os.walk(path)
+        jobs = []
+        for root, dirs, files in walks:
+            if 'geo_opt.out' in files:
+                job = Job(root)
+                jobs.append(job)
+        for job in jobs:
+            # if job.x == '0.10':
+            #     print(job)
+            path = job.path
+            lattice_para, geometry = get_optimized_geometry(path)
+            write_geometry_json(job, geometry)
+            write_latt_json(job, lattice_para)
 
 
-def test_read_lowest_e():
-    #path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
-    path = r'/users/shch/project/Masterarbeit/Test/'
-    walks = os.walk(path)
-    jobs = []
-    for root, dirs, files in walks:
-        if 'geo_opt.out' in files:
-            job = Job(root)
-            jobs.append(job)
-    read_and_select_lowest_e(jobs)
+    def test_read_lowest_e():
+        #path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test'
+        path = r'/users/shch/project/Masterarbeit/Test/'
+        walks = os.walk(path)
+        jobs = []
+        for root, dirs, files in walks:
+            if 'geo_opt.out' in files:
+                job = Job(root)
+                jobs.append(job)
+        read_and_select_lowest_e(jobs)
 
 
-def test_suite():
-    # test_data_saving()
-    test_read_all_results()
-    # test_write_geo_json()
-    # test_read_lowest_e()
+    def test_suite():
+        # test_data_saving()
+        test_read_all_results()
+        # test_write_geo_json()
+        # test_read_lowest_e()
 
 
-# test_suite()
+    # test_suite()

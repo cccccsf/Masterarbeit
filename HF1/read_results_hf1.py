@@ -11,7 +11,7 @@ def get_layer_distance(path):
     lines = ' '.join(lines.split()) + '#'
     f.close()
 
-    #search geometry infomation
+    # search geometry information
     regex = ' ATOM AT. N. .*#'
     geo_block = re.search(regex, lines).group(0)
     geo_block = re.split(':', geo_block.replace(': ', ':'))
@@ -21,15 +21,15 @@ def get_layer_distance(path):
             break
         geometry.append(line)
 
-    #get the dict of the z coordinate of each atom
+    # get the dict of the z coordinate of each atom
     geometry_split = []
     for geo in geometry:
         geometry_split.append(geo.split())
     z = []
-    for geo in geometry_split：
+    for geo in geometry_split:
         z.append(geo[-1])
 
-    #get the layer distance by calculating the largest distance between atoms
+    # get the layer distance by calculating the largest distance between atoms
     distance = 0
     for i in range(1, len(z)):
         if (abs(z[i] - z[i-1])) > distance:
@@ -56,18 +56,21 @@ def get_energy(job):
     lines = f.read()
     lines = ' '.join(lines.split()) + '#'
     f.close()
+    energy = 'Nah'
+    unit = 'Nah'
 
-    #regex = 'SCF ENDED - CONVERGENCE ON ENERGY .* CYCLES'
+    # regex = 'SCF ENDED - CONVERGENCE ON ENERGY .* CYCLES'
     regex = 'SCF ENDED .* CYCLES'
     try:
-        energy_block = re.search(regex, lines).group(0)    #SCF ENDED - CONVERGENCE ON ENERGY E(AU) -2.7260361085525E+03 CYCLES
+        energy_block = re.search(regex, lines).group(0)    # SCF ENDED - CONVERGENCE ON ENERGY E(AU) -2.7260361085525E+03 CYCLES
         status = if_converged(energy_block)
-        if status == True:
+        if status is True:
             regex_2 = 'E\(AU\) .* '
-            energy_block = re.search(regex_2, energy_block).group(0)    #E(AU) -2.7260361085525E+03
+            energy_block = re.search(regex_2, energy_block).group(0)    # E(AU) -2.7260361085525E+03
+            unit = search_unit(energy_block)
             regex_3 = ' .* '
             energy_block = re.search(regex_3, energy_block).group(0)    # -2.7260361085525E+03
-            energy = energy_block[1:-1]    #str
+            energy = energy_block[1:-1]    # str
             job.set_status('finished')
         else:
             energy = 'Nah'
@@ -84,7 +87,20 @@ def get_energy(job):
         energy = 'Nah'
         job.set_status('error')
 
-    return energy
+    return energy, unit
+
+
+def search_unit(energy_block):
+    reg = r'\(.*?\)'
+    unit_block = re.search(reg, energy_block)
+    if unit_block is not None:
+        unit_block = unit_block.group(0)
+        unit = unit_block[1:-1]
+        if unit == 'AU':
+            unit = 'hartree'
+    else:
+        unit = 'default'
+    return unit
 
 
 def if_converged(energy_block):
@@ -109,7 +125,6 @@ def if_converged(energy_block):
         print('Please check the output file.')
 
 
-
 def get_all_x_and_z(paths, init_distance):
     x_set = set()
     z_set = set()
@@ -120,14 +135,14 @@ def get_all_x_and_z(paths, init_distance):
         if z == 'underlayer' or z =='upperlayer':
             layer_type = z
             z = os.path.split(path)[-1]
-            path  = os.path.split(path)[0]
+            path = os.path.split(path)[0]
         z = float(z.split('_')[-1])
         x = os.path.split(path)[-1]
         x = float(x.split('_')[-1])
         x_set.add(x)
         z_set.add(z)
-    x_list = list(xs)
-    z_list = list(zs)
+    x_list = list(x_set)
+    z_list = list(z_set)
     x_list.sort()
     z_list.sort()
     for i in range(len(z_list)):
@@ -148,7 +163,7 @@ def get_x_z_and_layertype(path, init_distance):
     if z == 'underlayer' or z =='upperlayer':
         layer_type = z
         z = os.path.split(path)[-1]
-        path  = os.path.split(path)[0]
+        path = os.path.split(path)[0]
     z = float(z.split('_')[-1])
     z = z + init_distance
     x = os.path.split(path)[-1]
@@ -157,15 +172,15 @@ def get_x_z_and_layertype(path, init_distance):
 
 
 def creatxls_dis(path):
-    wb = xlwt.Workbook(encoding = 'utf-8')
-    ws = wb.add_sheet('hf1')   #creat new sheet
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('hf1')   # creat new sheet
     ws.write(0, 0, 'displacement')
     ws.write(0, 1, 'distance(A)')
     ws.write(0, 2, 'E(au)')
     ws.write(0, 3, 'Eupperlayer(au)')
     ws.write(0, 4, 'Eunderlayer(au)')
     ws.write(0, 5, 'deltaE')
-    wb.save(path + '/hf1.xls')  #save the sheet
+    wb.save(path + '/hf1.xls')  # save the sheet
 
 
 def data_saving_dis(i, path, disp, dis, l, energy):
@@ -185,7 +200,7 @@ def data_saving_dis(i, path, disp, dis, l, energy):
 def read_and_record_result(path, init_distance):
     energy = get_energy(path)
     x, z, layer_type = get_x_z_and_layertype(path, init_distance)
-    #path = path + '/../..'
+    # path = path + '/../..'
     path = os.path.dirname(path)
     path = os.path.dirname(path)
     j = 1 + len(x_dict) * z_dict[z] + x_dict[x]
@@ -194,5 +209,5 @@ def read_and_record_result(path, init_distance):
     data_saving_dis(j, path, x, z, l, energy)
 
 
-def read_all_results_hf1(jobs, init_dist = 3.1):
+def read_all_results_hf1(jobs, init_dist=3.1):
     read_all_results(jobs, 'hf1', energy_func=get_energy, init_distance=init_dist)

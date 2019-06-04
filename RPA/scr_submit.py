@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 
+
 class Scr(object):
 
     def __init__(self, job, nodes, molpro_key, molpro_path):

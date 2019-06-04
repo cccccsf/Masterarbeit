@@ -1,8 +1,8 @@
 import os
 from Common import Job
-from CLUSTER.atom import Atom
-import CLUSTER
-from CLUSTER.atom import Atom
+from Cluster.atom import Atom
+import Cluster
+from Cluster.atom import Atom
 
 
 #test BlackP
@@ -11,12 +11,12 @@ def test_cut_cluster(job):
     fac_upp = [1.2, 1.8, 1.3]
     fac_und = [1.2, 1.8, 1.3]
     factors = [[1, 1, 0.7], [1, 1.5, 0.7]]
-    Clu = CLUSTER.Cluster(job, centre=[[3, 4], [7, 8]], name='BlackP', factors=factors,size='S')
+    Clu = Cluster.ClusterCutter(job, centre=[[3, 4], [7, 8]], name='BlackP', factors=factors, size='S')
     nat = Clu.nat[0]
     x = Clu.x[0]
     y = Clu.y[0]
     z = Clu.z[0]
-    atom = CLUSTER.Atom(nat, x, y, z)
+    atom = Cluster.Atom(nat, x, y, z)
     cent = Clu.centre
     test_cal_dis(atom, cent, Clu)
 
@@ -87,7 +87,7 @@ def test_blackP():
             jobs.append(job)
     path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\job\cluster'
     #path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\cluster'
-    CLUSTER.creat_json_file(path)
+    Cluster.creat_json_file(path)
     # job = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_1\z_1'
     # job = jobs[0]
     # # print(job)
@@ -121,7 +121,7 @@ def test_SiO2():
 
     path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\cluster'
     #path = r'/users/shch/project/Masterarbeit/Test/cluster'
-    CLUSTER.creat_json_file(path)
+    Cluster.creat_json_file(path)
     job = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_1\z_1'
     #job = r'/users/shch/project/Masterarbeit/Test/geo_opt/x_1/z_1'
     dimen, lattice, geo = read_infomation(job)
@@ -134,7 +134,7 @@ def test_SiO2():
     deleted_atoms = [54, 49]
     #deleted_atoms = []
     #centre = [[2, 2], [13, 13]]
-    Clu = CLUSTER.Cluster(job, name='SiO2-H2O', centre=centre, basic_infos=[dimen, lattice, geo], factors=factors, size='M', fixed_atoms=[10, 17], deleted_atoms=deleted_atoms)
+    Clu = Cluster.ClusterCutter(job, name='SiO2-H2O', centre=centre, basic_infos=[dimen, lattice, geo], factors=factors, size='M', fixed_atoms=[10, 17], deleted_atoms=deleted_atoms)
     original_atoms = Clu.original_atoms
     cnt = 1
     Clu.write_xyz()
@@ -153,13 +153,13 @@ def test_SiO2():
     #test_FactorCalculator(Clu)
 
 def test_FactorCalculator(Cluster):
-    CLUSTER.FactorCalculator(Cluster)
+    Cluster.FactorCalculator(Cluster)
 
 # test MgO
 
 def test_MgO():
     path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\cluster'
-    CLUSTER.creat_json_file(path)
+    Cluster.creat_json_file(path)
     job = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test\geo_opt\x_1\z_2'
     dimen, lattice, geo = read_infomation(job)
     job = Job(job)
@@ -170,7 +170,7 @@ def test_MgO():
     fac_upp = [0.3, 0.5, 0.5]
     fac_und = [0.4, 0.6, 0.6]
     factors = [fac_upp, fac_und]
-    Clu = CLUSTER.Cluster(job, name='MgO', centre=center, basic_infos=[dimen, lattice, geo], factors=factors, fixed_atoms=fixed_atoms)
+    Clu = Cluster.ClusterCutter(job, name='MgO', centre=center, basic_infos=[dimen, lattice, geo], factors=factors, fixed_atoms=fixed_atoms)
     Clu.final_cluster = Clu.choose_atoms_from_distance()
     Clu.write_xyz(Clu.choosed_atoms)
     # original_atoms = Clu.original_atoms

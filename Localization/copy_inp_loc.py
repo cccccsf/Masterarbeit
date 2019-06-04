@@ -17,6 +17,7 @@ def get_jobs(path):
                 jobs.append(new_job)
     return jobs
 
+
 def copy_inp_file(job):
 
     ziel_path = job.path

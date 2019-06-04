@@ -3,6 +3,7 @@ import os
 import re
 import csv
 import json
+from Common import rename_file
 
 
 def is_number(s):
@@ -154,7 +155,7 @@ def record_all_results_into_json(Results, init_distance):
     assert len(Results) != 0
     path = Results[0].job.root_path
     path = os.path.join(path, 'cluster')
-    json_file = os.path.join(path, 'results.json')
+    json_file = os.path.join(path, 'correction.json')
     creat_json_file(json_file)
     for Res in Results:
         record_to_json_each_data(Res, init_distance, json_file)
@@ -200,8 +201,8 @@ def creat_json_file(json_file):
 def record_all_results_into_csv(Results, init_distace):
     assert len(Results) != 0
     path = Results[0].job.root_path
-    path = os.path.join(path, 'cluster')
-    csv_file = os.path.join(path, 'results.csv')
+    csv_file = os.path.join(path, 'correction.csv')
+    rename_file(path, 'correction.csv')
     creat_csv_file(csv_file)
     try:
         Results.sort(key=lambda x: x.job.x)

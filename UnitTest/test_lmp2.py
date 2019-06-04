@@ -11,7 +11,7 @@ def test_Input():
     path = os.getcwd()
     path = path + '/Test/hf_2/x_-0.150/z_-0.106'
     job = Job(path)
-    inp = input.Lmp2_Input(job)
+    inp = input.Lmp2Input(job)
     inp.write_input()
 
 def test_get_jobs(path):
@@ -26,7 +26,7 @@ def test_Input_Layer():
     path = os.getcwd()
     path = path + '/Test/hf_2/x_-0.150/z_-0.106/upperlayer'
     job = Job(path)
-    inp = input.Lmp2_Input_Layer(job)
+    inp = input.Lmp2InputLayer(job)
     inp.write_input()
 
 

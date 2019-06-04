@@ -2,13 +2,13 @@
 import sys
 from datetime import datetime
 from Common import record
-import geometry_optimization
+import GeoOPt
 import HF1
 import Localization
 import HF2
 import LMP2
 import RPA
-import CLUSTER
+import Cluster
 import Correction
 import Results
 
@@ -20,7 +20,8 @@ def end_programm(path):
         sys.exit(1)
     except Exception:
         rec = now + '\n'
-        rec += 'Program End...'
+        rec += 'Program End.\n'
+        rec += '***'*25
         print(rec)
         record(path, rec)
 
@@ -30,7 +31,7 @@ def pipeline(path, start, end):
     while anchor < end:
         # print(anchor, end)
         if anchor == 0:
-            geometry_optimization.geo_opt(path)
+            GeoOPt.geo_opt(path)
         elif anchor == 1:
             HF1.hf1(path)
         elif anchor == 2:
@@ -42,7 +43,7 @@ def pipeline(path, start, end):
         elif anchor == 5:
             RPA.rpa(path)
         elif anchor == 6:
-            CLUSTER.cluster(path)
+            Cluster.cluster(path)
         elif anchor == 7:
             Correction.correction(path)
         elif anchor == 8:

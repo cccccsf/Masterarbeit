@@ -28,7 +28,6 @@ class Job(object):
     def __repr__(self):
         return self.method + '(x:{}, z:{})'.format(self.x, self.z) + self.layertype
 
-
     def __setattr__(self, key, value):
         self.__dict__[key] = value
 
@@ -82,7 +81,7 @@ class Job(object):
         if method in method_dict:
             method = method_dict[method]
         else:
-            print('method not in method dict.')
+            # print('method not in method dict.')
             method = method.upper()
         return method
 

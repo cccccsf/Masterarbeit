@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import os
-import CLUSTER
-from CLUSTER import Cluster
-from CLUSTER import FactorCalculator
+import Cluster
+from Cluster import ClusterCutter
+from Cluster import FactorCalculator
 from Common import Job
 from test_cluster import read_infomation
 
@@ -31,12 +31,12 @@ def factor_calculation():
     job = Job(path)
     json_path = os.path.join(job.root_path, 'cluster')
     if not os.path.exists(os.path.join(json_path, 'geometry.json')):
-        CLUSTER.creat_json_file(json_path)
+        ClusterCutter.creat_json_file(json_path)
     if lattice_parameter != [] and geometry != []:
         basic_info = [dimen, lattice_parameter, geometry]
-        Clu = Cluster(job, name=name, centre=center, basic_infos=basic_info)
+        Clu = ClusterCutter(job, name=name, centre=center, basic_infos=basic_info)
     else:
-        Clu = Cluster(job, name=name, centre=center)
+        Clu = ClusterCutter(job, name=name, centre=center)
     Fac = FactorCalculator(Clu)
 
     for atom in atoms:
