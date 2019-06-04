@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 import os
-import re
 import sys
 from copy import deepcopy
 from Common import record
 from Common import ReadIni
+from Common import record_data_json
 from Common import Job
 import Correction
 from HF1 import read_init_dis
@@ -23,25 +23,21 @@ yes_or_no = {
 
 def correction(path):
 
-    rec = 'Correction Calculation begins...'
+    rec = 'Correction begins.\n'
+    rec += '---'*25
     print(rec)
     record(path, rec)
 
     # get jobs
     cluster_jobs = get_jobs(path)
-
-    # read info from ini file
     init_dist = read_init_dis(path)
-    ini_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    ini_file = os.path.exists(os.path.join(ini_path, 'input.ini'))
-    if ini_file:
-        Ini = ReadIni(ini_path)
-        molpro_path, molpro_key, nodes, memorys = Ini.read_correction_info()
-    else:
-        print('Initilization file input.ini not found!')
-        print('Please check it in the work directory!')
-        print('Programm exit and Please reatart it from HF1 step.')
-        sys.exit()
+
+    # read infos from input.ini file
+    Ini = ReadIni()
+    project_name, *_ = Ini.get_basic_info()
+    nodes, memorys, bs, molpro_path, molpro_key, atoms = Ini.get_correction()
+    record_data_json(path, 'memorys', memorys, section='correction')
+    record_data_json(path, 'nodes', nodes, section='correction')
 
     # prepare input
     cluster_path = os.path.join(path, 'cluster')
@@ -51,73 +47,53 @@ def correction(path):
     inputs = [inp + '.inp' for inp in inputs]
     inputs_files = [os.path.join(cluster_path, inp) for inp in inputs]
 
-    while True:
-        if check_inp_files(inputs_files):
-            break
-        if not check_inp_files(inputs_files):
-            print('Please finish different input files in the following path: ')
-            print(cluster_path)
-            print('And name them as following:')
-            for i in inputs:
-                print(i)
-            print('Then press ENTER to continue the programm.')
-            then = input()
     inputs, nodes, memorys = compare_inp_files(
         cluster_path, inputs, nodes, memorys)
     inputs_dict = {
         inp.split('.')[0]: os.path.join(
             cluster_path,
-            inp) for inp in inputs}
+            inp) for inp in inputs}     # input file maybe exists in \cluster\ directory
     inputs = [inp.split('.')[0] for inp in inputs]
 
     # generation input
     correction_jobs = []
+    correction_jobs_finished = []
     correction_jobs_dict = {inp: [] for inp in inputs}
     for job in cluster_jobs:
-        xyz_name = ''
         for inp in inputs:
             new_job = deepcopy(job)
             new_job.method = inp
             new_job.parameter['node'] = nodes[inp]
             new_job.parameter['memory'] = memorys[inp]
             new_job.parameter['original_input_file'] = inputs_dict[inp]
-            correction_jobs.append(new_job)
-            correction_jobs_dict[inp].append(new_job)
-            if xyz_name == '':
-                xyz_name = Correction.generation_input(new_job)
-            else:
-                Correction.generation_input(new_job, xyz_name)
-    # deal with the one with periodic bs
-    per = ''
-    for i in inputs:
-        if i.startswith('per'):
-            per = i
-            break
-    if per == '':
-        print('Job with the basis set for periodic system not found.')
-        print('Please enter the name of input file '
-              'or enter 1 to pass this calculation'
-              'or enter 0 to exit the programm.')
-        while True:
-            per_st = input()
-            if per_st == 0:
-                sys.exit()
-                print('Programm exit...')
-            elif per_st == 1:
-                break
-            else:
-                if per_st in inputs:
-                    per = per_st
-                    break
+            if not Correction.if_cal_finish(new_job):
+                if not os.path.exists(inputs_dict[inp]):
+                    print(str(new_job))
+                    print('{} file not found.'.format(inp))
+                    print('Program will generate the input automatically.')
+                    print('---'*25)
+                    if new_job.method.startswith('per'):
+                        Inp = Correction.InputPerRPA(new_job, project_name, memorys[new_job.method], uc_atoms=atoms)
+                        Inp.gen_inp()
+                    elif new_job.method.endswith('rpa_cc'):
+                        Inp = Correction.InputRPACC(new_job, project_name, memorys[new_job.method], uc_atoms=atoms)
+                        Inp.gen_inp()
+                    elif new_job.method.endswith('iext1_rpa'):
+                        Inp = Correction.InputIext1RPA(new_job, project_name, memorys[new_job.method], uc_atoms=atoms)
+                        Inp.gen_inp()
                 else:
-                    print('Please enter the correct name of input file with suffix.')
-    if per != '':
-        per_jobs = correction_jobs_dict[per]
-        inp_name = per + '.inp'
-        for job in per_jobs:
-            MB = Correction.Molpro_Bs(job, inp_name)
-            MB.get_molpro_bs()
-            MB.write_bs()
+                    if new_job.method.startswith('per'):
+                        inp_name = new_job.method + '.inp'
+                        MB = Correction.Molpro_Bs(new_job, inp_name)
+                        MB.get_molpro_bs()
+                        MB.write_bs()
+                    else:
+                        Correction.generation_input(new_job)
+                correction_jobs.append(new_job)
+                correction_jobs_dict[inp].append(new_job)
+            else:
+                new_job.status = 'finished'
+                correction_jobs_finished.append(new_job)
 
     # generate scr
     for key, value in correction_jobs_dict.items():
@@ -126,15 +102,17 @@ def correction(path):
             Scr.write_scr()
 
     # submit jobs
-    jobs_finished = correction_jobs  # only for test
-    #jobs_finished = Correction.submit(correction_jobs)
-
+    if len(correction_jobs) > 0:
+        new_finished_jobs = Correction.submit(correction_jobs)
+        correction_jobs_finished += new_finished_jobs
     # read and record all results
-    if len(jobs_finished) != 0:
-        Correction.read_all_results(jobs_finished, init_distance=init_dist)
+    if len(correction_jobs_finished) != 0:
+        Correction.read_all_results(correction_jobs_finished, init_distance=init_dist)
 
-    print('Correction calculation finished!!!')
-    record(path, 'Correction calculation finished!!!')
+    rec = 'Correction finished!\n'
+    rec += '***'*25
+    print(rec)
+    record(path, rec)
 
 
 def get_missions(memorys, nodes):

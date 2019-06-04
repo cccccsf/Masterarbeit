@@ -1,25 +1,11 @@
 #!/usr/bin/python3
 import os
 import re
-import subprocess
 import time
+import shutil
 from Common import record
 from Common import rename_file
-
-
-def submit_job(job):
-    job_name = job.method
-    chmod = 'chmod u+x {}'.format(job_name)
-    subprocess.call(chmod, shell=True)
-    try:
-        out_bytes = subprocess.check_output(['qsub', job_name])
-    except subprocess.CalledProcessError as e:
-        out_bytes = e.output
-        code = e.returncode
-        print(code)
-    out_text = out_bytes.decode('utf-8')
-    out_text = out_text.strip('\n')
-    return out_text
+from Common import submit_job
 
 
 def if_cal_finish(job):
@@ -33,13 +19,12 @@ def if_cal_finish(job):
             lines = f.read().decode('utf-8')
         pattern = 'Molpro calculation terminated'
         termi = re.search(pattern, lines)
-        if termi == None:
+        if termi is None:
             return False
         else:
             if termi.group(0) != 'Molpro calculation terminated':
                 return False
             return True
-    return True
 
 
 def submit(jobs):
@@ -48,19 +33,18 @@ def submit(jobs):
     count = 0
     submitted_jobs = []
     finished_jobs = []
-    max_calculations_12 = 5
-    max_calculations_28 = 3
     max_calculations_dict = {'12': 5, '28': 3}
 
     def test_finished(jobs):
         nonlocal count
+        nonlocal count_dict
         for job in jobs[:]:
             if if_cal_finish(job):
                 finished_jobs.append(job)
                 num = str(len(finished_jobs)) + '/' + str(total_num)
-                rec = job.path + '\n'
-                rec += job.method + '\n'
-                rec += num + 'calculation finished...'
+                rec = str(job) + '\n'
+                rec += num + 'calculation finished.\n'
+                rec += '---'*25
                 print(rec)
                 record(job.root_path, rec)
                 jobs.remove(job)
@@ -89,32 +73,49 @@ def submit(jobs):
     # submit and detect all jobs
     j = 0
     while True:
-        test_finished(jobs)
+        test_finished(submitted_jobs)
         if len(finished_jobs) == total_num and len(submitted_jobs) == 0:
             break
         else:
             for node in nodes_list:
-                if count_dict[node] < max_calculations_dict[node]:
+                if count_dict[node] < max_calculations_dict[node] and len(jobs_dict[node]) > 0:
                     new_job = jobs_dict[node].pop()
                     os.chdir(new_job.path)
                     rename_file(new_job.path, '{}.out'.format(new_job.method))
-                    out = submit_job(new_job)
+                    out = submit_job(new_job, new_job.method)
                     count += 1
                     count_dict[node] += 1
                     submitted_jobs.append(new_job)
                     rec = new_job.path + '\n'
                     rec += new_job.method + '\n'
-                    rec += 'job submitted...'
-                    rec += '\n' + out +'\n'
+                    rec += 'job submitted.'
+                    rec += '\n' + out + '\n'
+                    rec += '---'*25
                     record(new_job.root_path, rec)
                     print(rec)
                 else:
-                    time.sleep(500)
+                    time.sleep(0.001)
+                    # time.sleep(500)
+                    test_calculation(j, jobs, finished_jobs)
                     j += 1
                     if j > 8:
-                        rec += 'noting changes...\n'
+                        rec = 'noting changes.\n'
+                        rec += '---'*25
                         record(submitted_jobs[0].root_path, rec)
                         j = 0
                     continue
 
     return finished_jobs
+
+
+def test_calculation(j, init_jobs, finished_jobs):
+    # ----------------------------------------- test ---------------------------------------------------
+    if j >= 2:
+        jobs = init_jobs + finished_jobs
+        path = r'F:\BlackP\cluster\x_a_5.0\d_int_3.30'
+        for job in jobs:
+            out_name = job.method + '.out'
+            out_from = os.path.join(path, out_name)
+            out_to = os.path.join(job.path, out_name)
+            shutil.copy(out_from, out_to)
+    # ----------------------------------------- test ---------------------------------------------------

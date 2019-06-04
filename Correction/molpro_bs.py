@@ -3,8 +3,8 @@ import os
 import re
 import HF2
 from Common import ReadIni
-from Common import Job
 from Data import periodic_table_rev
+
 
 class Molpro_Bs(object):
 
@@ -16,7 +16,6 @@ class Molpro_Bs(object):
         self.bs_dict = {}
         self.mopro_form = ''
 
-
     def get_hf2_bs(self):
 
         ini_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -27,13 +26,12 @@ class Molpro_Bs(object):
 
             Ini = ReadIni(ini_path)
             name, slab_or_molecule, group, lattice_parameter, number_of_atoms, fixed_atoms = Ini.get_basic_info()
-            bs_type, nodes, crystal_path = Ini.get_hf2_info()
+            bs_type, nodes, crystal_path = Ini.get_hf2()
 
             Inp = HF2.Input(self.job, name, slab_or_molecule, group, bs_type=bs_type)
             Inp.generate_bs()
 
         return Inp.bs
-
 
     def creat_bs_dict(self):
         bs_dict = {}
@@ -41,7 +39,6 @@ class Molpro_Bs(object):
             s_element, orbitals = self.extract_bs_info(ele)
             bs_dict[s_element] = orbitals
         return bs_dict
-
 
     def transfer_to_molpro_form(self):
         molpro_form = 'basis={\n'
@@ -58,7 +55,6 @@ class Molpro_Bs(object):
         molpro_form += '}\n'
         #print(molpro_form)
         return molpro_form
-
 
     def transfer_one_kind_oribital(self, element, oribtal_type, shells):
         curr_shells = [shell[1:] for shell in shells]
@@ -135,7 +131,6 @@ class Molpro_Bs(object):
                         return True
             return False
         return False
-
 
     def write_bs(self):
         with open(self.input_file, 'r') as f:

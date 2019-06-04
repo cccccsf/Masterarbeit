@@ -112,17 +112,13 @@ def submit(jobs):
     # submit and detect all jobs
     j = 0
     while True:
-        print(1)
         test_finished(submitted_jobs)
         if len(finished_jobs) == job_num and len(submitted_jobs) == 0:
             break
         else:
-            print(2)
             # test_calculation(j, jobs, finished_jobs)
             for node in nodes_list:
-                print(node)
                 if count_dict[node] < max_calculations_dict[node] and len(jobs_dict[node]) > 0:
-                    print(3)
                     new_job = jobs_dict[node].pop()
                     os.chdir(new_job.path)
                     rename_file(new_job.path, 'rpa.out')
@@ -137,9 +133,8 @@ def submit(jobs):
                     record(new_job.root_path, rec)
                     print(rec)
                 else:
-                    print(3.1)
-                    time.sleep(0.01)
-                    # time.sleep(500)
+                    # time.sleep(0.01)
+                    time.sleep(500)
                     j += 1
                     if j > 15:
                         rec = 'noting changes.\n'

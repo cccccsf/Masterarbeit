@@ -683,7 +683,7 @@ class ClusterCutter(object):
             atom_dict['layer'] = atom.layer
             atom_dict['type'] = atom.type
             geo_list.append(atom_dict)
-        data['cluster'] = geo_list
+        data[str(self.cluster_job.coord)]['cluster'] = geo_list
         with open(self.record_file, 'w') as f:
             json.dump(data, f, indent=4)
 

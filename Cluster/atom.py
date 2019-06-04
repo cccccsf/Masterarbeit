@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 from Data.Periodict_Table import periodic_table_rev
 
+
 class Atom(object):
 
     def __init__(self, nat, x, y, z, no=1, type=1, coor=1, coor_vec=[]):
@@ -24,4 +25,4 @@ class Atom(object):
         return self.__dict__ == other.__dict__
 
     def __setitem__(self, key, value):
-        self._item[index] = value
+        self.__dict__[key] = value
