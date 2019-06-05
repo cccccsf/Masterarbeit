@@ -16,14 +16,15 @@ import Results
 def end_programm(path):
     now = datetime.now()
     now = now.strftime("%b %d %Y %H:%M:%S")
+    rec = 'Program End.\n'
+    rec += '***'*25
+    print(now)
+    print(rec)
+    record(path, rec)
     try:
         sys.exit(1)
     except Exception:
-        rec = now + '\n'
-        rec += 'Program End.\n'
-        rec += '***'*25
-        print(rec)
-        record(path, rec)
+        print('Program exit.')
 
 
 def pipeline(path, start, end):

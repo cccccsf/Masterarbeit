@@ -110,7 +110,7 @@ def results(path):
                 bs_correction.bs = 'av(t/q)z'
                 basis_set_correction['avtqz'][coord] = bs_correction
     # record above data
-    results_file = os.path.join(path, 'results.json')
+    results_file = os.path.join(path, 'final_results.json')
     record_correction_results(
         basis_set_correction,
         coord_list,
@@ -212,8 +212,10 @@ def results(path):
         except Exception as e:
             print(e)
 
-    print('Data processing finished!!!')
-    record(path, 'Data processing finished!!!')
+    rec = 'Data processing finished.\n'
+    rec += '***'*25
+    print(rec)
+    record(path, rec)
 
 
 def record_correction_results(
@@ -279,7 +281,7 @@ def record_correction_results(
 
 def if_results_json_exits(path):
     cluster_path = os.path.join(path, 'cluster')
-    results_file = os.path.join(cluster_path, 'results.json')
+    results_file = os.path.join(cluster_path, 'correction.json')
     if os.path.exists(results_file):
         return True
     return False
@@ -296,9 +298,11 @@ def get_jobs(path):
                 if os.path.splitext(file)[-1] == '.out':
                     new_job = Job(root)
                     new_job.method = os.path.splitext(file)[0]
-                    if if_cal_finish(new_job) and new_job not in jobs:
+                    if if_cal_finish(new_job) and new_job not in jobs and '20' not in new_job.method:
                         jobs.add(new_job)
                         root_jobs.add(Job(root))
+                        # print(new_job)
+                        # print(root)
     jobs = list(jobs)
     root_jobs = list(root_jobs)
     return jobs, root_jobs

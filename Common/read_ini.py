@@ -14,7 +14,8 @@ class ReadIni(object):
               'rpa': 5, 'lrpa': 5,
               'localization': 2, 'loc': 2,
               'cluster': 6,
-              'correction': 7, 'correct': 7}
+              'correction': 7, 'correct': 7,
+              'results': 8}
 
     def __init__(self, path=''):
         self.ini_path = path
@@ -34,7 +35,7 @@ class ReadIni(object):
             self.start = self.start.lower()
             self.start = self.method_dict[self.start]
         if self.end == '' or self.end == 'default':
-            self.end = 8
+            self.end = 9
         else:
             self.end = self.end.lower()
             self.end = self.method_dict[self.end]

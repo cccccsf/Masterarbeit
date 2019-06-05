@@ -26,27 +26,25 @@ class CorrectionResult(Result):
             data = data[self.coord][self.method]
             energy, unit = data['energy'], data['unit']
         except FileNotFoundError:
-            print('File results.json not found.')
+            print('File correction.json not found.')
             print('Please check the programm and the pragramm will exit. ')
             sys.exit()
         except KeyError:
             print(self.job)
-            print('Result not in results.json found.')
+            print('Result not in correction.json found.')
             print(
                 'Programm will read the energy from output file.\n'
-                'If you want to record the calculation result into the results.json file, '
+                'If you want to record the calculation result into the correction.json file, '
                 'Please move the file to another directory and run this step again.')
             self.get_energy()
             self.unit_transform()
             energy, unit = self.energy, self.unit
         return energy, unit
 
-
     def get_results_file(self):
         cluster_path = os.path.join(self.job.root_path, 'cluster')
-        results_file = os.path.join(cluster_path, 'results.json')
+        results_file = os.path.join(cluster_path, 'correction.json')
         return results_file
-
 
     def set_extrapolation_energy(self, Res1, Res2, X=[2, 3]):
         assert type(Res1) == Results.correction_data_process.CorrectionResult

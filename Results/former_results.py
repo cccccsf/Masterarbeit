@@ -20,7 +20,6 @@ class FResult(object):
         self.original_json_file = self.get_original_json_file()
         self.coord = str(self.job.coord)
 
-
     def read_info_from_json(self):
         try:
             with open(self.original_json_file, 'r') as f:
@@ -30,8 +29,8 @@ class FResult(object):
             self.x = data['x']
             self.z = data['z']
             self.energy = data['energy']
-            if is_number(self.energy):
-                self.energy = float(self.energy)
+            if is_number(self.energy[0]):
+                self.energy = float(self.energy[0])
         except FileNotFoundError:
             print(self.job)
             print(self.original_json_file)
