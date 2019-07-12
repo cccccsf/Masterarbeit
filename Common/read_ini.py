@@ -25,9 +25,12 @@ class ReadIni(object):
 
         self.project_path, self.start, self.end = self.read_ini_info()
         self.project_name, self.system_type, self.group_type, self.lattice_parameter, self.number_atoms, self.geometry, self.fixed_atoms = self.read_basic_info()
+        self.distance_series = self.read_distance_series()
+        self.shift_series = self.read_shift_series()
         self.molpro_key, self.molpro_path = self.read_molpro_info()
         self.crystal_path = self.read_crystal_path()
         self.unit = self.get_unit()
+        self.ll = self.read_ll()
 
         if self.start == '' or self.start == 'default':
             self.start = 0
@@ -88,6 +91,39 @@ class ReadIni(object):
             print(configparser.NoOptionError)
             sys.exit()
         return path, start, end
+
+    def read_distance_series(self):
+        try:
+            distance_series = self.cfg.get('Initialization', 'distance_series')
+            distance_series = distance_series.split()
+            distance_series = [float(d) for d in distance_series]
+            # print(distance_series)
+        except configparser.NoOptionError:
+            print(configparser.NoOptionError)
+            distance_series = 'default'
+        return distance_series
+
+    def read_shift_series(self):
+        try:
+            shift_series = self.cfg.get('Initialization', 'shift_series')
+            shift_series = shift_series.split()
+            shift_series = [float(d) for d in shift_series]
+            # print(shift_series)
+        except configparser.NoOptionError:
+            print(configparser.NoOptionError)
+            shift_series = 'default'
+        return shift_series
+
+    def read_ll(self):
+        try:
+            ll = self.cfg.get('Initialization', 'LL')
+            ll = ll.upper()
+            ll_list = ['LMP2', 'SCS-LMP2', 'LDRCCD']
+            assert ll in ll_list
+        except configparser.NoOptionError:
+            print(configparser.NoOptionError)
+            ll = 'LMP2'
+        return ll
 
     def read_basic_info(self):
         try:
@@ -213,6 +249,9 @@ class ReadIni(object):
 
     def get_geo_opt(self):
         return self.geo_opt_bs, self.geo_opt_functional, self.geo_opt_nodes, self.crystal_path
+
+    def get_series(self):
+        return self.distance_series, self.shift_series
 
     def read_hf1(self):
         bs = self.cfg.get('HF1', 'basis_set')
@@ -448,6 +487,7 @@ if __name__ == '__main__':
     def test_read_ini():
         path = os.path.dirname(__file__)
         path = os.path.dirname(path)
-        Ini = ReadIni(path)
+        Ini = ReadIni()
+        Ini.read_shift_series()
 
     test_read_ini()

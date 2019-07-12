@@ -22,11 +22,11 @@ def menu():
 
     now = datetime.now()
     now = now.strftime("%b %d %Y %H:%M:%S")
+    mkdir(path)
     rec = 'Project begins.'
     rec += '\n' + '***'*25
     rename_file(path, 'record')
     record(path, rec, init=True)
-    mkdir(path)
     print('***'*25)
     print(now)
     print(rec)
