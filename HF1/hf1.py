@@ -21,6 +21,7 @@ def hf1(path):
     Ini = ReadIni()
     name, slab_or_molecule, group, lattice_parameter, number_of_atoms, geometry, fixed_atoms = Ini.get_basic_info()
     bs_type, nodes, crystal_path = Ini.get_hf1()
+    cal_parameters = Ini.get_cal_parameters('HF1')
     if nodes == '' or nodes == 'default':
         nodes = 12
     record_data_json(path, 'basis_set', bs_type, section='hf1')
@@ -38,7 +39,7 @@ def hf1(path):
         path_HF1 = path_GeoOpt.replace('geo_opt', 'hf1')
         new_job = Job(path_HF1)
         if not HF1.if_cal_finish(new_job):
-            Inp = HF1.Input(job, name, slab_or_molecule, group, bs_type, layertype='bilayer', fiexed_atoms=fixed_atoms)
+            Inp = HF1.Input(job, name, slab_or_molecule, group, bs_type, layertype='bilayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
             Inp.gen_input()
             HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
@@ -49,7 +50,7 @@ def hf1(path):
         path_upper = os.path.join(path_HF1, 'upperlayer')
         new_job = Job(path_upper)
         if not HF1.if_cal_finish(new_job):
-            Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype = 'upperlayer', fiexed_atoms=fixed_atoms)
+            Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='upperlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
             Inp.gen_input()
             HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
@@ -60,7 +61,7 @@ def hf1(path):
         path_under = os.path.join(path_HF1, 'underlayer')
         new_job = Job(path_under)
         if not HF1.if_cal_finish(new_job):
-            Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype = 'underlayer', fiexed_atoms=fixed_atoms)
+            Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='underlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
             Inp.gen_input()
             HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)

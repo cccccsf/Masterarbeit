@@ -469,6 +469,28 @@ class ReadIni(object):
     def get_correction(self):
         return self.correction_nodes, self.correction_memory, self.correction_bs, self.molpro_path, self.molpro_key, self.atoms
 
+    def get_cal_parameters(self, step):
+        # get necessary options
+        options = self.cfg.options(step)
+        default_options = ['basis_set', 'functional', 'path', 'nodes', 'memory', 'atom']
+        # print(options)
+        delete_options = []
+        for opt in default_options:
+            for o in options:
+                if opt in o:
+                    # print(o)
+                    delete_options.append(o)
+        curr_options = list(set(options) - set(delete_options))
+        # read the data according to each option
+        option_dict = {}
+        for opt in curr_options:
+            try:
+                value = self.cfg.get(step, opt)
+                option_dict[opt] = value
+            except configparser.NoOptionError as e:
+                print(e)
+        return option_dict
+
 
 def exit_programm():
     try:
@@ -488,6 +510,6 @@ if __name__ == '__main__':
         path = os.path.dirname(__file__)
         path = os.path.dirname(path)
         Ini = ReadIni()
-        Ini.read_shift_series()
+        Ini.get_cal_parameters('Geo_Opt')
 
     test_read_ini()

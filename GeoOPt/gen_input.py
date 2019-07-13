@@ -21,7 +21,8 @@ class Geo_Opt_Input(object):
             lattice_vector,
             geometry,
             bs_type,
-            functional='PBE0'):
+            functional='PBE0',
+            cal_parameters={}):
         self.job = job
         self.dir_path = job.path
         self.input_path = os.path.join(self.dir_path, 'INPUT')
@@ -38,6 +39,7 @@ class Geo_Opt_Input(object):
         self.bs_type = bs_type
 
         self.functional = functional
+        self.cal_parameters = cal_parameters
 
     def write_basic_info(self):
         mkdir(self.dir_path)
@@ -137,7 +139,7 @@ class Geo_Opt_Input(object):
         if self.job.z != '0' or self.job.x != '0':
             self.write_gussp()
         self.write_other_info()
-        print('INPUT file generated...')
+        print('INPUT file generated.')
 
     def gen_input(self):
         self.write_basic_info()
@@ -146,6 +148,39 @@ class Geo_Opt_Input(object):
         self.write_opt_info()
         self.write_bs()
         self.write_cal_input()
+        if len(self.cal_parameters) > 0:
+            self.change_cal_parameters()
+
+    def change_cal_parameters(self):
+        with open(self.input_path, 'r') as f:
+            lines = f.readlines()
+        cal_begin = 0
+        for i in range(len(lines)):
+            if 'SHRINK' in lines[i]:
+                cal_begin = i
+        for key, value in self.cal_parameters.items():
+            loc = self.if_para_in_input(key, lines)
+            values_lines = value.split('\n')
+            values_lines = values_lines.split('\\n')
+            len_paras = len(values_lines)
+            if loc > 0:
+                for i in range(len_paras):
+                    lines[loc+1+i] = values_lines[i]+'\n'
+            else:
+                lines.insert(cal_begin, key.upper()+'\n')
+                for i in range(len_paras):
+                    lines.insert(cal_begin+1+i, values_lines[i]+'\n')
+        with open(self.input_path, 'w') as f:
+            f.writelines(lines)
+
+    @staticmethod
+    def if_para_in_input(key, lines):
+        loc = 0
+        for i in range(len(lines)):
+            if key.upper() in lines[i]:
+                loc = i
+                # print(loc)
+        return loc
 
 
 def write_init_dist(geometry, path):

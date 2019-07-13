@@ -24,14 +24,14 @@ def get_jobs(path):
 def test_get_jobs(path):
     # path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\test'
     jobs = get_jobs(path)
-    #expected = ['C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\hf_2\\x_-0.150\\z_-0.106', 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\hf_2\\x_-0.150\\z_-0.106\\underlayer', 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\hf_2\\x_-0.150\\z_-0.106\\upperlayer']
+    # expected = ['C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\hf_2\\x_-0.150\\z_-0.106', 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\hf_2\\x_-0.150\\z_-0.106\\underlayer', 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\hf_2\\x_-0.150\\z_-0.106\\upperlayer']
     # expected = ['/users/shch/project/Layer_Structure_Caculation/venv/Test/hf_2/x_-0.150/z_-0.106', '/users/shch/project/Layer_Structure_Caculation/venv/Test/hf_2/x_-0.150/z_-0.106/underlayer', '/users/shch/project/Layer_Structure_Caculation/venv/Test/hf_2/x_-0.150/z_-0.106/upperlayer']
     # assert(jobs == expected)
 
 
 class Lmp2Input(object):
 
-    def __init__(self, job):
+    def __init__(self, job, cal_parameters={}):
         self.job = job
         self.lmp2_job = 0
         self.lmp2_path = ''
@@ -39,6 +39,7 @@ class Lmp2Input(object):
         self.get_new_job()
 
         self.ghost = []
+        self.cal_parameters = cal_parameters
 
     def get_new_job(self):
         lmp2_job = deepcopy(self.job)
@@ -134,12 +135,45 @@ class Lmp2Input(object):
         self.write_part2()
         self.write_bilayer()
         self.write_part3()
+        if len(self.cal_parameters) > 0:
+            self.change_cal_parameters()
+
+    def change_cal_parameters(self):
+        with open(self.input_path, 'r') as f:
+            lines = f.readlines()
+        cal_begin = 0
+        for i in range(len(lines)):
+            if 'DFITTING' in lines[i]:
+                cal_begin = i
+        for key, value in self.cal_parameters.items():
+            loc = self.if_para_in_input(key, lines)
+            values_lines = value.split('\n')
+            values_lines = values_lines.split('\\n')
+            len_paras = len(values_lines)
+            if loc > 0:
+                for i in range(len_paras):
+                    lines[loc+1+i] = values_lines[i]+'\n'
+            else:
+                lines.insert(cal_begin, key.upper()+'\n')
+                for i in range(len_paras):
+                    lines.insert(cal_begin+1+i, values_lines[i]+'\n')
+        with open(self.input_path, 'w') as f:
+            f.writelines(lines)
+
+    @staticmethod
+    def if_para_in_input(key, lines):
+        loc = 0
+        for i in range(len(lines)):
+            if key.upper() in lines[i]:
+                loc = i
+                # print(loc)
+        return loc
 
 
 class Lmp2InputLayer(Lmp2Input):
 
-    def __init__(self, job):
-        super(Lmp2InputLayer, self).__init__(job)
+    def __init__(self, job, cal_parameters={}):
+        super(Lmp2InputLayer, self).__init__(job, cal_parameters)
 
     def write_part1(self):
         mkdir(self.lmp2_path)
@@ -203,3 +237,5 @@ class Lmp2InputLayer(Lmp2Input):
         self.write_part1()
         self.write_bilayer()
         self.write_part2()
+        if len(self.cal_parameters) > 0:
+            self.change_cal_parameters()

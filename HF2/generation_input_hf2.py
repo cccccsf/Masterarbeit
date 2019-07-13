@@ -27,7 +27,7 @@ def get_jobs(path):
 
 class Input(object):
 
-    def __init__(self, hf1_job, name, slab_or_molecule, layer_group, bs_type='default', layertype='bilayer', fixed_atoms=[]):
+    def __init__(self, hf1_job, name, slab_or_molecule, layer_group, bs_type='default', layertype='bilayer', fixed_atoms=[], cal_parameters={}):
         self.hf1_job = hf1_job     # class Job_path
         self.hf2_job = self.get_new_path()           # class Job_path
         self.job_path = self.hf2_job.path
@@ -42,6 +42,7 @@ class Input(object):
 
         self.bs = []                # class Basis_set
         self.bs_type = 'default'
+        self.cal_parameters = cal_parameters
 
     def get_new_path(self):
         hf2_job = deepcopy(self.hf1_job)
@@ -168,7 +169,39 @@ class Input(object):
         self.write_cal_info()
         self.guesdual()
         self.write_end()
+        if len(self.cal_parameters) > 0:
+            self.change_cal_parameters()
 
+    def change_cal_parameters(self):
+        with open(self.input_path, 'r') as f:
+            lines = f.readlines()
+        cal_begin = 0
+        for i in range(len(lines)):
+            if 'SHRINK' in lines[i]:
+                cal_begin = i
+        for key, value in self.cal_parameters.items():
+            loc = self.if_para_in_input(key, lines)
+            values_lines = value.split('\n')
+            values_lines = values_lines.split('\\n')
+            len_paras = len(values_lines)
+            if loc > 0:
+                for i in range(len_paras):
+                    lines[loc+1+i] = values_lines[i]+'\n'
+            else:
+                lines.insert(cal_begin, key.upper()+'\n')
+                for i in range(len_paras):
+                    lines.insert(cal_begin+1+i, values_lines[i]+'\n')
+        with open(self.input_path, 'w') as f:
+            f.writelines(lines)
+
+    @staticmethod
+    def if_para_in_input(key, lines):
+        loc = 0
+        for i in range(len(lines)):
+            if key.upper() in lines[i]:
+                loc = i
+                # print(loc)
+        return loc
 
 
 

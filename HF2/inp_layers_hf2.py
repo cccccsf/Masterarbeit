@@ -8,10 +8,9 @@ from Crystal import Basis_set
 
 class Layer_Inp(Input):
 
-    def __init__(self, hf1_job, name, slab_or_molecule, layer_group, layertype, bs_type='default', fixed_atoms = []):
-        super(Layer_Inp, self).__init__(hf1_job, name, slab_or_molecule, layer_group, bs_type, layertype=layertype, fixed_atoms=fixed_atoms)
+    def __init__(self, hf1_job, name, slab_or_molecule, layer_group, layertype, bs_type='default', fixed_atoms=[], cal_parameters={}):
+        super(Layer_Inp, self).__init__(hf1_job, name, slab_or_molecule, layer_group, bs_type, layertype=layertype, fixed_atoms=fixed_atoms, cal_parameters=cal_parameters)
         self.ghost = self.read_ghost()
-
 
     def read_ghost(self):
         file = self.hf1_job.path + '/INPUT'
@@ -23,7 +22,6 @@ class Layer_Inp(Input):
         ghost = re.search(regex, lines).group(0)
         ghost = re.split(':', ghost.replace(': ', ':'))
         return ghost
-
 
     def write_bs(self):
         self.bs = Basis_set(self.geometry.elements, 'HF2', self.bs_type)

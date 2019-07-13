@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-
 import os
-import re
 import json
 import sys
 from Common.file_processing import mkdir
@@ -11,10 +9,9 @@ from Crystal import choose_shrink
 from Crystal import Basis_set
 
 
-
 class Input(object):
 
-    def __init__(self, job, name, slab_or_molecule, layer_group, bs_type, layertype = 'bilayer', fiexed_atoms=[]):
+    def __init__(self, job, name, slab_or_molecule, layer_group, bs_type, layertype='bilayer', fiexed_atoms=[], cal_parameters={}):
         self.job_GeoOpt = job
         self.layertype = layertype
         self.job_hf1 = self.get_new_job()
@@ -33,7 +30,7 @@ class Input(object):
 
         self.bs_type = bs_type
         self.bs = Basis_set(self.geometry.elements, 'HF1', self.bs_type)
-
+        self.cal_parameters = cal_parameters
 
     def get_lattice_parameter(self):
         path = self.job_GeoOpt.root_path
@@ -65,7 +62,6 @@ class Input(object):
                   'Please check out?')
             return []
 
-
     def get_geometry(self):
         path = self.job_GeoOpt.root_path
         json_file = os.path.join(path, 'opt_geo_and_latt.json')
@@ -83,9 +79,8 @@ class Input(object):
             print(e)
             print('Optimized lattice parameter not found!'
                   'Please check out?')
-            sys.exit()	#here need a better way to deal with
+            sys.exit()	# here need a better way to deal with
         return geometry
-
 
     def get_new_job(self):
         path_GeoOpt = self.job_GeoOpt.path
@@ -95,14 +90,12 @@ class Input(object):
         job_hf1 = Job(path_hf1)
         return job_hf1
 
-
     def write_basis_info(self):
         mkdir(self.job_path)
         with open(self.input_path, 'w') as f:
             f.write(self.name + '\n')
             f.write(self.slab_or_molecule + '\n')
             f.write(str(self.layer_group) + '\n')
-
 
     def write_lattice_parameter(self):
         with open(self.input_path, 'a') as f:
@@ -112,12 +105,10 @@ class Input(object):
                 f.write(str(a) + ' ')
             f.write('\n')
 
-
     def write_geometry(self):
         self.geometry.write_geometry(self.input_path)
         with open(self.input_path, 'a') as f:
             f.write('END' + '\n')
-
 
     def write_bs(self):
         self.bs.write_bs(self.input_path)
@@ -125,11 +116,9 @@ class Input(object):
             f.write('99' + ' ' + '0' + '\n')
             f.write('END' + '\n')
 
-
     def write_gussp(self):
         with open(self.input_path, 'a') as f:
             f.write('GUESSP' + '\n')
-
 
     def write_cal_info(self):
         shrink = choose_shrink(self.lattice_parameter)
@@ -156,7 +145,6 @@ class Input(object):
             f.write('END' + '\n')
             f.write('END' + '\n')
 
-
     def gen_input(self):
         self.write_basis_info()
         self.write_lattice_parameter()
@@ -165,6 +153,39 @@ class Input(object):
         if self.job_hf1.z != '0' or self.job_hf1.x != '0':
             self.write_gussp()
         self.write_cal_info()
+        if len(self.cal_parameters) > 0:
+            self.change_cal_parameters()
+
+    def change_cal_parameters(self):
+        with open(self.input_path, 'r') as f:
+            lines = f.readlines()
+        cal_begin = 0
+        for i in range(len(lines)):
+            if 'SHRINK' in lines[i]:
+                cal_begin = i
+        for key, value in self.cal_parameters.items():
+            loc = self.if_para_in_input(key, lines)
+            values_lines = value.split('\n')
+            values_lines = values_lines.split('\\n')
+            len_paras = len(values_lines)
+            if loc > 0:
+                for i in range(len_paras):
+                    lines[loc+1+i] = values_lines[i]+'\n'
+            else:
+                lines.insert(cal_begin, key.upper()+'\n')
+                for i in range(len_paras):
+                    lines.insert(cal_begin+1+i, values_lines[i]+'\n')
+        with open(self.input_path, 'w') as f:
+            f.writelines(lines)
+
+    @staticmethod
+    def if_para_in_input(key, lines):
+        loc = 0
+        for i in range(len(lines)):
+            if key.upper() in lines[i]:
+                loc = i
+                # print(loc)
+        return loc
 
 
 

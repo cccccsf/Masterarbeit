@@ -21,6 +21,7 @@ def lmp2(path):
     hf2_jobs = LMP2.get_jobs(path)
     Ini = ReadIni()
     nodes, cryscor_path = Ini.get_lmp2()
+    cal_parameters = Ini.get_cal_parameters('LMP2')
     if nodes == '' or nodes == 'default':
         nodes = 1
     record_data_json(path, 'nodes', nodes, section='lmp2')
@@ -42,7 +43,7 @@ def lmp2(path):
         new_path = new_path.replace('hf2', 'lmp2')
         new_job = Job(new_path)
         if not LMP2.if_cal_finish(new_job):
-            Inp = LMP2.Lmp2Input(job)
+            Inp = LMP2.Lmp2Input(job, cal_parameters)
             Inp.write_input()
             LMP2.copy_files(job, nodes, cryscor_path)
             lmp2_jobs.append(new_job)
@@ -53,7 +54,7 @@ def lmp2(path):
         new_path = new_path.replace('hf2', 'lmp2')
         new_job = Job(new_path)
         if not LMP2.if_cal_finish(new_job):
-            Inp = LMP2.Lmp2InputLayer(job)
+            Inp = LMP2.Lmp2InputLayer(job, cal_parameters)
             Inp.write_input()
             LMP2.copy_files(job, nodes, cryscor_path)
             lmp2_jobs.append(new_job)
@@ -65,8 +66,8 @@ def lmp2(path):
         new_finished_jobs = LMP2.submit(lmp2_jobs)
         lmp2_jobs_finished += new_finished_jobs
     # read calculation results
-    if len(lmp2_jobs_finished) > 0:
-        LMP2.read_all_results_lmp2(lmp2_jobs_finished, init_distance=init_dist)
+    # if len(lmp2_jobs_finished) > 0:
+    #     LMP2.read_all_results_lmp2(lmp2_jobs_finished, init_distance=init_dist)
 
     rec = 'LMP2 finished!\n'
     rec += '***'*25

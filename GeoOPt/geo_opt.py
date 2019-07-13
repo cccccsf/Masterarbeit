@@ -22,6 +22,7 @@ def geo_opt(path):
     Ini = ReadIni()
     name, slab_or_molecule, group, lattice_parameter, number_atoms, geometry, fixed_atoms = Ini.get_basic_info()
     distance_series, shift_series = Ini.get_series()
+    cal_parameters = Ini.get_cal_parameters('Geo_Opt')
     record_data_json(path, 'project_name', name)
     record_data_json(path, 'system_type', slab_or_molecule)
     record_data_json(path, 'lattice_parameter', lattice_parameter)
@@ -55,7 +56,8 @@ def geo_opt(path):
             lattice_parameter,
             geometry,
             bs_type,
-            functional)
+            functional,
+            cal_parameters)
         Geo_Inp.gen_input()
         new_jobs.append(job)
     else:
@@ -121,7 +123,8 @@ def geo_opt(path):
                 lattice_parameter,
                 geometry,
                 bs_type,
-                functional)
+                functional,
+                cal_parameters)
             Geo_Inp.gen_input()
             new_jobs.append(job)
         else:

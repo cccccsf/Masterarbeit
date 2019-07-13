@@ -2,6 +2,7 @@
 import sys
 from datetime import datetime
 from Common import record
+from Common import ReadIni
 import GeoOPt
 import HF1
 import Localization
@@ -41,6 +42,8 @@ def pipeline(path, start, end):
             HF2.hf2(path)
         elif anchor == 4:
             LMP2.lmp2(path)
+            if if_skip_rpa() == 1:
+                anchor += 1
         elif anchor == 5:
             RPA.rpa(path)
         elif anchor == 6:
@@ -52,3 +55,16 @@ def pipeline(path, start, end):
         anchor += 1
     end_programm(path)
 
+
+def if_skip_rpa():
+    Ini = ReadIni()
+    ll = Ini.ll
+    if ll.upper() != 'LDRCCD':
+        skip_rpa = 1
+    else:
+        skip_rpa = 0
+    return skip_rpa
+
+
+if __name__ == '__main__':
+    if_skip_rpa = if_skip_rpa()
