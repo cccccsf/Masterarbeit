@@ -41,7 +41,7 @@ def hf1(path):
         if not HF1.if_cal_finish(new_job):
             Inp = HF1.Input(job, name, slab_or_molecule, group, bs_type, layertype='bilayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
             Inp.gen_input()
-            HF1.copy_submit_scr(new_job, nodes, crystal_path)
+            # HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
         else:
             hf1_jobs_finished.append(new_job)
@@ -52,7 +52,7 @@ def hf1(path):
         if not HF1.if_cal_finish(new_job):
             Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='upperlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
             Inp.gen_input()
-            HF1.copy_submit_scr(new_job, nodes, crystal_path)
+            # HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
         else:
             hf1_jobs_finished.append(new_job)
@@ -63,14 +63,14 @@ def hf1(path):
         if not HF1.if_cal_finish(new_job):
             Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='underlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
             Inp.gen_input()
-            HF1.copy_submit_scr(new_job, nodes, crystal_path)
+            # HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
         else:
             hf1_jobs_finished.append(new_job)
         jobs_HF1.append(new_job)
 
     # Submit the calculation job
-    hf1_jobs_finished_new = HF1.submit(new_jobs)
+    hf1_jobs_finished_new = HF1.submit(new_jobs, nodes, crystal_path)
     hf1_jobs_finished += hf1_jobs_finished_new
 
     # read calculation results

@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import time
+import math
 import GeoOPt
 from Common import record
 from Common import Job
@@ -60,7 +61,7 @@ def copy_fort9(job):
         print('fort.9 failed to copy...')
 
 
-def copy_submit_scr(job, nodes, crystal_path):
+def copy_submit_scr(job, nodes, crystal_path, nearest_job=0):
     ziel_path = job.path
     scr_path = os.path.dirname(os.path.realpath(__file__))
     if job.x == '0' and job.z == '0':
@@ -70,7 +71,27 @@ def copy_submit_scr(job, nodes, crystal_path):
     scr_to = os.path.join(ziel_path, 'geo_opt')
     shutil.copy(scr_from, scr_to)
     update_nodes(ziel_path, nodes, crystal_path)
+    if not isinstance(nearest_job, int):
+        insert_path_of_fort9(job, nearest_job)
     print('Submition file copied...')
+
+
+def insert_path_of_fort9(job, nearest_job):
+    submit_file = os.path.join(job.path, 'geo_opt')
+    with open(submit_file, 'r') as f:
+        lines = f.readlines()
+    loc = 0
+    for i in range(len(lines)):
+        if lines[i].startswith('cp fort.20'):
+            loc = i
+    # print(lines[loc])
+    path_from = os.path.join('../..', os.path.join(nearest_job.x_dirname, os.path.join(nearest_job.z_dirname, 'fort.9')))
+    # print(path_from)
+    line = 'cp {} $currdir/fort.20\n'.format(path_from)
+    if loc > 0:
+        lines[loc] = line
+    with open(submit_file, 'w') as f:
+        f.writelines(lines)
 
 
 def if_cal_finish(job):
@@ -185,9 +206,10 @@ def submit(jobs, nodes, crystal_path):
             else:
                 if count <= max_paralell and i < len(jobs):
                     print(jobs[i].path)
+                    nearest_job = obtain_nearest_job(jobs[i])
                     os.chdir(jobs[i].path)
-                    copy_submit_scr(jobs[i], nodes, crystal_path)
-                    copy_fort9(jobs[i])
+                    copy_submit_scr(jobs[i], nodes, crystal_path, nearest_job)
+                    # copy_fort9(jobs[i])
                     rename_file(jobs[i].path, 'geo_opt.out')
                     rename_file(jobs[i].path, 'fort.9')
                     out = submit_job(jobs[i], 'geo_opt')
@@ -212,6 +234,45 @@ def submit(jobs, nodes, crystal_path):
                     continue
     
         return finished_jobs
+
+
+def obtain_nearest_job(curr_job):
+    """
+    This function is used for choosing the nearest finished job to the current job, which will be used for GUESSP strategy
+    :param curr_job:
+    :param finished_jobs:
+    :return:
+    """
+    finished_jobs = get_finished_jobs(curr_job)
+    nearest_job = 0
+    if len(finished_jobs) > 0:
+        delta_z = 10000
+        for j in finished_jobs:
+            if j.x == curr_job.x:
+                if 0 < abs(float(j.z) - float(curr_job.z)) < delta_z:
+                    delta_z = abs(float(j.z) - float(curr_job.z))
+                    nearest_job = j
+        if not isinstance(nearest_job, Job):
+            distance = 100000
+            for j in finished_jobs:
+                dis = math.sqrt((float(j.z)-float(curr_job.z))**2 + (float(j.x)-float(curr_job.x))**2)
+                if 0 < dis < distance:
+                    distance = dis
+                    nearest_job = j
+    return nearest_job
+
+
+def get_finished_jobs(job):
+    path = os.path.join(job.root_path, job.method)
+    walks = os.walk(path)
+    jobs = []
+    for root, dirs, files in walks:
+        if ('geo_opt.out' in files) and ('fort.9' in files):
+            new_path = root
+            new_job = Job(new_path)
+            if if_cal_finish(new_job):
+                jobs.append(new_job)
+    return jobs
 
 
 def test_calculation(j, submitted_jobs):

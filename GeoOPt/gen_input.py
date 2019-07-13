@@ -1,13 +1,11 @@
 #!/usr/bin/python3
 import os
-import time
 import json
 from Data import Functionals
 from Data import Grimme_parameter
 from Common.file_processing import mkdir
 from Crystal import Basis_set
 from Crystal import choose_shrink
-import Initialization
 
 
 class Geo_Opt_Input(object):
@@ -86,9 +84,13 @@ class Geo_Opt_Input(object):
             f.write('END' + '\n')
 
     def write_grimme_dispersion(self):
+        s6_dict = {'B3LYP': 1.05, 'PBE': 0.75, 'PBE0': 0.70, 'BLYP': 1.2, 'B-P86': 1.05, 'TPSS': 1.0}
         with open(self.input_path, 'a') as f:
             f.write('GRIMME' + '\n')
-            f.write('1.05' + ' ' + '20.' + ' ' + '25.' + '\n')
+            if self.functional.upper() in s6_dict:
+                f.write(str(s6_dict[self.functional.upper()]) + ' ' + '20.' + ' ' + '25.' + '\n')
+            else:
+                f.write('1.05' + ' ' + '20.' + ' ' + '25.' + '\n')
             elements = sorted(self.bs.elements_unique)
             f.write(str(len(elements)) + '\n')
             for element in elements:

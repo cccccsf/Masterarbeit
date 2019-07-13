@@ -108,7 +108,7 @@ def geo_opt(path):
             dirname = 'x_{0:.2f}/z_{1:.3f}'.format(shift, distance)
             new_path = os.path.join(path, os.path.join('geo_opt', dirname))
             new_job = Job(new_path)
-            print(new_job)
+            # print(new_job)
             job_geo_dict[new_job] = geo
 
     # generation all INPUT files besides the first one above
