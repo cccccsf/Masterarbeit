@@ -27,7 +27,7 @@ def get_jobs(path):
 
 class Input(object):
 
-    def __init__(self, hf1_job, name, slab_or_molecule, layer_group, bs_type='default', layertype='bilayer', fixed_atoms=[], cal_parameters={}):
+    def __init__(self, hf1_job, name, slab_or_molecule, layer_group, bs_type='default', layertype='bilayer', fixed_atoms=[], cal_parameters={}, aos=0):
         self.hf1_job = hf1_job     # class Job_path
         self.hf2_job = self.get_new_path()           # class Job_path
         self.job_path = self.hf2_job.path
@@ -41,7 +41,8 @@ class Input(object):
         self.lattice_parameter = self.get_lattice_parameter()
 
         self.bs = []                # class Basis_set
-        self.bs_type = 'default'
+        self.bs_type = bs_type
+        self.aos = aos
         self.cal_parameters = cal_parameters
 
     def get_new_path(self):
@@ -123,12 +124,19 @@ class Input(object):
         if len(self.bs) == 0:
             self.generate_bs()
         self.bs.write_bs(self.input_path)
+        if self.aos != 0:
+            with open(self.input_path, 'a') as f:
+                for ao in self.aos:
+                    f.write(ao + '\n')
         with open(self.input_path, 'a') as f:
             f.write('99' + ' ' + '0' + '\n')
             f.write('END' + '\n')
 
     def generate_bs(self):
-        self.bs = Basis_set(self.geometry.elements, 'HF2', self.bs_type)
+        if self.aos == 0:
+            self.bs = Basis_set(self.geometry.elements, 'HF2', self.bs_type)
+        else:
+            self.bs = Basis_set(self.geometry.elements, 'HF1', self.bs_type, self.aos)
 
     def guesdual(self):
         guesdual = Guesdual(self.bs)

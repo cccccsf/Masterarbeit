@@ -99,7 +99,7 @@ class ReadIni(object):
             distance_series = [float(d) for d in distance_series]
             # print(distance_series)
         except configparser.NoOptionError:
-            print(configparser.NoOptionError)
+            # print(configparser.NoOptionError)
             distance_series = 'default'
         return distance_series
 
@@ -110,7 +110,7 @@ class ReadIni(object):
             shift_series = [float(d) for d in shift_series]
             # print(shift_series)
         except configparser.NoOptionError:
-            print(configparser.NoOptionError)
+            # print(configparser.NoOptionError)
             shift_series = 'default'
         return shift_series
 
@@ -269,6 +269,18 @@ class ReadIni(object):
         nodes = self.cfg.get('HF2', 'nodes')
         self.test_nodes(nodes)
         return bs, nodes
+
+    def get_aos(self):
+        paras = self.cfg.options('HF2')
+        try:
+            aoParas = [para for para in paras if para.startswith('ao')]
+            if len(aoParas) > 0:
+                aos = [self.cfg.get('HF2', p) for p in aoParas]
+            else:
+                aos = 0
+        except:
+            aos = 0
+        return aos
 
     def get_hf2(self):
         return self.hf2_bs, self.hf2_nodes, self.crystal_path
@@ -472,7 +484,7 @@ class ReadIni(object):
     def get_cal_parameters(self, step):
         # get necessary options
         options = self.cfg.options(step)
-        default_options = ['basis_set', 'functional', 'path', 'nodes', 'memory', 'atom']
+        default_options = ['basis_set', 'functional', 'path', 'nodes', 'memory', 'atom', 'ao']
         # print(options)
         delete_options = []
         for opt in default_options:
@@ -510,6 +522,6 @@ if __name__ == '__main__':
         path = os.path.dirname(__file__)
         path = os.path.dirname(path)
         Ini = ReadIni()
-        Ini.get_cal_parameters('Geo_Opt')
+        Ini.get_aos()
 
     test_read_ini()

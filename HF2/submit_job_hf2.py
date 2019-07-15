@@ -18,9 +18,23 @@ def copy_submit_scr(job, nodes, crystal_path):
     try:
         shutil.copy(scr_from, scr_to)
         update_nodes(ziel_path, nodes, crystal_path)
+        insert_path_fort(job, scr_to)
         print('Submition file copied.')
     except Exception as e:
         print(e)
+
+
+def insert_path_fort(job, scr_to):
+    with open(scr_to, 'r') as f:
+        lines = f.readlines()
+    fort20 = 0
+    for i in range(len(lines)):
+        if lines[i].startswith('cp fort.20'):
+            fort20 = i
+    fort20_path = os.path.join(job.path, 'fort.9')
+    lines[fort20] = lines[fort20].replace('cp fort.20', 'cp '+fort20_path)
+    with open(scr_to, 'w') as f:
+        f.writelines(lines)
 
 
 def copy_fort9(job):
@@ -60,7 +74,7 @@ def update_nodes(path, nodes, crystal_path):
     if nodes != '':
         nodes_line = '#PBS -l nodes={}\n'.format(nodes)
         lines[loc] = nodes_line
-        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${{PBS_O_WORKDIR}}/geo_opt.out\n'.format(nodes)
+        lines[loc2] = 'mpirun -np {} $crystal_path/Pcrystal >& ${{PBS_O_WORKDIR}}/hf2.out\n'.format(nodes)
     if crystal_path != '':
         lines[loc_cry] = 'crystal_path={}\n'.format(crystal_path)
 
@@ -143,10 +157,10 @@ def submit(jobs):
                 record(new_job.root_path, rec)
                 print(rec)
             else:
-                # time.sleep(500)
-                time.sleep(2)
+                time.sleep(500)
+                # time.sleep(2)
                 j += 1
-                test_calculation(j, jobs, submitted_jobs, finished_jobs)    # test function
+                # test_calculation(j, jobs, submitted_jobs, finished_jobs)    # test function
                 if j > 15:
                     rec = 'noting changes.\n'
                     rec += '---'*25

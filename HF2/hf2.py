@@ -21,6 +21,7 @@ def hf2(path):
     name, slab_or_molecule, group, lattice_parameter, number_of_atoms, geometry, fixed_atoms = Ini.get_basic_info()
     bs_type, nodes, crystal_path = Ini.get_hf2()
     cal_parameters = Ini.get_cal_parameters('HF2')
+    aos = Ini.get_aos()
     if nodes == '' or nodes == 'default':
         nodes = 12
     record_data_json(path, 'basis_set', bs_type, section='hf2')
@@ -39,42 +40,44 @@ def hf2(path):
     hf2_jobs = []
     hf2_jobs_finished = []
     for job in bilayer:
-        Inp = HF2.Input(
-            job,
-            name,
-            slab_or_molecule,
-            group,
-            bs_type=bs_type,
-            layertype='bilayer',
-            fixed_atoms=fixed_atoms,
-            cal_parameters=cal_parameters)
         new_path = job.path
         new_path = new_path.replace('hf1', 'hf2')
         new_job = Job(new_path)
         if not HF2.if_cal_finish(new_job):
+            Inp = HF2.Input(
+                job,
+                name,
+                slab_or_molecule,
+                group,
+                bs_type=bs_type,
+                layertype='bilayer',
+                fixed_atoms=fixed_atoms,
+                cal_parameters=cal_parameters,
+                aos=aos)
             Inp.gen_input()
             HF2.copy_submit_scr(job, nodes, crystal_path)
-            HF2.copy_fort9(job)
+            # HF2.copy_fort9(job)
             hf2_jobs.append(new_job)
         else:
             hf2_jobs_finished.append(new_job)
     for job in singlelayer:
-        Inp = HF2.Layer_Inp(
-            job,
-            name,
-            slab_or_molecule,
-            group,
-            bs_type=bs_type,
-            layertype=job.layertype,
-            fixed_atoms=fixed_atoms,
-            cal_parameters=cal_parameters)
         new_path = job.path
         new_path = new_path.replace('hf1', 'hf2')
         new_job = Job(new_path)
         if not HF2.if_cal_finish(new_job):
+            Inp = HF2.Layer_Inp(
+                job,
+                name,
+                slab_or_molecule,
+                group,
+                bs_type=bs_type,
+                layertype=job.layertype,
+                fixed_atoms=fixed_atoms,
+                cal_parameters=cal_parameters,
+                aos=aos)
             Inp.gen_input()
             HF2.copy_submit_scr(job, nodes, crystal_path)
-            HF2.copy_fort9(job)
+            # HF2.copy_fort9(job)
             hf2_jobs.append(new_job)
         else:
             hf2_jobs_finished.append(new_job)

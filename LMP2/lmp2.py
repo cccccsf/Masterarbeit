@@ -17,7 +17,7 @@ def lmp2(path):
     record(path, rec)
 
     init_dist = read_init_dis(path)
-    # read basic computation infomation
+    # read basic computation information
     hf2_jobs = LMP2.get_jobs(path)
     Ini = ReadIni()
     nodes, cryscor_path = Ini.get_lmp2()
