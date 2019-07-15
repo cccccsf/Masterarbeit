@@ -51,7 +51,10 @@ def insert_path_of_fort9(job, nearest_job):
         if lines[i].startswith('cp fort.20'):
             loc = i
     # print(lines[loc])
-    path_from = os.path.join('../..', os.path.join(nearest_job.x_dirname, os.path.join(nearest_job.z_dirname, 'fort.9')))
+    if job.layertype == 'bilayer':
+        path_from = os.path.join('../..', os.path.join(nearest_job.x_dirname, os.path.join(nearest_job.z_dirname, 'fort.9')))
+    else:
+        path_from = os.path.join('../..', os.path.join(nearest_job.x_dirname, os.path.join(nearest_job.z_dirname, os.path.join(nearest_job.layertype,'fort.9'))))
     # print(path_from)
     line = 'cp {} $currdir/fort.20\n'.format(path_from)
     if loc > 0:

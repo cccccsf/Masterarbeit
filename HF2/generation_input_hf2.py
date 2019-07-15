@@ -181,8 +181,8 @@ class Input(object):
                 cal_begin = i
         for key, value in self.cal_parameters.items():
             loc = self.if_para_in_input(key, lines)
-            values_lines = value.split('\n')
-            values_lines = values_lines.split('\\n')
+            values_lines = value.split('\\n')
+            # values_lines = values_lines.split('\\n')
             len_paras = len(values_lines)
             if loc > 0:
                 for i in range(len_paras):

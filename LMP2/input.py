@@ -31,8 +31,9 @@ def test_get_jobs(path):
 
 class Lmp2Input(object):
 
-    def __init__(self, job, cal_parameters={}):
+    def __init__(self, job, ll='LMP2', cal_parameters={}):
         self.job = job
+        self.ll = ll
         self.lmp2_job = 0
         self.lmp2_path = ''
         self.input_path = ''
@@ -129,12 +130,18 @@ class Lmp2Input(object):
         self.ghost = ghost
 
     def write_input(self):
-        self.read_ghost()
-        self.write_part1()
-        self.write_molatoms()
-        self.write_part2()
-        self.write_bilayer()
-        self.write_part3()
+        if self.ll == 'LDRCCD':
+            self.read_ghost()
+            self.write_part1()
+            self.write_molatoms()
+            self.write_part2()
+            self.write_bilayer()
+            self.write_part3()
+        else:
+            self.write_lmp2_part1()
+            self.read_ghost()
+            self.write_molatoms()
+            self.write_lmp2_part2()
         if len(self.cal_parameters) > 0:
             self.change_cal_parameters()
 
@@ -147,8 +154,8 @@ class Lmp2Input(object):
                 cal_begin = i
         for key, value in self.cal_parameters.items():
             loc = self.if_para_in_input(key, lines)
-            values_lines = value.split('\n')
-            values_lines = values_lines.split('\\n')
+            values_lines = value.split('\\n')
+            # values_lines = values_lines.split('\\n')
             len_paras = len(values_lines)
             if loc > 0:
                 for i in range(len_paras):
@@ -169,11 +176,43 @@ class Lmp2Input(object):
                 # print(loc)
         return loc
 
+    def write_lmp2_part1(self):
+        mkdir(self.lmp2_path)
+        with open(self.input_path, 'w') as f:
+            f.write('READC14' + '\n')
+            f.write('DUALBAS' + '\n')
+            f.write('KNET' + '\n')
+            f.write('8' + '\n')
+            f.write('MEMORY' + '\n')
+            f.write('40000' + '\n')
+            f.write('NOSING\n')
+
+    def write_lmp2_part2(self):
+        with open(self.input_path, 'a') as f:
+            f.write('ENVPAIR' + '\n')
+            f.write('8. 8.' + '\n')
+            f.write('MOLPAIR' + '\n')
+            f.write('8. 8.' + '\n')
+            f.write('MOENPAIR' + '\n')
+            f.write('12. 14.' + '\n')
+            f.write('DOMPUL' + '\n')
+            f.write('0.95' + '\n')
+            f.write('IEXT' + '\n')
+            f.write('1' + '\n')
+            f.write('DFITTING' +'\n')
+            f.write('DIRECT' + '\n')
+            f.write('PG-AVTZ' + '\n')
+            f.write('ENDDF' +'\n')
+            f.write('PRINPLOT' + '\n')
+            f.write('2' + '\n')
+            f.write('PRINTMEM' + '\n')
+            f.write('END' + '\n')
+
 
 class Lmp2InputLayer(Lmp2Input):
 
-    def __init__(self, job, cal_parameters={}):
-        super(Lmp2InputLayer, self).__init__(job, cal_parameters)
+    def __init__(self, job, ll='LMP2', cal_parameters={}):
+        super(Lmp2InputLayer, self).__init__(job, ll=ll, cal_parameters=cal_parameters)
 
     def write_part1(self):
         mkdir(self.lmp2_path)
@@ -234,8 +273,13 @@ class Lmp2InputLayer(Lmp2Input):
     def write_input(self):
         if self.ghost == []:
             self.get_ghost()
-        self.write_part1()
-        self.write_bilayer()
-        self.write_part2()
+        if self.ll == 'LDRCCD':
+            self.write_part1()
+            self.write_bilayer()
+            self.write_part2()
+        else:
+            self.write_lmp2_part1()
+            self.write_molatoms()
+            self.write_lmp2_part2()
         if len(self.cal_parameters) > 0:
             self.change_cal_parameters()

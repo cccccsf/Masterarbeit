@@ -22,6 +22,7 @@ def lmp2(path):
     Ini = ReadIni()
     nodes, cryscor_path = Ini.get_lmp2()
     cal_parameters = Ini.get_cal_parameters('LMP2')
+    ll = Ini.ll
     if nodes == '' or nodes == 'default':
         nodes = 1
     record_data_json(path, 'nodes', nodes, section='lmp2')
@@ -43,9 +44,9 @@ def lmp2(path):
         new_path = new_path.replace('hf2', 'lmp2')
         new_job = Job(new_path)
         if not LMP2.if_cal_finish(new_job):
-            Inp = LMP2.Lmp2Input(job, cal_parameters)
+            Inp = LMP2.Lmp2Input(job, ll, cal_parameters)
             Inp.write_input()
-            LMP2.copy_files(job, nodes, cryscor_path)
+            LMP2.copy_files(new_job, nodes, cryscor_path)
             lmp2_jobs.append(new_job)
         else:
             lmp2_jobs_finished.append(new_job)
@@ -56,7 +57,7 @@ def lmp2(path):
         if not LMP2.if_cal_finish(new_job):
             Inp = LMP2.Lmp2InputLayer(job, cal_parameters)
             Inp.write_input()
-            LMP2.copy_files(job, nodes, cryscor_path)
+            LMP2.copy_files(new_job, nodes, cryscor_path)
             lmp2_jobs.append(new_job)
         else:
             lmp2_jobs_finished.append(new_job)

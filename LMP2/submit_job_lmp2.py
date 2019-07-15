@@ -41,6 +41,7 @@ def copy_submit_src(job, ziel_path, nodes, cryscor_path):
     try:
         shutil.copy(scr_from, scr_to)
         update_scr(job, ziel_path, nodes, cryscor_path)
+        insert_path_fort(job)
         print('Submition file copied.')
     except Exception as e:
         print(e)
@@ -90,11 +91,34 @@ def update_scr(job, path, nodes, cryscor_path):
         f.writelines(lines)
 
 
+def insert_path_fort(job):
+    submit_file = os.path.join(job.path, 'lmp2')
+    with open(submit_file, 'r') as f:
+        lines = f.readlines()
+    # fort.9
+    fort9, fort78, fort80 = 0, 0, 0
+    for i in range(len(lines)):
+        if lines[i].startswith('cp fort.9'):
+            fort9 = i
+        elif lines[i].startswith('cp fort.78'):
+            fort78 = i
+        elif lines[i].startswith('cp fort.80'):
+            fort80 = i
+    fort9_path = os.path.join(job.path.replace('lmp2', 'hf2'), 'fort.9')
+    fort78_path = os.path.join(job.path.replace('lmp2', 'hf2'), 'fort.78')
+    fort80_path = os.path.join(job.path.replace('lmp2', 'hf1'), 'fort.80')
+    lines[fort9] = lines[fort9].replace('fort.9', fort9_path)
+    lines[fort78] = lines[fort78].replace('fort.78', fort78_path)
+    lines[fort80] = lines[fort80].replace('fort.80', fort80_path)
+    with open(submit_file, 'w') as f:
+        f.writelines(lines)
+
+
 def copy_files(job, nodes, cryscor_path):
-    ziel_path = job.path.replace('hf2', 'lmp2')
+    ziel_path = job.path
     copy_submit_src(job, ziel_path, nodes, cryscor_path)
-    copy_fort80(ziel_path)
-    copy_fort9_fort78(ziel_path)
+    # copy_fort80(ziel_path)
+    # copy_fort9_fort78(ziel_path)
 
 
 def if_cal_finish(job):
