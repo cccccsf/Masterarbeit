@@ -10,9 +10,10 @@ from Crystal import geometry_input
 
 yes_or_no = {'Y':1, 'y':1, 'Yes':1, 'yes':1, 'N':0, 'n':0, 'No':0, 'no':0 }
 
+
 class Basis_set(object):
 
-    def __init__(self, elements, method, bs_type = 'default'):
+    def __init__(self, elements, method, bs_type='default', aos=0):
         self.method = method
         self.bs_type = bs_type
         self.bs_types = [bs_type]
@@ -22,6 +23,7 @@ class Basis_set(object):
         self.bs_change = 0
         self.ele_bs_dict = {}
         self.basis_set = []
+        self.aos = aos
         self.read_bs()
 
     def __len__(self):
@@ -132,7 +134,7 @@ class Basis_set(object):
         return bs
 
     @staticmethod
-    def read_bs_geo_opt_default_nonmetal(element, method = 'HF1'):
+    def read_bs_geo_opt_default_nonmetal(element, method='HF1'):
         bs_ahlrichs = choose_bs.read_basis_set_file(element, 'Ahlrichs_VTZ')
         bs_cc = choose_bs.read_basis_set_file(element, 'cc-pVTZ')
         bs_combine = []
@@ -221,7 +223,6 @@ class Basis_set(object):
         bs_combine = choose_bs.transfer_crystal_formatted_bs_input([bs_combine],[element])[0]
         return bs_combine
 
-
     @staticmethod
     def get_bs_head(element, bs):
         head = []
@@ -254,6 +255,11 @@ class Basis_set(object):
         with open(path, 'a') as f:
             for element in self.basis_set:
                 head = element[0]
+                if self.aos == 0:
+                    num_aos = 0
+                else:
+                    num_aos = int(len(self.aos)/2)
+                head[1] = int(head[1]) + num_aos
                 f.write(str(head[0]) + ' ' + str(head[1]) + '\n')
                 for shell in element[1:]:
                     shell_head = shell[0]

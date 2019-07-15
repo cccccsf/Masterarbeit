@@ -2,15 +2,18 @@
 import os
 import re
 from Common import read_all_results
+from Common import Job
+
 
 def get_energy_lmp2(path):
-
+    if isinstance(path, Job):
+        path = path.path
     path = os.path.join(path, 'lmp2.out')
     with open(path, 'r') as f:
         lines = f.read()
         regex = 'FINAL SUMMARY.*?\*+.*?\*\*+'
     final_summary = re.search(regex, lines, re.M|re.S)
-    if final_summary != None:
+    if final_summary is not None:
         final_summary = final_summary.group(0)
     else:
         print(path)
@@ -18,7 +21,7 @@ def get_energy_lmp2(path):
 
     regex = 'MP2 CORRELATION ENERGY.*?\n'
     lmp2 = re.search(regex, final_summary)
-    if lmp2 != None:
+    if lmp2 is not None:
         lmp2 = lmp2.group(0)
         lmp2 = lmp2.strip()
         lmp2 = lmp2.split()
@@ -26,6 +29,7 @@ def get_energy_lmp2(path):
     else:
         print(path)
         print('LMP2 erengy not found...')
+    unit = 'hartree'    # here need more
 
     regex = 'HF\+SINGLES\+E\(GRIMME\).*?\n'
     scs = re.search(regex, final_summary)
@@ -35,7 +39,7 @@ def get_energy_lmp2(path):
         scs = scs.split()
         scs = scs[-2]
 
-    return lmp2
+    return lmp2, unit
 """
                                 FINAL SUMMARY
 
@@ -52,13 +56,14 @@ def get_energy_lmp2(path):
 
 
 def get_energy_scs(path):
-
+    if isinstance(path, Job):
+        path = path.path
     path = os.path.join(path, 'lmp2.out')
     with open(path, 'r') as f:
         lines = f.read()
         regex = 'FINAL SUMMARY.*?\*+.*?\*\*+'
     final_summary = re.search(regex, lines, re.M|re.S)
-    if final_summary != None:
+    if final_summary is not None:
         final_summary = final_summary.group(0)
     else:
         print(path)
@@ -66,7 +71,7 @@ def get_energy_scs(path):
 
     regex = 'MP2 CORRELATION ENERGY.*?\n'
     lmp2 = re.search(regex, final_summary)
-    if lmp2 != None:
+    if lmp2 is not None:
         lmp2 = lmp2.group(0)
         lmp2 = lmp2.strip()
         lmp2 = lmp2.split()
@@ -77,23 +82,19 @@ def get_energy_scs(path):
 
     regex = 'HF\+SINGLES\+E\(GRIMME\).*?\n'
     scs = re.search(regex, final_summary)
-    if scs != None:
+    if scs is not None:
         scs = scs.group(0)
         scs = scs.strip()
         scs = scs.split()
         scs = scs[-2]
+    unit = 'hartree'    # here need more
 
-    return scs
-
-
-
+    return scs, unit
 
 
+def read_all_results_lmp2(jobs, init_distance=None):
 
-def read_all_results_lmp2(jobs, init_distance = None):
-    readed_jobs = []
-
-    if init_distance == None:
+    if init_distance is None:
         while True:
             try:
                 print('Please enter the initial layer distance of the system:')

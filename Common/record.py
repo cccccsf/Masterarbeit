@@ -10,7 +10,7 @@ def record(path, content, init = False, begin_time = 0):
         prossing_time = now - begin_time
     now = now.strftime("%b %d %Y %H:%M:%S")
     record_file = os.path.join(path, 'record')
-    if init == False:
+    if init is False:
         with open(record_file, 'a') as f:
             f.write('TIME: '.ljust(10))
             f.write(now)
@@ -40,7 +40,7 @@ def rename_file(path, file_name):
     record_file = os.path.join(path, file_name)
     if os.path.exists(record_file):
         ctime = get_FileCreatTime(record_file)
-        new_name = ctime + '_' + 'record'
+        new_name = ctime + '_' + file_name
         new_name = os.path.join(path, new_name)
         try:
             os.rename(record_file, new_name)

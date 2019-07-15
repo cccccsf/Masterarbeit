@@ -13,10 +13,10 @@ currdir=/scratch/$USER/$$tmp
 crystal_path=~usvyat/Crystal14_new/bin/Linux-ifort-i64-t/std/
 mkdir -p $currdir
 cp INPUT $currdir
-cp fort.20 $currdir
+cp fort.20 $currdir/fort.20
 cd $currdir
 
-mpirun -np 12 $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/hf.out
+mpirun -np 12 $crystal_path/Pcrystal >& ${PBS_O_WORKDIR}/hf2.out
 
 cp fort.9 ${PBS_O_WORKDIR}/
 cp fort.78 ${PBS_O_WORKDIR}/

@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 import os
 import re
+import math
 import subprocess
 import shutil
 import time
 from Common import record
 from Common import rename_file
-
+from Common import submit_job
+from Common import Job
 
 
 def submit_hf1_job():
@@ -25,7 +27,7 @@ def submit_hf1_job():
     return out_text
 
 
-def copy_submit_scr(job, nodes, crystal_path):
+def copy_submit_scr(job, nodes, crystal_path, nearest_job=0):
     ziel_path = job.path
     scr_path = os.path.dirname(os.path.realpath(__file__))
     if job.x == '0' and job.z == '0':
@@ -35,7 +37,30 @@ def copy_submit_scr(job, nodes, crystal_path):
     scr_to = os.path.join(ziel_path, 'hf')
     shutil.copy(scr_from, scr_to)
     update_nodes(ziel_path, nodes, crystal_path)
-    print('Submition file copied...')
+    if not isinstance(nearest_job, int):
+        insert_path_of_fort9(job, nearest_job)
+    print('Submition file copied.')
+
+
+def insert_path_of_fort9(job, nearest_job):
+    submit_file = os.path.join(job.path, 'geo_opt')
+    with open(submit_file, 'r') as f:
+        lines = f.readlines()
+    loc = 0
+    for i in range(len(lines)):
+        if lines[i].startswith('cp fort.20'):
+            loc = i
+    # print(lines[loc])
+    if job.layertype == 'bilayer':
+        path_from = os.path.join('../..', os.path.join(nearest_job.x_dirname, os.path.join(nearest_job.z_dirname, 'fort.9')))
+    else:
+        path_from = os.path.join('../..', os.path.join(nearest_job.x_dirname, os.path.join(nearest_job.z_dirname, os.path.join(nearest_job.layertype,'fort.9'))))
+    # print(path_from)
+    line = 'cp {} $currdir/fort.20\n'.format(path_from)
+    if loc > 0:
+        lines[loc] = line
+    with open(submit_file, 'w') as f:
+        f.writelines(lines)
 
 
 def update_nodes(path, nodes, crystal_path):
@@ -50,7 +75,6 @@ def update_nodes(path, nodes, crystal_path):
         i = 0
         for line in lines:
             if line.startswith('#PBS -l nodes'):
-                nodes_line = line
                 loc = i
             i += 1
     loc2, loc_cry = 0, 0
@@ -91,7 +115,7 @@ def copy_fort9(job):
 def if_cal_finish(job):
     """
     check the calculation is finished or not through the output file
-    :param path: string
+    :param job: string
     :return: Bool Ture of False
     """
     path = job.path
@@ -105,19 +129,18 @@ def if_cal_finish(job):
             lines = ' '.join(lines.split()) + '#'
             regex = 'TOTAL CPU TIME'
             line = re.search(regex, lines)
-            if line == None:
+            if line is None:
                 return False
             else:
                 if line.group(0) != 'TOTAL CPU TIME':
                     return False
                 else:
                     return True
-        return True
     except FileNotFoundError as e:
         return False
 
 
-def submit(jobs):
+def submit(jobs, nodes, crystal_path):
     job_num = len(jobs)
     max_paralell = 5
     count = 0
@@ -130,23 +153,23 @@ def submit(jobs):
             if if_cal_finish(job):
                 finished_jobs.append(job)
                 num = str(len(finished_jobs)) + '/' + str(job_num)
-                rec = job.path
+                rec = str(job)
                 rec += '\n'
-                rec += num + 'calculation finished...'
+                rec += num + '  calculation finished.\n'
+                rec += '---'*25
                 print(rec)
                 record(job.root_path, rec)
                 count -= 1
                 jobs.remove(job)
 
-    #test if there is some job which is already finished
+    # test if there is some job which is already finished
     for job in jobs[:]:
-        #print(job)
         if if_cal_finish(job):
             finished_jobs.append(job)
             jobs.remove(job)
 
-    #find and submit the initial job
-    #print('number of jobs: ', len(jobs))
+    # find and submit the initial job
+    # print('number of jobs: ', len(jobs))
     init_jobs = []
     for job in jobs[:]:
         if job.x == '0' and job.z == '0':
@@ -156,34 +179,34 @@ def submit(jobs):
         if not if_cal_finish(job):
             os.chdir(job.path)
             rename_file(job.path, 'hf.out')
-            out = submit_hf1_job()
-            #out = '0000'
+            out = submit_job(job, 'hf')
             count += 1
             submitted_jobs.append(job)
-            rec = job.path
+            rec = str(job)
             print(rec)
             rec += '\n'
-            rec += 'job submitted...'
-            rec += '\n' + out
+            rec += 'job submitted.'
+            rec += '\n' + out + '\n'
+            rec += '---'*25
             record(job.root_path, rec)
         else:
             finished_jobs.append(job)
-    #detect if init jobs finished
+    # detect if init jobs finished
     r = 0
     while True:
-        test_finished(submitted_jobs)
+        test_finished(submitted_jobs)      # test function
         if len(submitted_jobs) == 0:
             break
         else:
             time.sleep(500)
             r += 1
             if r > 15:
-                rec += '\n'
-                rec += 'initial calculation still not finished...'
+                rec = 'initial calculation still not finished.\n'
+                rec += '---'*25
                 record(submitted_jobs[0].root_path, rec)
                 r = 0
 
-    #submit and detect the other jobs
+    # submit and detect the other jobs
     j = 0
     while True:
         test_finished(submitted_jobs)
@@ -192,25 +215,125 @@ def submit(jobs):
         else:
             if count < max_paralell and len(jobs) != 0:
                 new_job = jobs.pop()
-                print(new_job)
                 os.chdir(new_job.path)
+                nearest_job = obtain_nearest_job(new_job)
                 rename_file(new_job.path, 'hf.out')
                 rename_file(new_job.path, 'fort.9')
-                copy_fort9(new_job)
-                out = submit_hf1_job()
+                # copy_fort9(new_job)
+                copy_submit_scr(new_job, nodes, crystal_path, nearest_job)
+                out = submit_job(new_job, 'hf')
                 count += 1
                 submitted_jobs.append(new_job)
-                rec = new_job.path + '\n'
-                rec += 'job submitted...'
+                rec = str(new_job) + '\n'
+                rec += 'job submitted.'
                 rec += '\n' + out + '\n'
+                rec += '---'*25
                 record(new_job.root_path, rec)
+                print(rec)
             else:
+                # time.sleep(10)
                 time.sleep(500)
                 j += 1
+                test_calculation(j, jobs, submitted_jobs, finished_jobs)    # test function
                 if j > 15:
-                    rec = 'noting changes...'
+                    rec = 'noting changes.\n'
+                    rec += '---'*25
                     record(submitted_jobs[0].root_path, rec)
                     j = 0
                 continue
 
     return finished_jobs
+
+
+def obtain_nearest_job(curr_job):
+    """
+    This function is used for choosing the nearest finished job to the current job, which will be used for GUESSP strategy
+    :param curr_job:
+    :param finished_jobs:
+    :return:
+    """
+    finished_jobs = get_finished_jobs(curr_job)
+    nearest_job = 0
+    if len(finished_jobs) > 0:
+        delta_z = 10000
+        for j in finished_jobs:
+            if j.x == curr_job.x:
+                if 0 < abs(float(j.z) - float(curr_job.z)) < delta_z:
+                    delta_z = abs(float(j.z) - float(curr_job.z))
+                    nearest_job = j
+        if not isinstance(nearest_job, Job):
+            distance = 100000
+            for j in finished_jobs:
+                dis = math.sqrt((float(j.z)-float(curr_job.z))**2 + (float(j.x)-float(curr_job.x))**2)
+                if 0 < dis < distance:
+                    distance = dis
+                    nearest_job = j
+    return nearest_job
+
+
+def get_finished_jobs(job):
+    path = os.path.join(job.root_path, job.method)
+    walks = os.walk(path)
+    jobs = []
+    for root, dirs, files in walks:
+        if ('hf.out' in files) and ('fort.9' in files):
+            new_path = root
+            new_job = Job(new_path)
+            if if_cal_finish(new_job):
+                jobs.append(new_job)
+    return jobs
+
+
+def test_calculation(j, init_jobs, submitted_jobs, finished_jobs):
+    # ----------------------------------------- test ---------------------------------------------------
+    if j >= 2:
+        # categorization of out jobs
+        path = r'C:\Users\ccccc\Documents\Theoritische Chemie\Masterarbeit\BlackP\hf1'
+        walks = os.walk(path)
+        jobs = []
+        for root, dirs, files in walks:
+            if 'hf.out' in files:
+                if 'BS2' not in root:
+                    job = Job(root)
+                    jobs.append(job)
+        out_jobs = {}
+        for job in jobs:
+            if job.layertype not in out_jobs:
+                out_jobs[job.layertype] = {}
+            if job.x not in out_jobs[job.layertype]:
+                out_jobs[job.layertype][job.x] = [job]
+            else:
+                out_jobs[job.layertype][job.x].append(job)
+        for layertype, jobs_dict in out_jobs.items():
+            for key, value in jobs_dict.items():
+                sorted(value, key=lambda job: float(job.z))
+        # categorization of running jobs
+        all_jobs = init_jobs + finished_jobs + submitted_jobs
+        runing_jobs_dict = {}
+        for job in all_jobs:
+            if job.layertype not in runing_jobs_dict:
+                runing_jobs_dict[job.layertype] = {}
+            if job.x not in runing_jobs_dict[job.layertype]:
+                runing_jobs_dict[job.layertype][job.x] = [job]
+            else:
+                runing_jobs_dict[job.layertype][job.x].append(job)
+
+        # find corresponding jobs
+        for layertype, jobs_dict in runing_jobs_dict.items():
+            for x, job_list in jobs_dict.items():
+                corr_list = out_jobs[layertype]['%.1f' % (float(x)*10+2.5)]
+                job_list = sorted(job_list, key=lambda job: float(job.z))
+                for i in range(len(job_list)):
+                    out_from = corr_list[i].path
+                    fort_from = os.path.join(out_from, 'fort.9')
+                    out_from = os.path.join(out_from, 'hf.out')
+                    out_to = job_list[i].path
+                    fort_to = os.path.join(out_to, 'fort.9')
+                    out_to = os.path.join(out_to, 'hf.out')
+                    shutil.copy(out_from, out_to)
+                    shutil.copy(fort_from, fort_to)
+    # ----------------------------------------- test ---------------------------------------------------
+
+
+if __name__ == '__main__':
+    test_calculation(1,1,1)

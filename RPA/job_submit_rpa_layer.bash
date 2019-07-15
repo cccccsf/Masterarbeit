@@ -15,7 +15,7 @@ xdirname=${path1##/*/}
 layertype=${PWD##/*/}
 
 export scr1=/scratch/$LOGNAME
-export SCRATCHDIR=/scratch/$USER/cryscor/$xdirname/$zdirname/$layertype
+export SCRATCHDIR=/scratch/$USER/lmp2/$xdirname/$zdirname/$layertype
 export TMPDIR=$SCRATCHDIR
 export TMPDIR4=$scr1/run
 export TMPDIR5=$scr1/run

@@ -5,6 +5,7 @@ from Data import Functionals
 
 yes_or_no = {'Y':1, 'y':1, 'Yes':1, 'yes':1, 'N':0, 'n':0, 'No':0, 'no':0 }
 
+
 class Geo_Init:
 
     def __init__(self):

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os
 import shutil
-from Common import Job_path
+from Common import Job
 from HF1 import if_cal_finish
 
 
@@ -12,10 +12,11 @@ def get_jobs(path):
     for root, dirs, files in walks:
         if ('hf.out' in files) and ('fort.9' in files):
             new_path = root
-            new_job = Job_path(new_path)
+            new_job = Job(new_path)
             if if_cal_finish(new_job):
                 jobs.append(new_job)
     return jobs
+
 
 def copy_inp_file(job):
 

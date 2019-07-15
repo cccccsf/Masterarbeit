@@ -1,15 +1,15 @@
 #!/usr/bin/python3
 import os
-from Common import Job_path
+from Common import Job
 from HF1 import Input
 from copy import deepcopy
 
+
 class Layer_Inp(Input):
 
-    def __init__(self, job, name, slab_or_molecule, layer_group, bs_type, layertype, fiexed_atoms = []):
-        super(Layer_Inp, self).__init__(job, name, slab_or_molecule, layer_group, bs_type, layertype=layertype, fiexed_atoms=fiexed_atoms)
+    def __init__(self, job, name, slab_or_molecule, layer_group, bs_type, layertype, fiexed_atoms=[], cal_parameters={}):
+        super(Layer_Inp, self).__init__(job, name, slab_or_molecule, layer_group, bs_type, layertype=layertype, fiexed_atoms=fiexed_atoms, cal_parameters=cal_parameters)
         self.ghost_info = self.get_ghost()
-
 
     def get_ghost(self):
         count = 1
@@ -28,7 +28,6 @@ class Layer_Inp(Input):
         else:
             return under
 
-
     def write_ghost(self):
         with open(self.input_path, 'a') as f:
             f.write('GHOSTS' + '\n')
@@ -36,7 +35,6 @@ class Layer_Inp(Input):
             for atom in self.ghost_info:
                 f.write(str(atom) + ' ')
             f.write('\n')
-
 
     def write_bs(self):
         self.bs.write_bs(self.input_path)
@@ -47,7 +45,6 @@ class Layer_Inp(Input):
             f.write('END' + '\n')
 
 
-
 class Under_Layer_Inp(Input):
 
     def __init__(self, path, if_bs_change = 0, ele_to_bs_type=[], elements=[], root_path=''):
@@ -56,7 +53,6 @@ class Under_Layer_Inp(Input):
         self.n_fixed_atoms = []
         self.z_fixed_atoms = []
         self.ghost_number = []
-
 
     def transfer_to_float(self):
         self.get_geometry()
@@ -70,7 +66,6 @@ class Under_Layer_Inp(Input):
                 new_atom.append(new_unit)
             new_geo.append(new_atom)
         return new_geo
-
 
     def gen_fixed_atoms(self):
         count = 1
@@ -104,7 +99,6 @@ class Under_Layer_Inp(Input):
         self.n_fixed_atoms.append(z_coordinates_with_num_re[z_fixed_atoms[1]])
         #return n_fixed_atoms
 
-
     def get_underlayer(self):
         count = 1
         for atom in self.geometry:
@@ -114,7 +108,6 @@ class Under_Layer_Inp(Input):
                 self.ghost_number.append(count)
             count += 1
 
-
     def write_layer(self):
         with open(self.root_path + self.job_name + '/' + self.x_dirname + '/' + self.z_dirname + '/INPUT', 'a') as f:
             for line in self.underlayer:
@@ -122,7 +115,6 @@ class Under_Layer_Inp(Input):
                     f.write(str(unit) + ' ')
                 f.write('\n')
             f.write('END' + '\n')
-
 
     def write_geo(self):
         with open(self.root_path + self.job_name + '/' + self.x_dirname + '/' + self.z_dirname + '/INPUT', 'a') as f:
@@ -132,7 +124,6 @@ class Under_Layer_Inp(Input):
                 f.write('\n')
             f.write('END' + '\n')
 
-
     def write_ghost(self):
         with open(self.root_path + self.job_name + '/' + self.x_dirname + '/' + self.z_dirname + '/INPUT', 'a') as f:
             f.write('GHOSTS' + '\n')
@@ -140,7 +131,6 @@ class Under_Layer_Inp(Input):
             for atom in self.ghost_number:
                 f.write(str(atom) + ' ')
             f.write('\n')
-
 
     def write_bs(self):
         if self.if_bs_change == 0:
@@ -155,7 +145,6 @@ class Under_Layer_Inp(Input):
         with open(self.root_path + self.job_name + '/' + self.x_dirname + '/' + self.z_dirname + '/INPUT', 'a') as f:
             f.write('END' + '\n')
 
-
     def write_underlayer_inp_init(self):
         self.geometry = self.transfer_to_float()
         self.gen_fixed_atoms()
@@ -169,7 +158,6 @@ class Under_Layer_Inp(Input):
         self.write_geo()
         self.write_bs()
         self.write_cal_info()
-
 
     def write_underlayer_inp(self):
         self.geometry = self.transfer_to_float()

@@ -2,20 +2,19 @@
 import os
 import re
 import shutil
-import subprocess
-from copy import  deepcopy
+from copy import deepcopy
 from Common import mkdir
-from Common import Job_path
+from Common import Job
 from LMP2.submit_job_lmp2 import if_cal_finish
 
 
 def get_jobs(path):
-    path = os.path.join(path, 'hf_2')
+    path = os.path.join(path, 'lmp2')
     walks = os.walk(path)
     jobs = []
     for root, dirs, files in walks:
         if 'lmp2.out' in files and 'molpro.inp' in files:
-            new_job = Job_path(root)
+            new_job = Job(root)
             if if_cal_finish(new_job):
                 jobs.append(new_job)
     return jobs
@@ -31,12 +30,10 @@ class RPA_Input(object):
 
         self.memory = memory
 
-
     def get_new_job(self):
         self.rpa_job = deepcopy(self.lmp2_job)
         self.rpa_job.reset('method', 'rpa')
         self.rpa_path = self.rpa_job.path
-
 
     def copy_molpro_inp(self):
         mkdir(self.rpa_path)
@@ -45,12 +42,11 @@ class RPA_Input(object):
         inp_to = os.path.join(self.rpa_path, 'rpa.inp')
         shutil.copy(inp_from, inp_to)
 
-
     def change_form_molpro_inp(self):
         # only for shell, not windows
         # os.chdir(path)
         # com_memory = 'sed -i -e \'s/1536/{}/g\' rpa.inp'.format(memory)
-        #subprocess.call(com_memory, shell=True)
+        # subprocess.call(com_memory, shell=True)
         file_path = os.path.join(self.rpa_path, 'rpa.inp')
         with open(file_path, 'r') as f:
             molpro_inp = f.read()
@@ -66,7 +62,6 @@ class RPA_Input(object):
         molpro_inp = re.sub('P\s+', 'p', molpro_inp)
         with open(file_path, 'w') as f:
             f.write(molpro_inp)
-
 
     def generate_input(self):
         self.copy_molpro_inp()

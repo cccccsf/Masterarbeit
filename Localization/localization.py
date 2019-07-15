@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import os
 import sys
 import Localization
 from Common import record
@@ -10,12 +9,18 @@ from Common import mkdir
 
 def localization(path):
 
-    rec = 'Localization begins...'
+    rec = 'Localization begins.\n'
+    rec += '---'*25
     print(rec)
     record(path, rec)
 
-
+    # read infos from input.ini file
+    Ini = ReadIni()
+    nodes, crystal_path = Ini.get_loc()
+    if nodes == '' or nodes == 'default':
+        nodes = 1
     hf1_jobs = Localization.get_jobs(path)
+<<<<<<< HEAD
     ini_path = os.path.dirname(__file__)
     ini_path = os.path.dirname(ini_path)
     ini_file = os.path.join(ini_path, 'input.ini')
@@ -35,6 +40,10 @@ def localization(path):
         sys.exit()
 
     #copy input file of localiztion
+=======
+
+    # copy input file of localization
+>>>>>>> a683a8af38ab42158c09693bb6677e091cd66cad
     loc_jobs = []
     new_loc_jobs = []
     if len(hf1_jobs) != 0:
@@ -53,6 +62,7 @@ def localization(path):
             print(e)
     else:
         print('There is no appropriate Hartree Fock calculation results!!! ')
+<<<<<<< HEAD
         print('Programm will exit and correct the error and restart from localization step!!!')
         try:
             sys.exit(1)
@@ -61,6 +71,16 @@ def localization(path):
     
     #submit all jobs
     loc_finished_job = Localization.submit(new_loc_jobs)
+=======
+        print('Program will exit and correct the error and restart from localization step!!!')
+        sys.exit(1)
 
-    print('Localization finished!!!')
-    record(path, 'Localization finished!!!')
+    # submit all jobs
+    if len(loc_jobs) > 0:
+        loc_finished_job = Localization.submit(loc_jobs)
+>>>>>>> a683a8af38ab42158c09693bb6677e091cd66cad
+
+    rec = 'Localization finished!\n'
+    rec += '***'*25
+    print(rec)
+    record(path, rec)

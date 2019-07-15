@@ -7,3 +7,6 @@ from Correction.submit_job import if_cal_finish
 from Correction.submit_job import submit
 from Correction.read_results import Result
 from Correction.read_results import read_all_results
+from Correction.input_generation import InputRPACC
+from Correction.input_generation import InputIext1RPA
+from Correction.input_generation import InputPerRPA

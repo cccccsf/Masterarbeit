@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import os
-import re
 import sys
 import json
 from copy import deepcopy
@@ -9,9 +8,8 @@ from Crystal import Basis_set
 from Crystal import Geometry
 from Crystal import choose_shrink
 from Common.file_processing import mkdir
-from Common.job_path import Job_path
+from Common.job import Job
 from HF1 import if_cal_finish
-
 
 
 def get_jobs(path):
@@ -21,7 +19,7 @@ def get_jobs(path):
     for root, dirs, files in walks:
         if ('hf.out' in files) and ('fort.9' in files):
             new_path = root
-            new_job = Job_path(new_path)
+            new_job = Job(new_path)
             if if_cal_finish(new_job):
                 jobs.append(new_job)
     return jobs
@@ -29,9 +27,9 @@ def get_jobs(path):
 
 class Input(object):
 
-    def __init__(self, hf1_job, name, slab_or_molecule, layer_group, bs_type='default', layertype = 'bilayer', fixed_atoms = []):
-        self.hf1_job = hf1_job     #class Job_path
-        self.hf2_job = self.get_new_path()           #calss Job_path
+    def __init__(self, hf1_job, name, slab_or_molecule, layer_group, bs_type='default', layertype='bilayer', fixed_atoms=[], cal_parameters={}, aos=0):
+        self.hf1_job = hf1_job     # class Job_path
+        self.hf2_job = self.get_new_path()           # class Job_path
         self.job_path = self.hf2_job.path
         self.input_path = os.path.join(self.job_path, 'INPUT')
 
@@ -39,18 +37,25 @@ class Input(object):
         self.slab_or_molecule = slab_or_molecule
         self.layer_group = layer_group
         self.fixed_atoms = fixed_atoms
-        self.geometry = self.get_geometry()         #class geometry
+        self.geometry = self.get_geometry()         # class geometry
         self.lattice_parameter = self.get_lattice_parameter()
+<<<<<<< HEAD
         
         self.bs = []                #class Basis_set
         self.bs_type = 'default'
 
+=======
+
+        self.bs = []                # class Basis_set
+        self.bs_type = bs_type
+        self.aos = aos
+        self.cal_parameters = cal_parameters
+>>>>>>> a683a8af38ab42158c09693bb6677e091cd66cad
 
     def get_new_path(self):
         hf2_job = deepcopy(self.hf1_job)
         hf2_job.reset('method', 'hf2')
-        return  hf2_job
-
+        return hf2_job
 
     def get_geometry(self):
         path = self.hf1_job.root_path
@@ -69,9 +74,8 @@ class Input(object):
             print(e)
             print('Optimized lattice parameter not found!'
                   'Please check out?')
-            sys.exit()	#here need a better way to deal with
+            sys.exit()	# here need a better way to deal with
         return geometry
-
 
     def get_lattice_parameter(self):
         path = self.hf1_job.root_path
@@ -103,14 +107,12 @@ class Input(object):
                   'Please check out?')
             return []
 
-
     def write_basis_info(self):
         mkdir(self.job_path)
         with open(self.input_path, 'w') as f:
             f.write(self.name + '\n')
             f.write(self.slab_or_molecule + '\n')
             f.write(str(self.layer_group) + '\n')
-
 
     def write_lattice_parameter(self):
         with open(self.input_path, 'a') as f:
@@ -119,7 +121,6 @@ class Input(object):
             for a in self.lattice_parameter[1]:
                 f.write(str(a) + ' ')
             f.write('\n')
-
 
     def write_geometry(self):
         self.geometry.write_geometry(self.input_path)
@@ -130,20 +131,23 @@ class Input(object):
         if len(self.bs) == 0:
             self.generate_bs()
         self.bs.write_bs(self.input_path)
+        if self.aos != 0:
+            with open(self.input_path, 'a') as f:
+                for ao in self.aos:
+                    f.write(ao + '\n')
         with open(self.input_path, 'a') as f:
             f.write('99' + ' ' + '0' + '\n')
             f.write('END' + '\n')
 
-
     def generate_bs(self):
-        self.bs = Basis_set(self.geometry.elements, 'HF2', self.bs_type)
-
-
+        if self.aos == 0:
+            self.bs = Basis_set(self.geometry.elements, 'HF2', self.bs_type)
+        else:
+            self.bs = Basis_set(self.geometry.elements, 'HF1', self.bs_type, self.aos)
 
     def guesdual(self):
         guesdual = Guesdual(self.bs)
         guesdual.write_guesdual(self.input_path)
-
 
     def write_cal_info(self):
         shrink = choose_shrink(self.lattice_parameter)
@@ -167,12 +171,10 @@ class Input(object):
             f.write('BIPOSIZE' + '\n')
             f.write('30000000' + '\n')
 
-
     def write_end(self):
         with open(self.input_path, 'a') as f:
             f.write('END' + '\n')
             f.write('END' + '\n')
-
 
     def gen_input(self):
         self.write_basis_info()
@@ -182,7 +184,39 @@ class Input(object):
         self.write_cal_info()
         self.guesdual()
         self.write_end()
+        if len(self.cal_parameters) > 0:
+            self.change_cal_parameters()
 
+    def change_cal_parameters(self):
+        with open(self.input_path, 'r') as f:
+            lines = f.readlines()
+        cal_begin = 0
+        for i in range(len(lines)):
+            if 'SHRINK' in lines[i]:
+                cal_begin = i
+        for key, value in self.cal_parameters.items():
+            loc = self.if_para_in_input(key, lines)
+            values_lines = value.split('\\n')
+            # values_lines = values_lines.split('\\n')
+            len_paras = len(values_lines)
+            if loc > 0:
+                for i in range(len_paras):
+                    lines[loc+1+i] = values_lines[i]+'\n'
+            else:
+                lines.insert(cal_begin, key.upper()+'\n')
+                for i in range(len_paras):
+                    lines.insert(cal_begin+1+i, values_lines[i]+'\n')
+        with open(self.input_path, 'w') as f:
+            f.writelines(lines)
+
+    @staticmethod
+    def if_para_in_input(key, lines):
+        loc = 0
+        for i in range(len(lines)):
+            if key.upper() in lines[i]:
+                loc = i
+                # print(loc)
+        return loc
 
 
 
