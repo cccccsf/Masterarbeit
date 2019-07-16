@@ -9,7 +9,7 @@ from Common import record_data_json
 import HF1
 
 
-def hf1(path):
+def hf1(path, moni):
 
     rec = 'First Hartree Fock Calculation begins.\n'
     rec += '---'*25
@@ -70,7 +70,7 @@ def hf1(path):
         jobs_HF1.append(new_job)
 
     # Submit the calculation job
-    hf1_jobs_finished_new = HF1.submit(new_jobs, nodes, crystal_path)
+    hf1_jobs_finished_new = HF1.submit(new_jobs, nodes, crystal_path, moni)
     hf1_jobs_finished += hf1_jobs_finished_new
 
     # read calculation results

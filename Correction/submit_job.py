@@ -27,7 +27,7 @@ def if_cal_finish(job):
             return True
 
 
-def submit(jobs):
+def submit(jobs, moni):
 
     total_num = len(jobs)
     count = 0
@@ -74,6 +74,7 @@ def submit(jobs):
     j = 0
     while True:
         test_finished(submitted_jobs)
+        moni.update_status()
         if len(finished_jobs) == total_num and len(submitted_jobs) == 0:
             break
         else:
@@ -86,6 +87,7 @@ def submit(jobs):
                     count += 1
                     count_dict[node] += 1
                     submitted_jobs.append(new_job)
+                    moni.insert_new_job(new_job, out)
                     rec = new_job.path + '\n'
                     rec += new_job.method + '\n'
                     rec += 'job submitted.'
@@ -94,9 +96,9 @@ def submit(jobs):
                     record(new_job.root_path, rec)
                     print(rec)
                 else:
-                    time.sleep(0.001)
-                    # time.sleep(500)
-                    test_calculation(j, jobs, finished_jobs)
+                    # time.sleep(0.001)
+                    time.sleep(500)
+                    # test_calculation(j, jobs, finished_jobs)
                     j += 1
                     if j > 8:
                         rec = 'noting changes.\n'

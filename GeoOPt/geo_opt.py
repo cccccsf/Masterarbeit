@@ -11,7 +11,7 @@ import GeoOPt
 from GeoOPt import if_cal_finish
 
 
-def geo_opt(path):
+def geo_opt(path, moni):
 
     rec = 'Geometry Optimization begins.'
     print(rec)
@@ -132,7 +132,7 @@ def geo_opt(path):
         jobs.append(job)
     # Copy files and Submit the calculation job above
     new_jobs_finished = GeoOPt.submit(
-        new_jobs, nodes, crystal_path)
+        new_jobs, nodes, crystal_path, moni)
     jobs_finished += new_jobs_finished
 
     # # Select the optimal distance of each x point

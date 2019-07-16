@@ -5,7 +5,7 @@ from Common import record
 from Common import ReadIni
 
 
-def localization(path):
+def localization(path, moni):
 
     rec = 'Localization begins.\n'
     rec += '---'*25
@@ -37,7 +37,7 @@ def localization(path):
 
     # submit all jobs
     if len(loc_jobs) > 0:
-        loc_finished_job = Localization.submit(loc_jobs)
+        loc_finished_job = Localization.submit(loc_jobs, moni)
 
     rec = 'Localization finished!\n'
     rec += '***'*25

@@ -9,7 +9,7 @@ from Common import record_data_json
 from Common import Job
 
 
-def lmp2(path):
+def lmp2(path, moni):
 
     rec = 'LMP2 Calculation begins.\n'
     rec += '---'*25
@@ -64,7 +64,7 @@ def lmp2(path):
 
     # submit the jobs
     if len(lmp2_jobs) > 0:
-        new_finished_jobs = LMP2.submit(lmp2_jobs)
+        new_finished_jobs = LMP2.submit(lmp2_jobs, moni)
         lmp2_jobs_finished += new_finished_jobs
     # read calculation results
     # if len(lmp2_jobs_finished) > 0:

@@ -7,7 +7,7 @@ from HF1 import read_init_dis
 from Common import record_data_json
 
 
-def hf2(path):
+def hf2(path, moni):
 
     rec = 'Second Hartree Fock Calculation begins.\n'
     rec += '---'*25
@@ -84,7 +84,7 @@ def hf2(path):
 
     # submit the jobs
     if len(hf2_jobs) > 0:
-        new_finished_jobs = HF2.submit(hf2_jobs)
+        new_finished_jobs = HF2.submit(hf2_jobs, moni)
         hf2_jobs_finished += new_finished_jobs
 
     # read calculation results

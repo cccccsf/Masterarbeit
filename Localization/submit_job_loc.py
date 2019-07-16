@@ -111,7 +111,7 @@ def test_all_loc_finished(job_dirs):
     return True
 
 
-def submit(jobs):
+def submit(jobs, moni):
 
     jobs_len = len(jobs)
     max_paralell = 8
@@ -143,6 +143,7 @@ def submit(jobs):
     j = 0
     while True:
         test_finished(submitted_jobs)
+        moni.update_status()
         if len(finished_jobs) == jobs_len and len(submitted_jobs) == 0:
             break
         else:
@@ -152,6 +153,7 @@ def submit(jobs):
                 out = submit_job(new_job, 'loc')
                 count += 1
                 submitted_jobs.append(new_job)
+                moni.insert_new_job(new_job, out)
                 new_job.method = 'loc'
                 rec = str(new_job) + '\n'
                 rec += 'job submitted.'
@@ -163,7 +165,7 @@ def submit(jobs):
                 time.sleep(500)
                 # time.sleep(3)
                 j += 1
-                test_calculation(j, jobs, submitted_jobs, finished_jobs)    # test function
+                # test_calculation(j, jobs, submitted_jobs, finished_jobs)    # test function
                 if j > 10:
                     rec = 'noting changes.'
                     record(submitted_jobs[0].root_path, rec)
