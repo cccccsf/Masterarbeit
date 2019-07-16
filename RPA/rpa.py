@@ -6,7 +6,7 @@ from Common import ReadIni
 from Common import Job
 
 
-def rpa(path):
+def rpa(path, moni):
 
     rec = 'LRPA begins.\n'
     rec += '---'*25
@@ -62,7 +62,7 @@ def rpa(path):
 
     # submit the jobs
     if len(rpa_jobs) > 0:
-        new_finished_jobs = RPA.submit(rpa_jobs)
+        new_finished_jobs = RPA.submit(rpa_jobs, moni)
         rpa_jobs_finished += new_finished_jobs
     # read calculation results
     if len(rpa_jobs_finished) > 0:

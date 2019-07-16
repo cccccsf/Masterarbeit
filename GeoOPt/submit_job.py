@@ -119,7 +119,7 @@ def if_cal_finish(job):
                 return True
 
 
-def submit(jobs, nodes, crystal_path):
+def submit(jobs, nodes, crystal_path, moni):
     job_numbers = len(jobs)
     max_paralell = 5
     count = 0
@@ -140,6 +140,7 @@ def submit(jobs, nodes, crystal_path):
             rename_file(job_init.path, 'geo_opt.out')
             out = submit_job(job_init, 'geo_opt')
             submitted_jobs.append(job_init)
+            moni.insert_new_job(job_init, out)
             rec = job_init.path
             print(rec)
             rec += '\n'
@@ -149,6 +150,7 @@ def submit(jobs, nodes, crystal_path):
             record(job_init.root_path, rec)
             r = 0
             while True:
+                moni.update_status()
                 if if_cal_finish(job_init):
                     rec = job_init.path
                     rec += '\n'
@@ -201,6 +203,7 @@ def submit(jobs, nodes, crystal_path):
         j = 0
         while True:
             test_finished(submitted_jobs)
+            moni.update_status()
             if len(finished_jobs) == job_numbers and len(submitted_jobs) == 0:
                 break
             else:
@@ -215,6 +218,7 @@ def submit(jobs, nodes, crystal_path):
                     out = submit_job(jobs[i], 'geo_opt')
                     count += 1
                     submitted_jobs.append(jobs[i])
+                    moni.insert_new_job(jobs[i], out)
                     rec = jobs[i].path + '\n'
                     rec += 'job submitted.'
                     rec += '\n' + out + '\n'
@@ -224,7 +228,7 @@ def submit(jobs, nodes, crystal_path):
                 else:
                     time.sleep(500)
                     j += 1
-                    j = test_calculation(j, submitted_jobs)     # test function
+                    # j = test_calculation(j, submitted_jobs)     # test function
                     if j > 20:
                         rec = 'noting changes.\n'
                         rec += '---'*25

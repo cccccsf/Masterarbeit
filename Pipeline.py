@@ -12,6 +12,7 @@ import RPA
 import Cluster
 import Correction
 import Results
+import Monitor
 
 
 def end_programm(path):
@@ -29,19 +30,20 @@ def end_programm(path):
 
 
 def pipeline(path, start, end):
+    moni = Monitor.Monitor(path)
     anchor = start
     while anchor < end:
         # print(anchor, end)
         if anchor == 0:
-            GeoOPt.geo_opt(path)
+            GeoOPt.geo_opt(path, moni)
         elif anchor == 1:
             HF1.hf1(path)
         elif anchor == 2:
             Localization.localization(path)
         elif anchor == 3:
-            HF2.hf2(path)
+            HF2.hf2(path, moni)
         elif anchor == 4:
-            LMP2.lmp2(path)
+            LMP2.lmp2(path, moni)
             if if_skip_rpa() == 1:
                 anchor += 1
         elif anchor == 5:

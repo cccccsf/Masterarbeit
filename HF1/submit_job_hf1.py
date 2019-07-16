@@ -140,7 +140,7 @@ def if_cal_finish(job):
         return False
 
 
-def submit(jobs, nodes, crystal_path):
+def submit(jobs, nodes, crystal_path, moni):
     job_num = len(jobs)
     max_paralell = 5
     count = 0
@@ -182,6 +182,7 @@ def submit(jobs, nodes, crystal_path):
             out = submit_job(job, 'hf')
             count += 1
             submitted_jobs.append(job)
+            moni.insert_new_job(job, out)
             rec = str(job)
             print(rec)
             rec += '\n'
@@ -195,6 +196,7 @@ def submit(jobs, nodes, crystal_path):
     r = 0
     while True:
         test_finished(submitted_jobs)      # test function
+        moni.update_status()
         if len(submitted_jobs) == 0:
             break
         else:
@@ -210,6 +212,7 @@ def submit(jobs, nodes, crystal_path):
     j = 0
     while True:
         test_finished(submitted_jobs)
+        moni.update_status()
         if len(finished_jobs) == job_num and len(submitted_jobs) == 0:
             break
         else:
@@ -224,6 +227,7 @@ def submit(jobs, nodes, crystal_path):
                 out = submit_job(new_job, 'hf')
                 count += 1
                 submitted_jobs.append(new_job)
+                moni.insert_new_job(new_job, out)
                 rec = str(new_job) + '\n'
                 rec += 'job submitted.'
                 rec += '\n' + out + '\n'
@@ -234,7 +238,7 @@ def submit(jobs, nodes, crystal_path):
                 # time.sleep(10)
                 time.sleep(500)
                 j += 1
-                test_calculation(j, jobs, submitted_jobs, finished_jobs)    # test function
+                # test_calculation(j, jobs, submitted_jobs, finished_jobs)    # test function
                 if j > 15:
                     rec = 'noting changes.\n'
                     rec += '---'*25

@@ -108,7 +108,7 @@ def if_cal_finish(job):
                 return True
 
 
-def submit(jobs):
+def submit(jobs, moni):
     job_num = len(jobs)
     max_paralell = 5
     count = 0
@@ -140,6 +140,7 @@ def submit(jobs):
     j = 0
     while True:
         test_finished(submitted_jobs)
+        moni.update_status()
         if len(finished_jobs) == job_num and len(submitted_jobs) == 0:
             break
         else:
@@ -150,6 +151,7 @@ def submit(jobs):
                 out = submit_job(new_job, 'hf2')
                 count += 1
                 submitted_jobs.append(new_job)
+                moni.insert_new_job(new_job, out)
                 rec = str(new_job) + '\n'
                 rec += 'job submitted.'
                 rec += '\n' + out + '\n'
@@ -157,8 +159,8 @@ def submit(jobs):
                 record(new_job.root_path, rec)
                 print(rec)
             else:
-                time.sleep(500)
-                # time.sleep(2)
+                # time.sleep(500)
+                time.sleep(200)
                 j += 1
                 # test_calculation(j, jobs, submitted_jobs, finished_jobs)    # test function
                 if j > 15:

@@ -21,7 +21,7 @@ yes_or_no = {
     'no': 0}
 
 
-def correction(path):
+def correction(path, moni):
 
     rec = 'Correction begins.\n'
     rec += '---'*25
@@ -103,7 +103,7 @@ def correction(path):
 
     # submit jobs
     if len(correction_jobs) > 0:
-        new_finished_jobs = Correction.submit(correction_jobs)
+        new_finished_jobs = Correction.submit(correction_jobs, moni)
         correction_jobs_finished += new_finished_jobs
     # read and record all results
     if len(correction_jobs_finished) != 0:

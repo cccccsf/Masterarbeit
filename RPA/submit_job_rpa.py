@@ -60,7 +60,7 @@ def if_cal_finish(job):
             return False
 
 
-def submit(jobs):
+def submit(jobs, moni):
     job_num = len(jobs)
     count = 0
     submitted_jobs = []
@@ -113,6 +113,7 @@ def submit(jobs):
     j = 0
     while True:
         test_finished(submitted_jobs)
+        moni.update_status()
         if len(finished_jobs) == job_num and len(submitted_jobs) == 0:
             break
         else:
@@ -126,6 +127,7 @@ def submit(jobs):
                     count += 1
                     count_dict[node] += 1
                     submitted_jobs.append(new_job)
+                    moni.insert_new_job(new_job, out)
                     rec = str(new_job) + '\n'
                     rec += 'job submitted.'
                     rec += '\n' + out + '\n'
