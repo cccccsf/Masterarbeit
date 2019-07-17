@@ -135,6 +135,12 @@ def submit(jobs, moni):
         if if_cal_finish(job):
             finished_jobs.append(job)
             jobs.remove(job)
+    # test if there is some jobs which are already submitted but not finished
+    running_jobs = moni.get_running_jobs()
+    for job in jobs[:]:
+        if job in running_jobs:
+            submitted_jobs.append(job)
+            jobs.remove(job)
 
     # submit and detect all jobs
     j = 0

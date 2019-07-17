@@ -33,22 +33,26 @@ def results(path):
     iext1_rpa_dict = {}
     bas_rpa_iext1_dict = {}
     for Res in correction_results:
-        if Res.step == 'rpa_cc':
+        # if Res.step == 'rpa_cc':
+        if '_cc' in Res.step:
             method_error_jobs.append(Res)
             if Res.bs not in method_error_dict:
                 method_error_dict[Res.bs] = {Res.coord: Res}
             else:
                 method_error_dict[Res.bs][Res.coord] = Res
-        elif Res.step == 'iext1_rpa':
-            if Res.bs not in iext1_rpa_dict:
-                iext1_rpa_dict[Res.bs] = {Res.coord: Res}
-            else:
-                iext1_rpa_dict[Res.bs][Res.coord] = Res
-        elif Res.step == 'bas_rpa_iext1':
+        # elif Res.step == 'bas_rpa_iext1':
+        elif 'bas_' in Res.step:
             if Res.bs not in bas_rpa_iext1_dict:
                 bas_rpa_iext1_dict[Res.bs] = {Res.coord: Res}
             else:
                 bas_rpa_iext1_dict[Res.bs][Res.coord] = Res
+        # elif Res.step == 'iext1_rpa':
+        elif Res.step == 'iext1_rpa' or Res.step == 'iext1_lmp2':
+            if Res.bs not in iext1_rpa_dict:
+                iext1_rpa_dict[Res.bs] = {Res.coord: Res}
+            else:
+                iext1_rpa_dict[Res.bs][Res.coord] = Res
+
     coord_set = {job.coord for job in method_error_jobs}
     coord_list = list(coord_set)
 

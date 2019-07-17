@@ -25,7 +25,7 @@ def is_number(s):
 
 class Result(object):
 
-    def __init__(self, job, unit_type='Hartree'):
+    def __init__(self, job, unit_type='Hartree', ll='LMP2'):
         self.job = job
         self.path = job.path
         self.method = job.method
@@ -33,13 +33,19 @@ class Result(object):
         self.bs = self.get_bs_type()
         self.energy, self.unit = None, None
         self.unit_type = unit_type
+        self.ll = ll
 
     def get_method_error(self):
         out_file = os.path.join(self.path, self.job.method) + '.out'
         with open(out_file, 'rb') as f:
             f.seek(-20000, 2)
             text = f.read().decode('utf-8')
-        pattern = 'DELTA_DE_LCCSDT_RPA.*?\n'
+        if self.ll.upper() == 'LDRCCD':
+            pattern = 'DELTA_DE_LCCSDT_RPA.*?\n'
+        elif self.ll.upper() == 'LMP2':
+            pattern = 'DELTA_DE_LCCSDT_LMP2.*?\n'
+        elif 'SCS' in self.ll.upper():
+            pattern = 'DELTA_DE_LCCSDT_SCSLMP2.*?\n'
         energy = re.search(pattern, text)
         if energy is not None:
             energy = energy.group(0)
@@ -81,7 +87,12 @@ class Result(object):
         with open(out_file, 'rb') as f:
             f.seek(-20000, 2)
             text = f.read().decode('utf-8')
-        pattern = 'DE_LRPA.*?\n'
+        if self.ll.upper() == 'LDRCCD':
+            pattern = 'DE_LRPA.*?\n'
+        elif self.ll.upper() == 'LMP2':
+            pattern = 'DE_LMP2.*?\n'
+        elif 'SCS' in self.ll.upper():
+            pattern = 'DE_SCSLMP2.*?\n'
         unit = None
         energy = re.search(pattern, text)
         if energy is not None:
@@ -106,7 +117,7 @@ class Result(object):
         return energy, unit
 
     def get_energy(self):
-        if self.step == 'rpa_cc':
+        if '_cc' in self.step:
             self.energy, self.unit = self.get_method_error()
         else:
             self.energy, self.unit = self.get_e_iext1_rpa()
@@ -138,10 +149,10 @@ class Result(object):
             self.unit = self.unit_type
 
 
-def read_all_results(jobs, init_distance=0):
+def read_all_results(jobs, init_distance=0, ll='LMP2'):
     Results = []
     for job in jobs:
-        Res = Result(job)
+        Res = Result(job, ll=ll)
         Res.get_energy()
         # print(job)
         # print(Res.energy, Res.unit)
@@ -250,3 +261,29 @@ def creat_csv_file(csv_file):
     with open(csv_file, 'w', newline='') as f:
         f_csv = csv.writer(f)
         f_csv.writerow(headers)
+
+
+if __name__ == '__main__':
+    from Common import Job
+    import Correction
+
+    def test_if_cal_finish():
+        path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\test_may\cluster\x_0\z_-0.106'
+        job = Job(path)
+        # job.method = 'avdz_iext1_lmp2'
+        job.method = 'avdz_lmp2_cc'
+        finished = Correction.if_cal_finish(job)
+        print(finished)
+
+    def test_read_results():
+        path = r'C:\Users\ccccc\PycharmProjects\Layer_Structure_Caculation\test_may\cluster\x_0\z_-0.106'
+        job = Job(path)
+        job.method = 'avdz_iext1_lmp2'
+        Res = Correction.Result(job, ll='lmp2')
+        Res.get_energy()
+        print(Res.energy, Res.unit)
+        Res.unit_transform()
+        print(Res.energy, Res.unit)
+
+    # test_if_cal_finish()
+    test_read_results()

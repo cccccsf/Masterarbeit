@@ -2,6 +2,7 @@
 import os
 import json
 import subprocess
+from Common import Job
 
 
 class Monitor(object):
@@ -97,6 +98,16 @@ class Monitor(object):
             data = {}
             with open(self.status_file, 'w') as f:
                 json.dump(data, f, indent=4)
+
+    def get_running_jobs(self):
+        running_jobs = []
+        with open(self.status_file, 'r') as f:
+            data = json.load(f)
+        for job in data.keys():
+            if data[job]['status'] == 'running':
+                curr_job = Job(data[job]['path'])
+                running_jobs.append(curr_job)
+        return running_jobs
 
 
 if __name__ == '__main__':

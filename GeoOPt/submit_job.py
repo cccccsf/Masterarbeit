@@ -180,6 +180,12 @@ def submit(jobs, nodes, crystal_path, moni):
             # print('Job already finished: ', job)
             finished_jobs.append(job)
             jobs.remove(job)
+    # test if there is some jobs which are already submitted but not finished
+    running_jobs = moni.get_running_jobs()
+    for job in jobs[:]:
+        if job in running_jobs:
+            submitted_jobs.append(job)
+            jobs.remove(job)
 
     def test_finished(paths):
         nonlocal count    # debug: UnboundLocalError: local variable 'count' referenced before assignment

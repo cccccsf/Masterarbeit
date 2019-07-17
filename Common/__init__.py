@@ -15,3 +15,4 @@ from Common.submit_job import submit_job
 from Common.unit_transform import unit_transform
 from Common.is_number_func import is_number
 from Common.cal_layer_energy_func import cal_layer_energy
+from Common.submit_job import submit

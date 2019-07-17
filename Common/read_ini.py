@@ -398,7 +398,7 @@ class ReadIni(object):
         try:
             self.coord = self.cfg.get('Cluster', 'coord')
             assert isinstance(self.coord, str)
-            if self.coord.lower() == 'false':
+            if self.coord.lower() == 'false' or self.coord == '0':
                 self.coord = False
             else:
                 self.coord = True
@@ -418,7 +418,7 @@ class ReadIni(object):
         try:
             self.add_h = self.cfg.get('Cluster', 'add_h')
             assert isinstance(self.add_h, str)
-            if self.add_h.lower() == 'false' or self.add_h == '':
+            if self.add_h.lower() == 'false' or self.add_h == '' or self.add_h == '0':
                 self.add_h = False
             else:
                 self.add_h = True
@@ -430,7 +430,7 @@ class ReadIni(object):
         try:
             self.out_layer_number = self.cfg.get('Cluster', 'output_with_layer_numer')
             assert isinstance(self.out_layer_number, str)
-            if self.out_layer_number.lower() == 'false' or self.out_layer_number == '':
+            if self.out_layer_number.lower() == 'false' or self.out_layer_number == '' or self.out_layer_number == '0':
                 self.out_layer_number = False
             else:
                 self.out_layer_number = True

@@ -65,7 +65,7 @@ class Input(object):
                 geometry = Geometry(json_form=geometry)
         except KeyError as e:
             print(e)
-            print('Optimized lattice parameter not found!'
+            print('Geometry not found!'
                   'Please check out?')
             sys.exit()	# here need a better way to deal with
         return geometry

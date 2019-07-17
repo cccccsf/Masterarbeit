@@ -36,6 +36,7 @@ def correction(path, moni):
     Ini = ReadIni()
     project_name, *_ = Ini.get_basic_info()
     nodes, memorys, bs, molpro_path, molpro_key, atoms = Ini.get_correction()
+    ll = Ini.ll
     record_data_json(path, 'memorys', memorys, section='correction')
     record_data_json(path, 'nodes', nodes, section='correction')
 
@@ -67,30 +68,39 @@ def correction(path, moni):
             new_job.parameter['memory'] = memorys[inp]
             new_job.parameter['original_input_file'] = inputs_dict[inp]
             if not Correction.if_cal_finish(new_job):
-                if not os.path.exists(inputs_dict[inp]):
+                try:
                     print(str(new_job))
-                    print('{} file not found.'.format(inp))
-                    print('Program will generate the input automatically.')
-                    print('---'*25)
-                    if new_job.method.startswith('per'):
-                        Inp = Correction.InputPerRPA(new_job, project_name, memorys[new_job.method], uc_atoms=atoms)
-                        Inp.gen_inp()
-                    elif new_job.method.endswith('rpa_cc'):
-                        Inp = Correction.InputRPACC(new_job, project_name, memorys[new_job.method], uc_atoms=atoms)
-                        Inp.gen_inp()
-                    elif new_job.method.endswith('iext1_rpa'):
-                        Inp = Correction.InputIext1RPA(new_job, project_name, memorys[new_job.method], uc_atoms=atoms)
-                        Inp.gen_inp()
-                else:
-                    if new_job.method.startswith('per'):
-                        inp_name = new_job.method + '.inp'
-                        MB = Correction.Molpro_Bs(new_job, inp_name)
-                        MB.get_molpro_bs()
-                        MB.write_bs()
+                    if not os.path.exists(inputs_dict[inp]):
+                        print('{} file not found.'.format(inp))
+                        print('Program will generate the input automatically.')
+                        if new_job.method.startswith('per'):
+                            Inp = Correction.InputPerRPA(new_job, project_name, memorys[new_job.method], uc_atoms=atoms, ll=ll)
+                            Inp.gen_inp()
+                        # elif new_job.method.endswith('rpa_cc'):
+                        elif '_cc' in new_job.method:
+                            Inp = Correction.InputRPACC(new_job, project_name, memorys[new_job.method], uc_atoms=atoms, ll=ll)
+                            Inp.gen_inp()
+                        # elif new_job.method.endswith('iext1_rpa'):
+                        elif 'z_iext1' in new_job.method:
+                            Inp = Correction.InputIext1RPA(new_job, project_name, memorys[new_job.method], uc_atoms=atoms, ll=ll)
+                            Inp.gen_inp()
+
+                        # sys.exit()    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!test
                     else:
-                        Correction.generation_input(new_job)
-                correction_jobs.append(new_job)
-                correction_jobs_dict[inp].append(new_job)
+                        if new_job.method.startswith('per'):
+                            inp_name = new_job.method + '.inp'
+                            MB = Correction.Molpro_Bs(new_job, inp_name)
+                            MB.get_molpro_bs()
+                            MB.write_bs()
+                        else:
+                            Correction.generation_input(new_job)
+                    correction_jobs.append(new_job)
+                    correction_jobs_dict[inp].append(new_job)
+                    print('Input generated.')
+                except Exception as e:
+                    print(e)
+                    print('Input faied to generate..')
+                print('---'*25)
             else:
                 new_job.status = 'finished'
                 correction_jobs_finished.append(new_job)
@@ -107,7 +117,7 @@ def correction(path, moni):
         correction_jobs_finished += new_finished_jobs
     # read and record all results
     if len(correction_jobs_finished) != 0:
-        Correction.read_all_results(correction_jobs_finished, init_distance=init_dist)
+        Correction.read_all_results(correction_jobs_finished, init_distance=init_dist, ll=ll)
 
     rec = 'Correction finished!\n'
     rec += '***'*25

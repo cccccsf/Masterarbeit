@@ -10,13 +10,14 @@ from Data import periodic_table_rev
 
 class InputRPACC(object):
 
-    def __init__(self, job, name, memory, uc_atoms=(), basis_set=''):
+    def __init__(self, job, name, memory, uc_atoms=(), basis_set='', ll='LMP2'):
         self.job = job
         self.path = job.path
         self.method = job.method
         self.name = name
         self.memory = memory
         self.input_file = self.get_input_file()
+        # print(self.input_file)
         self.geo_file = self.get_geo_file()
         self.bs = basis_set
         self.bs = self.get_bs()
@@ -24,6 +25,15 @@ class InputRPACC(object):
         self.atom1, self.atom2 = uc_atoms
         self.cluster = self.get_cluster()
         self.elements = self.get_elements()
+        self.ll = ll
+        self.ll_type = self.get_ll_type()
+
+    def get_ll_type(self):
+        if self.ll.upper() == 'LDRCCD':
+            ll_type = 1
+        else:
+            ll_type = 0
+        return ll_type
 
     def get_input_file(self):
         return os.path.join(self.path, self.method+'.inp')
@@ -112,26 +122,28 @@ class InputRPACC(object):
             # HF
             f.write('{df-hf,basis=%s;accu,12}\n' % self.df_bs)
             f.write('edim_hf(i)=energr\n')
-            # lrpa
-            f.write('{df-lrpa,basis=%s\n' % self.df_bs)
-            f.write('local,chgfrac=0.95\n')
             at1ucell = ''
             for a in self.atom1:
                 at1ucell += a + ','
-            f.write('AT1UCELL,' + at1ucell[:-1] + '\n')
             at2ucell = ''
             for a in self.atom2:
                 at2ucell += a + ','
-            f.write('AT2UCELL,' + at2ucell[:-1] + '\n')
-            f.write('}\n')
-            f.write('edim_lmp2(i)=emp2-edim_hf(i)\n')
-            f.write('edim_lrpa(i)=energy-edim_hf(i)\n')
+            if self.ll_type == 1:
+                # lrpa
+                f.write('{df-lrpa,basis=%s\n' % self.df_bs)
+                f.write('local,chgfrac=0.95\n')
+                f.write('AT1UCELL,' + at1ucell[:-1] + '\n')
+                f.write('AT2UCELL,' + at2ucell[:-1] + '\n')
+                f.write('}\n')
+                f.write('edim_lrpa(i)=energy-edim_hf(i)\n')
             # lccsd(t)
             f.write('{df-lccsd(t),basis=%s\n' % self.df_bs)
             f.write('local,chgfrac=0.95\n')
             f.write('AT1UCELL,' + at1ucell[:-1] + '\n')
             f.write('AT2UCELL,' + at2ucell[:-1] + '\n')
             f.write('}\n')
+            f.write('edim_lmp2(i)=emp2-edim_hf(i)\n')
+            f.write('edim_scslmp2(i)=emp2_scs-edim_hf(i)\n')
             f.write('edim_lccsdt(i)=energy-edim_hf(i)\n')
             f.write('\n')
 
@@ -171,9 +183,6 @@ class InputRPACC(object):
             # HF
             f.write('{df-hf,basis=%s;accu,12}\n' % self.df_bs)
             f.write('e{}_hf(i)=energr\n'.format(layer))
-            # lrpa
-            f.write('{df-lrpa,basis=%s\n' % self.df_bs)
-            f.write('local,chgfrac=0.95\n')
             at1ucell = 'AT1UCELL,'
             for a in self.atom1:
                 if self.cluster[int(a)-1].layer != layer:
@@ -182,17 +191,22 @@ class InputRPACC(object):
             for a in self.atom2:
                 if self.cluster[int(a)-1].layer != layer:
                     at2ucell += a + ','
-            f.write(at1ucell[:-1] + '\n')
-            f.write(at2ucell[:-1] + '\n')
-            f.write('}\n')
-            f.write('e{}_lrpa(i)=energy-e{}_hf(i)\n'.format(layer, layer))
-            f.write('e{}_lmp2(i)=emp2-e{}_hf(i)\n'.format(layer, layer))
+            if self.ll_type == 1:
+                # lrpa
+                f.write('{df-lrpa,basis=%s\n' % self.df_bs)
+                f.write('local,chgfrac=0.95\n')
+                f.write(at1ucell[:-1] + '\n')
+                f.write(at2ucell[:-1] + '\n')
+                f.write('}\n')
+                f.write('e{}_lrpa(i)=energy-e{}_hf(i)\n'.format(layer, layer))
             # lccsd(t)
             f.write('{df-lccsd(t),basis=%s\n' % self.df_bs)
             f.write('local,chgfrac=0.95\n')
             f.write(at1ucell[:-1] + '\n')
             f.write(at2ucell[:-1] + '\n')
             f.write('}\n')
+            f.write('e{}_lmp2(i)=emp2-e{}_hf(i)\n'.format(layer, layer))
+            f.write('e{}_scslmp2(i)=emp2_scs-e{}_hf(i)\n'.format(layer, layer))
             f.write('e{}_lccsdt(i)=energy-e{}_hf(i)\n'.format(layer, layer))
             f.write('\n')
 
@@ -201,9 +215,14 @@ class InputRPACC(object):
             f.write('\n')
             f.write('de_hf=(edim_hf-e1_hf-e2_hf)*tokcal\n')
             f.write('de_lmp2=(edim_lmp2-e1_lmp2-e2_lmp2)*tokcal\n')
-            f.write('de_lrpa=(edim_lrpa-e1_lrpa-e2_lrpa)*tokcal\n')
+            f.write('de_scslmp2=(edim_scslmp2-e1_scslmp2-e2_scslmp2)*tokcal\n')
+            if self.ll_type == 1:
+                f.write('de_lrpa=(edim_lrpa-e1_lrpa-e2_lrpa)*tokcal\n')
             f.write('de_lccsdt=(edim_lccsdt-e1_lccsdt-e2_lccsdt)*tokcal\n')
-            f.write('delta_de_lccsdt_rpa=de_lccsdt-de_lrpa')
+            if self.ll_type == 1:
+                f.write('delta_de_lccsdt_rpa=de_lccsdt-de_lrpa')
+            f.write('delta_de_lccsdt_lmp2=de_lccsdt-de_lmp2\n')
+            f.write('delta_de_lccsdt_scslmp2=de_lccsdt-de_scslmp2\n')
 
     def gen_inp(self):
         self.write_header()
@@ -218,13 +237,16 @@ class InputRPACC(object):
 
 class InputIext1RPA(InputRPACC):
 
-    def __init__(self, job, name, memory, uc_atoms=(), basis_set=''):
-        super(InputIext1RPA, self).__init__(job, name, memory, uc_atoms, basis_set)
+    def __init__(self, job, name, memory, uc_atoms=(), basis_set='', ll='LMP2'):
+        super(InputIext1RPA, self).__init__(job, name, memory, uc_atoms, basis_set,ll)
 
     def write_loc(self):
         with open(self.input_file, 'a') as f:
             f.write('dfit,F4EXTSIZE=700,F3EXTSIZE=1100\n')
-            f.write('local,use_dist=0,keepcls=1,iext=1,idist=0,loc_method=ibo,ivdist=0,interact=1,interpair=1,how_treatclswk=5\n')
+            if self.ll_type == 1:
+                f.write('local,use_dist=0,keepcls=1,iext=1,idist=0,loc_method=ibo,ivdist=0,interact=1,interpair=1,how_treatclswk=5\n')
+            else:
+                f.write('local,use_dist=0,keepcls=1,iext=1,idist=0,loc_method=ibo,ivdist=0,interact=1,interpair=1\n')
             f.write('\n')
 
     def write_bilayer(self):
@@ -232,8 +254,12 @@ class InputIext1RPA(InputRPACC):
             # HF
             f.write('{df-hf,basis=%s;accu,12}\n' % self.df_bs)
             f.write('edim_hf(i)=energr\n')
-            # lrpa
-            f.write('{df-lrpa,basis=%s\n' % self.df_bs)
+            if self.ll_type == 1:
+                # lrpa
+                f.write('{df-lrpa,basis=%s\n' % self.df_bs)
+            else:
+                # lmp2
+                f.write('{df-lmp2,basis=%s\n' % self.df_bs)
             f.write('local,chgfrac=0.95\n')
             at1ucell = ''
             for a in self.atom1:
@@ -245,7 +271,9 @@ class InputIext1RPA(InputRPACC):
             f.write('AT2UCELL,' + at2ucell[:-1] + '\n')
             f.write('}\n')
             f.write('edim_lmp2(i)=emp2-edim_hf(i)\n')
-            f.write('edim_lrpa(i)=energy-edim_hf(i)\n')
+            f.write('edim_scslmp2(i)=emp2_scs-edim_hf(i)\n')
+            if self.ll_type == 1:
+                f.write('edim_lrpa(i)=energy-edim_hf(i)\n')
             f.write('\n')
 
     def write_layer(self, layer):
@@ -259,8 +287,12 @@ class InputIext1RPA(InputRPACC):
             # HF
             f.write('{df-hf,basis=%s;accu,12}\n' % self.df_bs)
             f.write('e{}_hf(i)=energr\n'.format(layer))
-            # lrpa
-            f.write('{df-lrpa,basis=%s\n' % self.df_bs)
+            if self.ll_type == 1:
+                # lrpa
+                f.write('{df-lrpa,basis=%s\n' % self.df_bs)
+            else:
+                # lmp2
+                f.write('{df-lmp2,basis=%s\n' % self.df_bs)
             f.write('local,chgfrac=0.95\n')
             at1ucell = 'AT1UCELL,'
             for a in self.atom1:
@@ -273,8 +305,10 @@ class InputIext1RPA(InputRPACC):
             f.write(at1ucell[:-1] + '\n')
             f.write(at2ucell[:-1] + '\n')
             f.write('}\n')
-            f.write('e{}_lrpa(i)=energy-e{}_hf(i)\n'.format(layer, layer))
+            if self.ll_type == 1:
+                f.write('e{}_lrpa(i)=energy-e{}_hf(i)\n'.format(layer, layer))
             f.write('e{}_lmp2(i)=emp2-e{}_hf(i)\n'.format(layer, layer))
+            f.write('e{}_scslmp2(i)=emp2_scs-e{}_hf(i)\n'.format(layer, layer))
             f.write('\n')
 
     def write_calculation(self):
@@ -282,13 +316,15 @@ class InputIext1RPA(InputRPACC):
             f.write('\n')
             f.write('de_hf=(edim_hf-e1_hf-e2_hf)*tokcal\n')
             f.write('de_lmp2=(edim_lmp2-e1_lmp2-e2_lmp2)*tokcal\n')
-            f.write('de_lrpa=(edim_lrpa-e1_lrpa-e2_lrpa)*tokcal\n')
+            f.write('de_scslmp2=(edim_scslmp2-e1_scslmp2-e2_scslmp2)*tokcal\n')
+            if self.ll_type == 1:
+                f.write('de_lrpa=(edim_lrpa-e1_lrpa-e2_lrpa)*tokcal\n')
 
 
 class InputPerRPA(InputIext1RPA):
 
-    def __init__(self, job, name, memory, uc_atoms=(), basis_set=''):
-        super(InputPerRPA, self).__init__(job, name, memory, uc_atoms, basis_set)
+    def __init__(self, job, name, memory, uc_atoms=(), basis_set='', ll='LMP2'):
+        super(InputPerRPA, self).__init__(job, name, memory, uc_atoms, basis_set, ll)
         self.hf2_bs = self.get_hf2_bs()
         self.bs_dict = self.creat_bs_dict()
         self.molpro_form = self.transfer_to_molpro_form()
@@ -392,7 +428,10 @@ class InputPerRPA(InputIext1RPA):
     def write_loc(self):
         with open(self.input_file, 'a') as f:
             f.write('dfit,F4EXTSIZE=700,F3EXTSIZE=1100\n')
-            f.write('local,use_dist=0,keepcls=1,idist=0,loc_method=ibo,ivdist=0,interact=1,interpair=1,how_treatclswk=5\n')
+            if self.ll_type == 1:
+                f.write('local,use_dist=0,keepcls=1,idist=0,loc_method=ibo,ivdist=0,interact=1,interpair=1,how_treatclswk=5\n')
+            else:
+                f.write('local,use_dist=0,keepcls=1,idist=0,loc_method=ibo,ivdist=0,interact=1,interpair=1\n')
             f.write('cfit,invsqrt=1,BASIS_MP2=avtz/mp2fit,BASIS_CCSD=avtz/mp2fit\n')
             f.write('\n')
 
