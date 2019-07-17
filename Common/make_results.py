@@ -15,7 +15,15 @@ def creat_json_file(path):
 
 
 def record_data_json(path, item, value, section='basis'):
-    json_file = os.path.join(path, 'results.json')
+    """
+    record corresponding parameters for each calculation
+    :param path:
+    :param item:
+    :param value:
+    :param section:
+    :return:
+    """
+    json_file = os.path.join(path, 'parameters.json')
     try:
         with open(json_file, 'r') as f:
             data = json.load(f)
