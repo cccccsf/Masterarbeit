@@ -1,10 +1,9 @@
 #!/usr/bin/python3
 
-from copy import deepcopy
 
 class Geometry(object):
 
-    def __init__(self, init_path = '', geometry = [], fixed_atoms = [], json_form = []):
+    def __init__(self, init_path='', geometry=[], fixed_atoms=[], json_form=[]):
         self.elements = []
         self.x = []
         self.y = []
@@ -29,7 +28,6 @@ class Geometry(object):
 
         if fixed_atoms != []:
             self.set_fixed_atoms(fixed_atoms)
-
 
     def __len__(self):
         return len(self.geometry)
@@ -105,13 +103,12 @@ class Geometry(object):
                 f.write('{:.12E}'.format(float(element[4])).rjust(19))
                 f.write('\n')
 
-
     def get_layerdistance(self):
         z = [float(i) for i in self.z]
         z_dict = dict(zip(z, self.no))
         z.sort()
 
-        #dlete the repeat atom with the similar z-coordinate
+        # dlete the repeat atom with the similar z-coordinate
         i = 1
         while i < len(z):
             if abs(z[i] - z[i-1]) < 0.1:
@@ -119,7 +116,7 @@ class Geometry(object):
             else:
                 i += 1
 
-        #get the longest distance between atom layer
+        # get the longest distance between atom layer
         distance = 0
         z_fixed = [0, 0]
         for i in range(1, len(z)):

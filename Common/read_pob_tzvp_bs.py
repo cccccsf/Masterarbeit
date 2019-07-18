@@ -43,7 +43,7 @@ def read_pob_bs(element):
 
 def transfer_to_target_bs(bs):
     """
-    for metal atoms, we use POB-tvzp BS for s, p orbitals, and 1/3 of POB-tvzp for d orbitals and 2/3 of POB-tvzp for f orbitals in HF1
+    for metal atoms, we use POB-tvzp BS for s, p, d orbitals, and adding 1/3 of POB-tvzp for d orbitals and 2/3 of POB-tvzp for f orbitals in HF1 additionally
     :param bs: [shell[line[unit]]]
     :return: bs: after calculation
     """
@@ -53,8 +53,7 @@ def transfer_to_target_bs(bs):
             shell[j] = line.split()
 
     shell_d = [shell for shell in bs if shell[0][1] == '3']
-
-    new_bs = [shell for shell in bs if int(shell[0][1]) < 3]
+    new_bs = [shell for shell in bs if int(shell[0][1]) < 4]
 
     new_shells_d = []
     new_shells_f = []

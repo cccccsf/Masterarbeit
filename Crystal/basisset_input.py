@@ -6,9 +6,8 @@ from Basis_Set import basis_set_catalog
 from Common import test_variable
 from Common import choose_bs
 from Common import read_pob_tzvp_bs
-from Crystal import geometry_input
 
-yes_or_no = {'Y':1, 'y':1, 'Yes':1, 'yes':1, 'N':0, 'n':0, 'No':0, 'no':0 }
+yes_or_no = {'Y': 1, 'y': 1, 'Yes': 1, 'yes': 1, 'N': 0, 'n': 0, 'No': 0, 'no': 0 }
 
 
 class Basis_set(object):
@@ -284,18 +283,18 @@ class Basis_set(object):
         self.__dict__[arg] = value
         self.__init__(self.elements, self.method, self.bs_type)
 
-# path = 'C:\\Users\\ccccc\\Documents\\Theoritische Chemie\\Masterarbeit\\test\\geo_opt\\x_-0.150\\z_-0.106'
-# geo = geometry_input.Geometry(path)
-# elements = geo.elements
-# method = 'HF2'
-# bs = Basis_set([15], method)
-# print(bs)
 
+if __name__ == '__main__':
+    # from Crystal import geometry_input
+    # from Common import ReadIni
+    # Ini = ReadIni()
+    # geometry = Ini.geometry
+    # geo = geometry_input.Geometry(geometry=geometry)
+    # elements = geo.elements
+    method = 'HF1'
+    bs = Basis_set([13], method)
+    print(bs)
 
-# bs = Basis_set.read_bs_geo_opt_default_metal(20)
-# bs = Basis_set.read_bs_default('HF2', 15, 0)
-# print(len(bs))
-# print(bs)
 
 
 
