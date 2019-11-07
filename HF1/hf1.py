@@ -20,6 +20,7 @@ def hf1(path, moni):
     init_dist = HF1.read_init_dis(path)
     Ini = ReadIni()
     name, slab_or_molecule, group, lattice_parameter, number_of_atoms, geometry, fixed_atoms = Ini.get_basic_info()
+    geometry = Geometry(geometry=geometry)
     bs_type, nodes, crystal_path = Ini.get_hf1()
     cal_parameters = Ini.get_cal_parameters('HF1')
     if nodes == '' or nodes == 'default':
@@ -39,34 +40,34 @@ def hf1(path, moni):
         path_HF1 = path_GeoOpt.replace('geo_opt', 'hf1')
         new_job = Job(path_HF1)
         if not HF1.if_cal_finish(new_job):
-            Inp = HF1.Input(job, name, slab_or_molecule, group, bs_type, layertype='bilayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
+            Inp = HF1.Input(job, name, slab_or_molecule, group, bs_type, layertype='bilayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters, geometry=geometry, lattice_parameters=lattice_parameter)
             Inp.gen_input()
-            # HF1.copy_submit_scr(new_job, nodes, crystal_path)
+            HF1.copy_submit_scr(new_job, nodes, crystal_path)
             new_jobs.append(new_job)
         else:
             hf1_jobs_finished.append(new_job)
         jobs_HF1.append(new_job)
-        # upperlayer
-        path_upper = os.path.join(path_HF1, 'upperlayer')
-        new_job = Job(path_upper)
-        if not HF1.if_cal_finish(new_job):
-            Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='upperlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
-            Inp.gen_input()
-            # HF1.copy_submit_scr(new_job, nodes, crystal_path)
-            new_jobs.append(new_job)
-        else:
-            hf1_jobs_finished.append(new_job)
-        jobs_HF1.append(new_job)
-        # underlayer
-        path_under = os.path.join(path_HF1, 'underlayer')
-        new_job = Job(path_under)
-        if not HF1.if_cal_finish(new_job):
-            Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='underlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
-            Inp.gen_input()
-            # HF1.copy_submit_scr(new_job, nodes, crystal_path)
-            new_jobs.append(new_job)
-        else:
-            hf1_jobs_finished.append(new_job)
+        # # upperlayer
+        # path_upper = os.path.join(path_HF1, 'upperlayer')
+        # new_job = Job(path_upper)
+        # if not HF1.if_cal_finish(new_job):
+        #     Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='upperlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
+        #     Inp.gen_input()
+        #     # HF1.copy_submit_scr(new_job, nodes, crystal_path)
+        #     new_jobs.append(new_job)
+        # else:
+        #     hf1_jobs_finished.append(new_job)
+        # jobs_HF1.append(new_job)
+        # # underlayer
+        # path_under = os.path.join(path_HF1, 'underlayer')
+        # new_job = Job(path_under)
+        # if not HF1.if_cal_finish(new_job):
+        #     Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='underlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
+        #     Inp.gen_input()
+        #     # HF1.copy_submit_scr(new_job, nodes, crystal_path)
+        #     new_jobs.append(new_job)
+        # else:
+        #     hf1_jobs_finished.append(new_job)
         jobs_HF1.append(new_job)
 
     # Submit the calculation job
@@ -77,15 +78,15 @@ def hf1(path, moni):
     HF1.read_all_results_hf1(hf1_jobs_finished, init_dist)
 
     # deal with not-converged jobs
-    jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
-    hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
-    # try to not use GUESSP
-    for job in jobs_not_converged:
-        HF1.delete_guessp(job)
-    new_jobs_finished = HF1.submit(jobs_not_converged)
-    hf1_jobs_finished += hf1_jobs_finished_new
-    jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
-    hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
+    # jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
+    # hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
+    # # try to not use GUESSP
+    # for job in jobs_not_converged:
+    #     HF1.delete_guessp(job)
+    # new_jobs_finished = HF1.submit(jobs_not_converged)
+    # hf1_jobs_finished += new_jobs_finished
+    # jobs_not_converged = [job for job in hf1_jobs_finished if job.status == 'not converged']
+    # hf1_jobs_finished = [job for job in hf1_jobs_finished if job.status != 'not converged']
     # # if still not converged, try to change some parameters
     # while len(jobs_not_converged) > 0:
     #     HF1.change_parameters(jobs_not_converged)

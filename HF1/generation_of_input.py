@@ -11,7 +11,7 @@ from Crystal import Basis_set
 
 class Input(object):
 
-    def __init__(self, job, name, slab_or_molecule, layer_group, bs_type, layertype='bilayer', fiexed_atoms=[], cal_parameters={}):
+    def __init__(self, job, name, slab_or_molecule, layer_group, bs_type, layertype='bilayer', fiexed_atoms=[], cal_parameters={}, geometry={}, lattice_parameters={}):
         self.job_GeoOpt = job
         self.layertype = layertype
         self.job_hf1 = self.get_new_job()
@@ -23,7 +23,9 @@ class Input(object):
         self.layer_group = layer_group
         self.fixed_atoms = fiexed_atoms
 
+        self.original_lattice_parameter = lattice_parameters
         self.lattice_parameter = self.get_lattice_parameter()
+        self.original_geometry = geometry
         self.geometry = self.get_geometry()
         self.number_of_atoms = len(self.geometry)
         self.elements = []
@@ -33,54 +35,56 @@ class Input(object):
         self.cal_parameters = cal_parameters
 
     def get_lattice_parameter(self):
-        path = self.job_GeoOpt.root_path
-        json_file = os.path.join(path, 'opt_geo_and_latt.json')
-        with open(json_file, 'r') as f:
-            data = json.load(f)
-        data_latt = data['lattice_parameter']
-        coor = '({}, {})'.format(self.job_GeoOpt.x, self.job_GeoOpt.z)
-        try:
-            latt_para = data_latt[coor]
-            latt_para = [float(i) for i in latt_para]
-            if self.slab_or_molecule == 'SLAB' and len(latt_para) == 6:
-                latt_para = latt_para[:2] + latt_para[-1:]
-                l = latt_para[:2]
-                a = latt_para[-1:]
-                new_latt_patt = [l, a]
-            elif len(latt_para) == 6:
-                l = latt_para[:3]
-                a = latt_para[3:]
-                new_latt_patt = [l, a]
-            else:
-                l = [i for i in latt_para if i <= 20]
-                a = [i for i in latt_para if i > 20]
-                new_latt_patt = [l, a]
-            return new_latt_patt
-        except KeyError as e:
-            print(e)
-            print('Optimized lattice parameter not found!'
-                  'Please check out?')
-            return []
+        if self.original_lattice_parameter == {}:
+            path = self.job_GeoOpt.root_path
+            json_file = os.path.join(path, 'opt_geo_and_latt.json')
+            with open(json_file, 'r') as f:
+                data = json.load(f)
+            data_latt = data['lattice_parameter']
+            coor = '({}, {})'.format(self.job_GeoOpt.x, self.job_GeoOpt.z)
+            try:
+                latt_para = data_latt[coor]
+                latt_para = [float(i) for i in latt_para]
+                if self.slab_or_molecule == 'SLAB' and len(latt_para) == 6:
+                    latt_para = latt_para[:2] + latt_para[-1:]
+                    l = latt_para[:2]
+                    a = latt_para[-1:]
+                    new_latt_patt = [l, a]
+                elif len(latt_para) == 6:
+                    l = latt_para[:3]
+                    a = latt_para[3:]
+                    new_latt_patt = [l, a]
+                else:
+                    l = [i for i in latt_para if i <= 20]
+                    a = [i for i in latt_para if i > 20]
+                    new_latt_patt = [l, a]
+                return new_latt_patt
+            except KeyError as e:
+                print(e)
+                print('Optimized lattice parameter not found!'
+                      'Please check out?')
+                return []
 
     def get_geometry(self):
-        path = self.job_GeoOpt.root_path
-        json_file = os.path.join(path, 'opt_geo_and_latt.json')
-        with open(json_file, 'r') as f:
-            data = json.load(f)
-        geo_data = data['geometry']
-        coor = '({}, {})'.format(self.job_GeoOpt.x, self.job_GeoOpt.z)
-        try:
-            geometry = geo_data[coor]
-            if type(self.fixed_atoms) == list and len(self.fixed_atoms) == 2:
-                geometry = Geometry(json_form=geometry, fixed_atoms=self.fixed_atoms)
-            else:
-                geometry = Geometry(json_form=geometry)
-        except KeyError as e:
-            print(e)
-            print('Optimized lattice parameter not found!'
-                  'Please check out?')
-            sys.exit()	# here need a better way to deal with
-        return geometry
+        if self.original_geometry == {}:
+            path = self.job_GeoOpt.root_path
+            json_file = os.path.join(path, 'opt_geo_and_latt.json')
+            with open(json_file, 'r') as f:
+                data = json.load(f)
+            geo_data = data['geometry']
+            coor = '({}, {})'.format(self.job_GeoOpt.x, self.job_GeoOpt.z)
+            try:
+                geometry = geo_data[coor]
+                if type(self.fixed_atoms) == list and len(self.fixed_atoms) == 2:
+                    geometry = Geometry(json_form=geometry, fixed_atoms=self.fixed_atoms)
+                else:
+                    geometry = Geometry(json_form=geometry)
+            except KeyError as e:
+                print(e)
+                print('Optimized lattice parameter not found!'
+                      'Please check out?')
+                sys.exit()	# here need a better way to deal with
+            return geometry
 
     def get_new_job(self):
         path_GeoOpt = self.job_GeoOpt.path

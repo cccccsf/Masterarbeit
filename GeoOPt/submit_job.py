@@ -163,7 +163,7 @@ def submit(jobs, nodes, crystal_path, moni):
                     time.sleep(500)
                     r += 1
                     # test function
-                    test_init_job(job_init, r)
+                    # test_init_job(job_init, r)
                     if r > 15:
                         rec = job_init.path
                         rec += '\n'

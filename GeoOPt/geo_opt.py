@@ -37,7 +37,7 @@ def geo_opt(path, moni):
     record_data_json(path, 'basis_set', bs_type, section='geo_opt')
     record_data_json(path, 'functional', functional, section='geo_opt')
     record_data_json(path, 'nodes', nodes, section='geo_opt')
-    test_ini_read(group, lattice_parameter, number_atoms, slab_or_molecule)
+    # test_ini_read(group, lattice_parameter, number_atoms, slab_or_molecule)
 
     jobs = []
     new_jobs = []

@@ -31,6 +31,7 @@ def end_programm(path):
 
 def pipeline(path, start, end):
     moni = Monitor.Monitor(path)
+    moni.creat_json_file()
     anchor = start
     while anchor < end:
         # print(anchor, end)

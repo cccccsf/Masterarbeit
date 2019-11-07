@@ -4,8 +4,8 @@ import csv
 import json
 
 
-def creat_json_file(path):
-    json_file = os.path.join(path, 'results.json')
+def creat_json_file(path, filename='results.json'):
+    json_file = os.path.join(path, filename)
     if not os.path.exists(json_file):
         info = {}
         with open(json_file, 'w') as f:
@@ -28,7 +28,7 @@ def record_data_json(path, item, value, section='basis'):
         with open(json_file, 'r') as f:
             data = json.load(f)
     except FileNotFoundError:
-        creat_json_file(path)
+        creat_json_file(path, 'parameters.json')
         with open(json_file, 'r') as f:
             data = json.load(f)
     if section not in data:
