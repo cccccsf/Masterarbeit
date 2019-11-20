@@ -7,13 +7,14 @@ from Common import Job
 
 class Monitor(object):
 
-    def __init__(self, path):
+    def __init__(self, path, test=False):
         self.path = path
         self.curr_jobs = {}
         self.finished_jobs = []
         self.status_file = os.path.join(self.path, 'jobs_status.json')
         self.curr_status = ''
         self.creat_json_file()
+        self.test = test
 
     def qstat_n(self):
         command = 'qstat'
@@ -38,8 +39,18 @@ class Monitor(object):
     def get_qstatn_info(self, job_id, out=''):
         if out == '':
             s = self.status_file.replace('jobs_status', 'status')
-            with open(s, 'r') as f:
-                infos = f.readlines()
+            try:
+                with open(s, 'r') as f:
+                    infos = f.readlines()
+            except FileNotFoundError as e:
+                print(e)
+                s = os.path.join(os.path.split(os.path.dirname(__file__))[0], 'test_may')
+                s = os.path.join(s, 'status.json')
+                # print(s)
+                # import sys
+                # sys.exit()
+                with open(s, 'r') as f:
+                    infos = f.readlines()
         else:
             infos = out.split('\n')
         loc = 0

@@ -47,27 +47,27 @@ def hf1(path, moni):
         else:
             hf1_jobs_finished.append(new_job)
         jobs_HF1.append(new_job)
-        # # upperlayer
-        # path_upper = os.path.join(path_HF1, 'upperlayer')
-        # new_job = Job(path_upper)
-        # if not HF1.if_cal_finish(new_job):
-        #     Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='upperlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
-        #     Inp.gen_input()
-        #     # HF1.copy_submit_scr(new_job, nodes, crystal_path)
-        #     new_jobs.append(new_job)
-        # else:
-        #     hf1_jobs_finished.append(new_job)
-        # jobs_HF1.append(new_job)
-        # # underlayer
-        # path_under = os.path.join(path_HF1, 'underlayer')
-        # new_job = Job(path_under)
-        # if not HF1.if_cal_finish(new_job):
-        #     Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='underlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
-        #     Inp.gen_input()
-        #     # HF1.copy_submit_scr(new_job, nodes, crystal_path)
-        #     new_jobs.append(new_job)
-        # else:
-        #     hf1_jobs_finished.append(new_job)
+        # upperlayer
+        path_upper = os.path.join(path_HF1, 'upperlayer')
+        new_job = Job(path_upper)
+        if not HF1.if_cal_finish(new_job):
+            Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='upperlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
+            Inp.gen_input()
+            # HF1.copy_submit_scr(new_job, nodes, crystal_path)
+            new_jobs.append(new_job)
+        else:
+            hf1_jobs_finished.append(new_job)
+        jobs_HF1.append(new_job)
+        # underlayer
+        path_under = os.path.join(path_HF1, 'underlayer')
+        new_job = Job(path_under)
+        if not HF1.if_cal_finish(new_job):
+            Inp = HF1.Layer_Inp(job, name, slab_or_molecule, group, bs_type, layertype='underlayer', fiexed_atoms=fixed_atoms, cal_parameters=cal_parameters)
+            Inp.gen_input()
+            # HF1.copy_submit_scr(new_job, nodes, crystal_path)
+            new_jobs.append(new_job)
+        else:
+            hf1_jobs_finished.append(new_job)
         jobs_HF1.append(new_job)
 
     # Submit the calculation job

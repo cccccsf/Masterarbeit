@@ -38,7 +38,7 @@ class Range_of_Distances(object):
             z_coordinates.append(float(atom[4]))
         i = 1
         while i < len(z_coordinates):
-        # for i in range(1, len(z_coordinates)):
+            # for i in range(1, len(z_coordinates)):
             if abs(z_coordinates[i] - z_coordinates[i-1]) < 0.2:
                     z_coordinates.pop(i)
             else:
@@ -108,8 +108,12 @@ class Range_of_Distances(object):
         if self.distance_series == 'default':
             self.get_distance_series(max_atom_dist)
         else:
-            self.delta_distances = self.get_delta_dis_of_given_dis()
+            # self.delta_distances = self.get_delta_dis_of_given_dis()
+            self.delta_distances = [dis for dis in self.distance_series if dis != 0]
         new_geometrys_dict = self.get_diff_geometry()
+        #print(self.delta_distances)
+        #print(new_geometrys_dict)
+
         return new_geometrys_dict
 
 

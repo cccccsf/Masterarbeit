@@ -44,15 +44,18 @@ class Geo_Opt_Input(object):
         with open(self.input_path, 'w') as f:
             f.write(self.name + '\n')
             f.write(self.slab_or_molecule + '\n')
+            if self.slab_or_molecule.upper == 'CRYSTAL':
+                f.write('0 0 0\n')
             f.write(str(self.layer_group) + '\n')
 
     def write_lattice_parameter(self):
-        with open(self.input_path, 'a') as f:
-            for l in self.lattice_vector[0]:
-                f.write(str(l) + ' ')
-            for a in self.lattice_vector[1]:
-                f.write(str(a) + ' ')
-            f.write('\n')
+        if self.lattice_vector != [[], []]:
+            with open(self.input_path, 'a') as f:
+                for l in self.lattice_vector[0]:
+                    f.write(str(l) + ' ')
+                for a in self.lattice_vector[1]:
+                    f.write(str(a) + ' ')
+                f.write('\n')
 
     def write_opt_info(self):
         free_atoms = self.geometry.z_free_no
@@ -198,6 +201,7 @@ def write_init_dist(geometry, path):
 def creat_geo_lat_json(path):
     geo_lat_json = {'geometry': {}, 'lattice_parameter': {}, 'init_dist': 0}
     json_path = os.path.join(path, 'opt_geo_and_latt.json')
-    print(json_path)
-    with open(json_path, 'w') as f:
-        json.dump(geo_lat_json, f, indent=4)
+    # print(json_path)
+    if not os.path.exists(json_path):
+        with open(json_path, 'w') as f:
+            json.dump(geo_lat_json, f, indent=4)
