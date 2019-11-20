@@ -191,6 +191,8 @@ class Geo_Opt_Input(object):
 def write_init_dist(geometry, path):
     init_dist = geometry.layer_distance
     json_file = os.path.join(path, 'opt_geo_and_latt.json')
+    if not os.path.exists(json_file):
+        creat_geo_lat_json(path)
     with open(json_file, 'r') as f:
         data = json.load(f)
     data['init_dist'] = init_dist

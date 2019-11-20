@@ -201,7 +201,7 @@ def submit(jobs, nodes, crystal_path, moni):
     # detect if init jobs finished
     r = 0
     while True:
-        test_finished(submitted_jobs)      # test function
+        # test_finished(submitted_jobs)      # test function
         moni.update_status()
         if len(submitted_jobs) == 0:
             break

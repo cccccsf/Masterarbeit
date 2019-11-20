@@ -3,6 +3,7 @@ from HF1.select_jobs import select_jobs
 from HF1.generation_of_input import Input
 from HF1.input_of_layers import Layer_Inp
 from HF1.hf1 import hf1
+from HF1.hf1 import hf1_start
 from HF1.submit_job_hf1 import if_cal_finish
 from HF1.submit_job_hf1 import copy_submit_scr
 from HF1.submit_job_hf1 import submit

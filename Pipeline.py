@@ -38,7 +38,10 @@ def pipeline(path, start, end):
         if anchor == 0:
             GeoOPt.geo_opt(path, moni)
         elif anchor == 1:
-            HF1.hf1(path, moni)
+            if start == 1:
+                HF1.hf1_start(path, moni)
+            else:
+                HF1.hf1(path, moni)
         elif anchor == 2:
             Localization.localization(path, moni)
         elif anchor == 3:

@@ -64,6 +64,8 @@ class Input(object):
                 print('Optimized lattice parameter not found!'
                       'Please check out?')
                 return []
+        else:
+            return self.original_lattice_parameter
 
     def get_geometry(self):
         if self.original_geometry == {}:
@@ -85,6 +87,8 @@ class Input(object):
                       'Please check out?')
                 sys.exit()	# here need a better way to deal with
             return geometry
+        else:
+            return self.original_geometry
 
     def get_new_job(self):
         path_GeoOpt = self.job_GeoOpt.path
@@ -102,12 +106,13 @@ class Input(object):
             f.write(str(self.layer_group) + '\n')
 
     def write_lattice_parameter(self):
-        with open(self.input_path, 'a') as f:
-            for l in self.lattice_parameter[0]:
-                f.write(str(l) + ' ')
-            for a in self.lattice_parameter[1]:
-                f.write(str(a) + ' ')
-            f.write('\n')
+        if self.lattice_parameter != [[], []]:
+            with open(self.input_path, 'a') as f:
+                for l in self.lattice_parameter[0]:
+                    f.write(str(l) + ' ')
+                for a in self.lattice_parameter[1]:
+                    f.write(str(a) + ' ')
+                f.write('\n')
 
     def write_geometry(self):
         self.geometry.write_geometry(self.input_path)

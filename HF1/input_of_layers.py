@@ -7,8 +7,8 @@ from copy import deepcopy
 
 class Layer_Inp(Input):
 
-    def __init__(self, job, name, slab_or_molecule, layer_group, bs_type, layertype, fiexed_atoms=[], cal_parameters={}):
-        super(Layer_Inp, self).__init__(job, name, slab_or_molecule, layer_group, bs_type, layertype=layertype, fiexed_atoms=fiexed_atoms, cal_parameters=cal_parameters)
+    def __init__(self, job, name, slab_or_molecule, layer_group, bs_type, layertype, fiexed_atoms=[], cal_parameters={}, geometry={}, lattice_parameters={}):
+        super(Layer_Inp, self).__init__(job, name, slab_or_molecule, layer_group, bs_type, layertype=layertype, fiexed_atoms=fiexed_atoms, cal_parameters=cal_parameters, geometry=geometry, lattice_parameters=lattice_parameters)
         self.ghost_info = self.get_ghost()
 
     def get_ghost(self):

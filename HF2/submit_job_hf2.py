@@ -165,8 +165,8 @@ def submit(jobs, moni):
                 record(new_job.root_path, rec)
                 print(rec)
             else:
-                # time.sleep(500)
-                time.sleep(200)
+                time.sleep(500)
+                # time.sleep(200)
                 j += 1
                 # test_calculation(j, jobs, submitted_jobs, finished_jobs)    # test function
                 if j > 15:

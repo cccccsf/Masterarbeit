@@ -108,12 +108,13 @@ class Input(object):
             f.write(str(self.layer_group) + '\n')
 
     def write_lattice_parameter(self):
-        with open(self.input_path, 'a') as f:
-            for l in self.lattice_parameter[0]:
-                f.write(str(l) + ' ')
-            for a in self.lattice_parameter[1]:
-                f.write(str(a) + ' ')
-            f.write('\n')
+        if self.lattice_parameter != [[], []]:
+            with open(self.input_path, 'a') as f:
+                for l in self.lattice_parameter[0]:
+                    f.write(str(l) + ' ')
+                for a in self.lattice_parameter[1]:
+                    f.write(str(a) + ' ')
+                f.write('\n')
 
     def write_geometry(self):
         self.geometry.write_geometry(self.input_path)
